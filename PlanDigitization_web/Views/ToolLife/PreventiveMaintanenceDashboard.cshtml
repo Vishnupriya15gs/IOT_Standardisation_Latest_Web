@@ -1,0 +1,886 @@
+@model SerializableAttribute
+@{ ViewBag.Title = "PreventiveMaintanenceDashboard";
+                Layout = "~/Views/Shared/_Layout.cshtml"; }
+<link rel="stylesheet" type="text/css" href="~/assets1/datepicker_normal/jquery-ui-1.8.19.custom.css">
+<link href="~/Content/bootstrapmodel.css" rel="stylesheet" />
+<header class="page-header">
+    <h2>Tool Life Monitoring Report</h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("MainDashboard","MainDashboard")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            @*<li><span>Maintenance</span></li>
+                <li><span>Historic Data & Analytics</span></li>
+                <li><span>Tool Life Monitoring</span></li>
+                <li><span>Preventive Maintanence</span></li>*@
+        </ol>
+    </div>
+</header>
+@if (ViewContext.Controller.HasPermission("ToolLifeHistoric-View"))
+{
+<div class="row">
+    <div class="col-md-10">
+        @*<a href="~/Views/ToolLife/PreventiveMaintanenceDashboard.cshtml">~/Views/ToolLife/PreventiveMaintanenceDashboard.cshtml</a>*@
+        @*<div class="btn-group">
+                <label class="control-label" style="float:right; font-weight:bold;"> Select Line </label>
+            </div>
+            <div class="btn-group">
+                <select id="linecode" class="form-control" name="linecode" title="*"></select>
+            </div>&nbsp;&nbsp;*@
+        <div class="btn-group">
+            <label class="control-label" style="float:right; font-weight:bold;"> Select Machine </label>
+        </div>
+        <div class="btn-group">
+            <select id="subsystem" class="form-control" name="subsystem" title="*">
+                <option value="">Select Line First</option>
+            </select>
+        </div>
+        <div class="btn-group">
+            <button type="button" id="viewdetails" class="mb-xs mt-xs mr-xs btn btn-primary">View</button>
+        </div>
+        <div class="btn-group">
+            <button type="button" id="clear" class="mb-xs mt-xs mr-xs btn btn-danger">Reset</button>
+        </div>
+    </div>
+</div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="tabs tabs-danger">
+                            <ul class="nav nav-tabs">
+                                <li class="active" id="custom">
+                                    <a href="#custom" data-toggle="tab">Custom</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div id="custom" class="tab-pane active">
+                                    <section class="panel">
+                                        <header class="panel-heading" style="background-color:teal;color:white;">
+                                            <div class="panel-actions">
+                                                <a href="#" class="fa fa-caret-down"></a>
+                                            </div>
+                                            <h2 class="panel-title" style="color:white;font-size:large;font-style:inherit">Preventive Maintanence record: <span class="line_name"></span> Assembly Line</h2>
+                                        </header>
+                                        <div class="panel-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered table-striped table-condensed mb-none" id="custom_preventive">
+                                                    <thead style="background-color:teal;color:white;">
+                                                        <tr>
+                                                            <th>S.No</th>
+                                                            <th>Line Name</th>
+                                                            <th>Subsystem</th>
+
+                                                            <th>Element</th>
+                                                            <th>Make</th>
+                                                            <th>Part Number</th>
+                                                            <th>Classification</th>
+                                                            <th>Last Maintanence date</th>
+                                                            <th>Is replaced?</th>
+                                                            <th>No of replacements</th>
+                                                            <th>Current Usage</th>
+                                                            <th>UOM</th>
+                                                            <th>Remarks</th>
+                                                            <th>Edit</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="custom_preventive"></tbody>
+                                                    <span class="custom_pre_error" style="color:red;font-size:13px;font-weight:bold;"></span>
+                                                </table>
+                                            </div>
+                                            @*<div class="btn-group" style="float:right;">
+                                                    <button type="button" class="mb-xs mt-xs mr-xs btn btn-primary" id="download_option" onclick="exportTableToExcel('custom_preventive', 'Preventive Maintainence')">Download</button>
+                                                </div>*@
+                                        </div>
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> }
+                            else
+                            {
+                <div class="row">
+                    <h2 class="panel-title">View Permission is denied</h2>
+                </div>}
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+<script src="~/assets1/datepicker_normal/datepicker_normal_jquery.min.js"></script>
+<script src="~/assets1/datepicker_normal/jquery-ui-1.8.19.custom.min.js"></script>
+<script src="~/Scripts/bootstrap-datepicker.js"></script>
+<script type="text/javascript">
+    var I_URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+    document.getElementById("clear").addEventListener("click", function () {
+        $('#linecode').val('');
+        $('#subsystem').val('');
+    })
+
+    document.getElementById("viewdetails").addEventListener("click", function () {
+
+        var active_tab = $('ul .active').attr("id");
+        var linecode = '@Session["LineCode"]';
+        var subsystem = $('#subsystem').val();
+
+        $('.line_name').text(linecode);
+        $(".custom_pre_error").text('');
+
+         if (linecode == '') {
+            swal({
+                icon: "error",
+                title: "Please Provide Line details",
+                button: false,
+                timer: 4500
+            })
+        }
+        else if (subsystem == '') {
+                swal({
+                    icon: "error",
+                    title: "Please Provide Machine details",
+                    button: false,
+                    timer: 4500
+                })
+        }
+        else {
+
+            var preData = {
+                "Flag": "preventive",
+                "linename": linecode,
+                "subsystem": subsystem,
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]'
+             };
+             var R_url = '@Url.Action("Login", "Main")';
+                   var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+                    //$.ajax({
+                    //    type: 'Get',
+                    //    url: URL + 'api/UserSettings/GetEmployee',
+                    //    headers: {
+                    //        Authorization: 'Bearer ' + user1
+                    //    },
+                    //    dataType: 'json'
+                    //}).success(function (response) {
+            $.ajax({
+                type: "POST",
+                url: I_URL + 'api/Toollife/GetPreventiveMain',
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                data: preData,
+                dataType: "json",
+                 beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+                    var rowsCnt = document.getElementById("custom_preventive").getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
+                    if (rowsCnt > 0) {
+                        for (var i = 0; i < rowsCnt; i++) {
+                            document.getElementById("custom_preventive").deleteRow(1);
+                        }
+                    }
+                    if (response.data.length != 0) {
+                        $('.updated_time').text(new Date().toLocaleString());
+                        $('.shift').text("N/A");
+
+                        var j = 1;
+                        for (var i = 0; i < response.data.length; i++) {
+                            var newRow = $("<tr>");
+                            var cols = '';
+                            cols += "<td> " + j + "</td> ";
+                            cols += "<td> " + response.data[i].linename + "</td> ";
+                            cols += "<td> " + response.data[i].subsystem + "</td> ";
+                            cols += "<td> " + response.data[i].element + "</td> ";
+                            cols += "<td> " + response.data[i].make + "</td> ";
+                            cols += "<td> " + response.data[i].partnumber + "</td> ";
+                            cols += "<td> " + response.data[i].classification + " <input type='hidden' id='ToolID' value='" + response.data[i].ToolID +"'/> <input type='hidden' id='currentlifecle' value='" + response.data[i].currentusage +"'/> </td> ";
+                            cols += "<td> <span>" + response.data[i].lastmain + " </span>  <input type='date' class='datepic' id='lastmain' value='" + response.data[i].lastmain + "' name='lastmain' style='display:none;width:80px;'/></td> ";
+                            cols += "<td> <span>" + response.data[i].isreplaced + "</span>  <input type='text' id='isreplaced' maxlength='3' class='isreplaced' name='isreplaced'  oncut='return false' oncopy='return false' onpaste='return false' onkeypress='return validatetxt(event)' onblur='validate(this);'  style='display:none;width:80px;' value='" + response.data[i].isreplaced + "'/> </td> ";
+                            cols += "<td> <span>" + response.data[i].noofreplace + " </span> <input type='number' id='noofreplace' value='" + response.data[i].noofreplace +"' name='noofreplace' style='display:none;width:80px;'/> </td> ";
+                            cols += "<td> " + response.data[i].currentusage + "</td> ";
+                            cols += "<td> " + response.data[i].uom + "</td> ";
+                            cols += "<td> <span>" + response.data[i].remarks + " </span> <input type='text' id='remarks' class='remarks' value='" + response.data[i].remarks + "' name='remarks'  style='display:none;width:80px;'/> </td> ";
+                             cols += "<td> <a class='Edit'><span class='fa fa-pencil-square-o'></span></a><a class='Update' style ='display:none'><span class='fa fa-floppy-o'></span></a>&nbsp<a class='Cancel' style ='display:none'><span class='fa fa-times'></span></a></td > ";
+                            cols += "</tr>";
+                            newRow.append(cols);
+                            $(".custom_preventive").append(newRow);
+                            j++;
+                        }
+                    }
+                    else {
+                        $(".custom_pre_error").text(response.msg);
+                    }
+
+                    if ($.fn.DataTable.isDataTable('#custom_preventive')) {
+                        $('#custom_preventive').DataTable().destroy();
+                    }
+
+                    $('#custom_preventive').DataTable({
+                        //"ordering": true,
+                        //"bDestroy": true,
+                        "responsive": true,
+                        "autoWidth": false,
+                        "searching": false,
+                         scrollY: true,
+                            scrollX: true,
+                            scroller: true,
+                        dom: 'Bfrtip',
+                        buttons: [
+                            //{
+                            //    extend: 'csv',
+                            //    title: 'Ok Parts Count',
+                            //    messageTop: 'Date:' + new Date().toLocaleString() + ' Line: ' + line_name + '  Machine:' + machine
+                            //},
+                            {
+                                extend: 'excel',
+
+                                title: 'Preventive Maintainence',
+                                exportOptions: {
+                                    columns: [0, 1, 2,3,4,5,6,7,8,9,10,11,12]
+                                }
+
+
+
+                            },
+
+                        ]
+
+                    });
+                },
+                error: function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+                    }
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                }
+            });
+                    //}).error(function (response) {
+                    //    swal({
+                    //        icon: "warning",
+                    //        title: "Session Timeout",
+                    //        button: true,
+                    //        closeModal: false
+                    //    })
+                    //    window.location = R_url;
+                    //});
+        }
+
+    })
+
+
+    var upva = 0;
+    $("body").on("click", "#custom_preventive .Edit", function () {
+        var row = $(this).closest("tr");
+        $("td", row).each(function () {
+            if ($(this).find("input").length > 0) {
+                $(this).find("input").show();
+                $(this).find("span").hide();
+            }
+        });
+        $("#download_option").hide();
+        row.find(".Update").show();
+        row.find(".Cancel").show();
+        $(this).hide();
+    });
+
+    $("body").on("click", "#custom_preventive .Cancel", function () {
+
+        if (upva == 0) {
+            var row = $(this).closest("tr");
+            $("td", row).each(function () {
+                if ($(this).find("input").length > 0) {
+                    var span = $(this).find("span");
+                    var input = $(this).find("input");
+                    span.html(input.val());
+                    span.show();
+                    input.hide();
+                }
+            });
+            $("#download_option").show();
+            row.find(".Edit").show();
+            row.find(".Update").hide();
+            row.find(".Cancel").hide();
+            $(this).hide();
+        }
+        else {
+
+            return alert("Value is null");
+        }
+
+    });
+
+    $("body").on("click", "#custom_preventive .Update", function () {
+        var row = $(this).closest("tr");
+        var dateval = row.find("#lastmain").val();
+
+        if (dateval != null) {
+
+            var remval = sanitizedate(dateval);
+
+            var conditions = ["&lt;", "&#x2F;", "&#x27;", "&amp;", "&gt;", "&quot;"];
+            var test1 = conditions.some(el => remval.includes(el));
+
+            if (test1 == true) {
+                upva = 1;
+                return alert("Reamrks contain special charecters which is not allowed");
+            }
+
+
+        }
+        else {
+            upva = 1;
+            return alert("LastMaintanence value is null");
+
+        }
+        var noofrepl = row.find("#noofreplace").val();
+
+        if (noofrepl != null) {
+
+            var remval = sanitizenoofrepl(noofrepl);
+
+            var conditions = ["&lt;", "&#x2F;", "&#x27;", "&amp;", "&gt;", "&quot;"];
+            var test1 = conditions.some(el => remval.includes(el));
+
+            if (test1 == true) {
+                upva = 1;
+                return alert("NoOfReplacement contain special charecters which is not allowed");
+            }
+
+
+        }
+        else {
+            upva = 1;
+            return alert("No of replacement value is null");
+
+        }
+        var isrepval = row.find("#isreplaced").val();
+
+        if (isrepval != null) {
+
+            var remval = sanitizeisrepl(isrepval);
+
+            var conditions = ["&lt;", "&#x2F;", "&#x27;", "&amp;", "&gt;", "&quot;"];
+            var test1 = conditions.some(el => remval.includes(el));
+
+            if (test1 == true) {
+                upva = 1;
+                return alert("Please enter Yes or No");
+            }
+
+
+        }
+        else {
+            upva = 1;
+            return alert("IsReplaced value is null");
+
+        }
+        //var res = validate(isrepval);
+            var string12 = row.find("#remarks").val();
+            if (string12 != null) {
+
+                var remval = sanitize(string12);
+
+                var conditions = ["&lt;", "&#x2F;", "&#x27;", "&amp;", "&gt;", "&quot;"];
+                var test1 = conditions.some(el => remval.includes(el));
+                if (test1 == true) {
+                    upva = 1;
+                    return alert("Reamrks contain special charecters which is not allowed");
+                }
+                //var conspech = remval.includes("&lt;", "&#x2F;","&#x27;")
+                //if (conspech == true) {
+                //    upva = 1;
+                //    return alert("String contain special charecters which is not allowed");
+                //}
+            }
+            else {
+                upva = 1;
+                return alert("Remarks value is null");
+
+            }
+            //var format = /^[A-Za-z0-9]+$/;
+            //var format = /^[A-Za-z0-9 ]+$/;
+            //if (format.test(string12)) {
+
+            //} else {
+            //    row.find("#remarks").val('');
+            //    return alert("Remarks format is wrong..");
+            //}
+
+            $("td", row).each(function () {
+                if ($(this).find("input").length > 0) {
+                    var span = $(this).find("span");
+                    var input = $(this).find("input");
+                    span.html(input.val());
+                    span.show();
+                    input.hide();
+                }
+            });
+            $("#download_option").show();
+            row.find(".Edit").show();
+            row.find(".Cancel").hide();
+        $(this).hide();
+
+
+            var myData = {
+                "ToolID": row.find("#ToolID").val(),
+                "LastMaintenaceDate": row.find("#lastmain").val(),
+                "IsReplaced": row.find("#isreplaced").val(),
+                "No_of_Replacements": row.find("#noofreplace").val(),
+                "Currentusage": row.find("#currentlifecle").val(),
+                "Remarks": row.find("#remarks").val(),
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]',
+                 "LineCode":'@Session["LineCode"]'
+            };
+            var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+            //$.ajax({
+            //    type: 'Get',
+            //    url: URL + 'api/UserSettings/GetEmployee',
+            //    headers: {
+            //        Authorization: 'Bearer ' + user1
+            //    },
+            //    dataType: 'json'
+            //}).success(function (response) {
+            $.ajax({
+                type: "POST",
+                url: I_URL + 'api/Toollife/Addtoolmaintenance',
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                data: myData,
+                dataType: "json",
+                success: function (response) {
+                },
+
+                //error: function (response) {
+                //    swal({
+                //        icon: "warning",
+                //        title: "Session Timeout",
+                //        button: true,
+                //        closeModal: false
+                //    })
+                //    window.location = R_url;
+                //}
+            }).error(function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+            });
+
+        })
+    function sanitize(string12) {
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#x27;',
+            "/": '&#x2F;',
+        };
+        const reg = /[&<>"'/]/ig;
+        return string12.replace(reg, (match) => (map[match]));
+    }
+    function sanitizeisrepl(isrepval) {
+
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#x27;',
+            "/": '&#x2F;',
+        };
+        const reg = /[&<>"'/]/ig;
+        return isrepval.replace(reg, (match) => (map[match]));
+    }
+    function sanitizedate(dateval) {
+
+
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#x27;',
+            "/": '&#x2F;',
+        };
+        const reg = /[&<>"'/]/ig;
+        return dateval.replace(reg, (match) => (map[match]));
+    }
+    function sanitizenoofrepl(noofrepl) {
+
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#x27;',
+            "/": '&#x2F;',
+        };
+        const reg = /[&<>"'/]/ig;
+        return noofrepl.replace(reg, (match) => (map[match]));
+    }
+</script>
+
+<script type="text/javascript">
+    $(".datepic").datepicker({
+        format: "yyyy-mm-dd",
+        orientation: "bottom",
+        endDate: '+0d'
+    });
+</script>
+
+<script type="text/javascript">
+    $(function () {
+        var CompanyCode = '@Session["CompanyCode"]';
+        var PlantCode = '@Session["PlantCode"]';
+        var LineCode = '@Session["LineCode"]';
+        if (CompanyCode == "" && PlantCode == "" && LineCode == "") {
+            swal({
+                icon: "error",
+                title: "Please Select Customer, Plant and Line...!",
+                button: true,
+                timer: 4500
+            })
+            return;
+        }
+        else
+            if (CompanyCode == "") {
+                swal({
+                    icon: "error",
+                    title: "Please Select Customer...!",
+                    button: true,
+                    timer: 4500
+                })
+                return;
+            }
+            else
+                if (PlantCode == "") {
+                    swal({
+                        icon: "error",
+                        title: "Please Select Plant...!",
+                        button: true,
+                        timer: 4500
+                    })
+                    return;
+                }
+                if (LineCode == "") {
+                    swal({
+                        icon: "error",
+                        title: "Please Select Line...!",
+                        button: true,
+                        timer: 4500
+                    })
+                    return;
+                }
+                else {
+                    var I_URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+                    @*var myData = {
+                        "Flag": "LineCode",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+                    };
+                    var R_url = '@Url.Action("Login", "Main")';
+                    var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+                    //$.ajax({
+                    //    type: 'Get',
+                    //    url: URL + 'api/UserSettings/GetEmployee',
+                    //    headers: {
+                    //        Authorization: 'Bearer ' + user1
+                    //    },
+                    //    dataType: 'json'
+                    //}).success(function (response) {
+                        $.ajax({
+                            type: "POST",
+                            url: '/Main/GetSettingdatas1',
+                            data: myData,
+                            dataType: "json",
+                            success: function (response) {
+                                var s = '<option value="">Select Line</option>';
+                                for (var i = 0; i < response.data.length; i++) {
+                                    s += '<option value="' + response.data[i].Code + '">' + response.data[i].Name + '</option>';
+                                }
+                                $("#linecode").html(s);
+                            },
+                            error: function (response) {
+                                if (response.status == "401") {
+                                    swal({
+                                        icon: "warning",
+                                        title: "Session Timeout",
+                                        button: true,
+                                        closeModal: false
+                                    })
+                                    window.location = R_url;
+                                }
+                                else {
+                                    swal({
+                                        icon: "warning",
+                                        title: response.responseText,
+                                        button: true,
+                                        closeModal: false
+                                    })
+
+                                }
+                            }
+                        });
+                        //}).error(function (response) {
+                        //    swal({
+                        //        icon: "warning",
+                        //        title: "Session Timeout",
+                        //        button: true,
+                        //        closeModal: false
+                        //    })
+                        //    window.location = R_url;
+                        //});
+
+                    //});*@
+
+                     var myData1 = {
+                        "Flag": "Subsystem",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]',
+                         "LineCode":'@Session["LineCode"]',
+                    };
+                    var R_url = '@Url.Action("Login", "Main")';
+                   var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+                    //$.ajax({
+                    //    type: 'Get',
+                    //    url: URL + 'api/UserSettings/GetEmployee',
+                    //    headers: {
+                    //        Authorization: 'Bearer ' + user1
+                    //    },
+                    //    dataType: 'json'
+                    //}).success(function (response) {
+                    $.ajax({
+                        type: "POST",
+
+                        url:'@Url.Action("GetSettingdatas1", "Main")',
+
+                        data: myData1,
+                        dataType: "json",
+                        success: function (response) {
+                            var s = '<option value="">Select Machine</option>';
+                            for (var i = 0; i < response.data.length; i++) {
+                                s += '<option value="' + response.data[i].Code + '">' + response.data[i].Name + '</option>';
+                            }
+                            $("#subsystem").html(s);
+                        },
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+                            }
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                    });
+                    //}).error(function (response) {
+                    //    swal({
+                    //        icon: "warning",
+                    //        title: "Session Timeout",
+                    //        button: true,
+                    //        closeModal: false
+                    //    })
+                    //    window.location = R_url;
+                    //});
+                }
+
+    });
+</script>
+
+<script type="text/javascript">
+    @*$('#linecode').on('change', function() {
+        //alert(this.value);
+
+
+            var myData1 = {
+                        "Flag": "Subsystem",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]',
+                         "LineCode":this.value,
+                    };
+                    var R_url = '@Url.Action("Login", "Main")';
+                   var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+                    //$.ajax({
+                    //    type: 'Get',
+                    //    url: URL + 'api/UserSettings/GetEmployee',
+                    //    headers: {
+                    //        Authorization: 'Bearer ' + user1
+                    //    },
+                    //    dataType: 'json'
+                    //}).success(function (response) {
+                    $.ajax({
+                        type: "POST",
+
+                        url:'/Main/GetSettingdatas1',
+
+                        data: myData1,
+                        dataType: "json",
+                        success: function (response) {
+                            var s = '<option value="">Select Subsystem</option>';
+                            for (var i = 0; i < response.data.length; i++) {
+                                s += '<option value="' + response.data[i].Code + '">' + response.data[i].Name + '</option>';
+                            }
+                            $("#subsystem").html(s);
+                        },
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+                            }
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                    });
+                    //}).error(function (response) {
+                    //    swal({
+                    //        icon: "warning",
+                    //        title: "Session Timeout",
+                    //        button: true,
+                    //        closeModal: false
+                    //    })
+                    //    window.location = R_url;
+                    //});
+    });*@
+
+</script>
+
+
+<script>
+    function exportTableToExcel(tableID, filename = '') {
+        var downloadLink;
+        var dataType = 'application/vnd.ms-excel';
+        var tableSelect = document.getElementById(tableID);
+        var tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
+
+        // Specify file name
+        filename = filename ? filename + '.xls' : 'excel_data.xls';
+
+        // Create download link element
+        downloadLink = document.createElement("a");
+
+        document.body.appendChild(downloadLink);
+
+        if (navigator.msSaveOrOpenBlob) {
+            var blob = new Blob(['\ufeff', tableHTML], {
+                type: dataType
+            });
+            navigator.msSaveOrOpenBlob(blob, filename);
+        } else {
+            // Create a link to the file
+            downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+
+            // Setting the file name
+            downloadLink.download = filename;
+
+            //triggering the function
+            downloadLink.click();
+        }
+    }
+</script>
+
+<script type="text/javascript">
+
+    function validate(isrepval) {
+
+
+        var valueOfFormField1 = isrepval;
+
+        if ((valueOfFormField1.toUpperCase() == "YES") || (valueOfFormField1.toUpperCase() == "NO")) {
+
+        }
+        else {
+            return alert("You should enter YES or NO");
+            txt.value = "";
+        }
+
+    }
+    function validatetxt(e) {
+        var keyCode = e.keyCode || e.which;
+        var regex = /^[A-Za-z0- 9]+$/;
+        var isValid = regex.test(String.fromCharCode(keyCode));
+        return isValid;
+    }
+
+
+
+    $('body').delegate('#remarks', 'keypress', function (e) {
+        var keyCode = e.keyCode || e.which;
+        var regex = /^[A-Za-z0-9 ]+$/;
+        var isValid = regex.test(String.fromCharCode(keyCode));
+        return isValid;
+    });
+
+        //$(".submit").on("click", function () {
+        //    var string = $(".Remarks").val();
+
+        //    var format = /^[A-Za-z0-9]+$/;
+
+        //    if (format.test(string)) {
+
+        //    } else {
+        //        $(".Remarks").val('');
+        //        alert("Remarks format is wrong..");
+        //    }
+        //});
+
+</script>
+
+

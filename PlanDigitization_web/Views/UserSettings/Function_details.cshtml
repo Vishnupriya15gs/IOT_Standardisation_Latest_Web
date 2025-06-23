@@ -1,0 +1,657 @@
+﻿@model IEnumerable<PlanDigitization_web.Models.Function>
+@{
+    ViewBag.Title = "Function_details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="page-header">
+    <h2> Function </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("MainDashboard","MainDashboard")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li><span>Settings</span></li>
+            <li><span>Function</span></li>
+        </ol>
+    </div>
+</header>
+
+<!-- Add New Function-->
+<div class="row" id="divnew" style="display:none;">
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Insert_Function","UserSettings")" method="post">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Add New Function</h2>
+                </header>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Department <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control Dept_id" name="Dept_id" id="Dept_id" title="Select Department" required></select>
+                        </div>
+                        <label class="col-sm-2 control-label"> Function Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="FunctionName" id="FunctionName" class="form-control" title="Function Name" placeholder="Function Name" required />
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:10px">
+                        <label class="col-sm-2 control-label"> Function ID <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="FunctionID" name="FunctionID" class="form-control" title="Function ID" placeholder="Function ID" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Parent Plant <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control ParentPlant" name="ParentPlant" id="ParentPlant" title="Select Plant" required></select>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:10px">
+                        <label class="col-sm-2 control-label"> Function Description <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="FunctionDescription" id="FunctionDescription" class="form-control" title="Function Description" placeholder="Function Description" required />
+                        </div>
+                    </div>
+
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+<!-- Function Details-->
+<div class="row" id="divdetails">
+    <div class="col-md-12">
+        <section class="panel">
+            <header class="panel-heading" style="background-color:teal;color:white;">
+                @if (ViewContext.Controller.HasPermission("FunctionSetting-Add"))
+                {
+                    <div class="panel-actions">
+                        <button class="btn btn-primary" id="add"><i class="fa fa-plus" aria-hidden="true"> Add New</i></button>
+                    </div>}
+                <h2 class="panel-title" style="color:white">List of Functions : </h2>
+            </header>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="panel-body">
+                        @if (ViewContext.Controller.HasPermission("FunctionSetting-View"))
+                        {
+                            <table class="table table-bordered table-striped mb-none" id="datatable-default" data-swf-path="assets1/vendor/jquery-datatables/extras/TableTools/swf/copy_csv_xls_pdf.swf">
+                                <thead style="background-color:teal;color:white;">
+                                    <tr>
+                                        <th class="centercls"> S.No </th>
+                                        <th style="display:none;"></th>
+                                        <th style="display:none">Function ID</th>
+                                        <th>Function Name</th>
+                                        <th> Parent Plant </th>
+                                        <th> Status </th>
+                                        <th>Department</th>
+                                        <th style="text-align:center;width:150px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{int RowNo = 0;}
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr class="gradeX">
+                                            <td>
+                                                @{RowNo++;}@RowNo
+                                            </td>
+                                            <td class="FunctionID" style="display:none;">
+                                                <span>@Html.Encode(item.Unique_id)</span>
+                                            </td>
+                                            <td style="display:none" class="Fid">
+                                                <span>@Html.Encode(item.FunctionID)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.FunctionName)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.PlantName)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.IsActive)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.dept_name)</span>
+                                            </td>
+                                            <td style="text-align:center;">
+                                                @if (ViewContext.Controller.HasPermission("FunctionSetting-Edit"))
+                                                {
+                                                    <button class="btn btn-primary" style="margin-top: 10px" id="edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>}
+                                                @if (ViewContext.Controller.HasPermission("FunctionSetting-Delete"))
+                                                {
+                                                    <button class="btn btn-danger" style="margin-top: 10px" id="delete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>}
+                                            </td>
+                                        </tr>
+}
+                                </tbody>
+                            </table> }
+                        else
+                        {
+                            <h2>View Permission is denied</h2>}
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!--Edit Function Details-->
+<div class="row" id="divedit" style="display:none;">
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Update_Function","UserSettings")" method="post">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Update Function Details</h2>
+                </header>
+                <div class="panel-body">
+                    <div class="form-group" style="margin-top:10px">
+                        <label class="col-sm-2 control-label"> Department <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control Dept_id" name="Dept_id" id="eDept_id" title="Select Department" required></select>
+                        </div>
+                        <label class="col-sm-2 control-label"> Function Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="eFunctionName" name="FunctionName" class="form-control" title="Function Name" placeholder="Function Name" required />
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:10px">
+                        <input type="hidden" id="eUnique_id" name="Unique_id" />
+                        @*<label class="col-sm-2 control-label"> Function ID <span class="required">*</span></label>
+                            <div class="col-sm-4">*@
+                        <input type="hidden" id="eFunctionID" name="FunctionID" class="form-control" title="Function ID" readonly placeholder="Function ID" required />
+                        @*</div>*@
+                        <label class="col-sm-2 control-label"> Parent Plant <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control" id="eParentPlant" name="ParentPlant" title="Select Plant" required></select>
+                        </div>
+                        <label class="col-sm-2 control-label"> Function Description <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="FunctionDescription" id="eFunctionDescription" class="form-control" title="Function Description" placeholder="Function Description" required />
+                        </div>
+                    </div>
+
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+@if (@TempData["message"] != null)
+{
+    <script type="text/javascript">
+    $(function () {
+        var msg = '@TempData["message"]';
+        if (msg == "Inserted") {
+            swal({
+                icon: "success",
+                title: "Details Added Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Updated") {
+            swal({
+                icon: "success",
+                title: "Details Updated Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Already FunctionID") {
+            swal({
+                icon: "error",
+                title: "Failed to Add.Function ID already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Already FunctionName") {
+            swal({
+                icon: "error",
+                title: "Failed to Add.Function Name already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+        else {
+            swal({
+                icon: "error",
+                title: "Failed to Add",
+                button: true,
+                timer: 4500
+            })
+        }
+    });
+    </script>
+}
+<script type="text/javascript">
+    $(function () {
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+        var User_Role = '@Session["Role"]';
+        var myDatas = {
+            "QueryType": "Customer_Plant",
+            "Parameter1": '@Session["CompanyCode"]'
+        };
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+        $.ajax({
+            type: "POST",
+            data: myDatas,
+             headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+            url: URL + 'api/UserSettings/User_settings_details',
+            dataType: "json",
+            success: function (response) {
+                var s = '<option value="">Please Select</option>';
+                for (var i = 0; i < response.data.Table.length; i++) {
+                    s += '<option value="' + response.data.Table[i].PlantID + '">' + response.data.Table[i].PlantName + '</option>';
+                }
+                $("#ParentPlant").html(s);
+            }
+        }).error(function (response) {
+            if (response.status == "401") {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            }
+            else {
+                swal({
+                    icon: "warning",
+                    title: response.responseText,
+                    button: true,
+                    closeModal: false
+                })
+
+            }
+             });
+    });
+</script>
+<script type="text/javascript">
+    $("#add").click(function () {
+        $("#divnew").show();
+        $("#divdetails").hide();
+        $("#divedit").hide();
+    });
+
+    $(".cancel").click(function () {
+        $("#divnew").hide();
+        $("#divdetails").show();
+        $("#divedit").hide();
+    });
+
+</script>
+<script type="text/javascript">
+    $(function () {
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+        var data = {
+            "Flag": "Get_dept",
+            "CompanyCode": '@Session["CompanyCode"]',
+            "PlantCode": '@Session["PlantCode"]',
+        };
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+        $.ajax({
+            type: "POST",
+            data: data,
+            url:  '@Url.Action("GetMasterdata", "Main")',
+            dataType: "json",
+            success: function (response) {
+                //alert(response)
+                var s = '<option value="">Please Select</option>';
+                for (var i = 0; i < response.data.length; i++) {
+                    s += '<option value="' + response.data[i].Code + '">' + response.data[i].Name + '</option>';
+                }
+                $("#Dept_id").html(s);
+            }
+        }).error(function (response) {
+            if (response.status == "401") {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            }
+            else {
+                swal({
+                    icon: "warning",
+                    title: response.responseText,
+                    button: true,
+                    closeModal: false
+                })
+
+            }
+             });
+
+    });
+</script>
+
+<script type="text/javascript">
+    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+    $("body").on("click", "#edit", function () {
+        var row = $(this).closest("tr");
+        var ID = row.find(".FunctionID span").html();
+
+        var myData = {
+            "QueryType": "Edit_Function",
+            "Parameter": ID
+        };
+
+        $("#divedit").show();
+        $("#divnew").hide();
+        $("#divdetails").hide();
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+        $.ajax({
+            type: "POST",
+            url: URL + 'api/UserSettings/User_settings_details',
+            data: myData,
+             headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+            dataType: "json",
+            beforeSend: function () {
+                $('.loading').show();
+            },
+            complete: function () {
+                $('.loading').hide();
+            },
+            success: function (response) {
+                $('#eUnique_id').val(response.data.Table[0].Unique_id);
+                $('#eFunctionID').val(response.data.Table[0].FunctionID);
+                $('#eIsActive').val(response.data.Table[0].IsActive);
+                $('#eFunctionName').val(response.data.Table[0].FunctionName);
+                $('#eFunctionDescription').val(response.data.Table[0].FunctionDescription);
+                $('#eParentPlant').val(response.data.Table[0].ParentPlant);
+
+                var myDatass = {
+                    "QueryType": "Customer_Plant",
+                    "Parameter1": '@Session["CompanyCode"]'
+                };
+                 var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+                $.ajax({
+                    type: "POST",
+                    data: myDatass,
+                     headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                    url: URL + 'api/UserSettings/User_settings_details',
+                    dataType: "json",
+                    success: function (response3) {
+                        var s = '<option value="">Please Select</option>';
+                        for (var i = 0; i < response3.data.Table.length; i++) {
+                            if (response3.data.Table[i].PlantID == response.data.Table[0].ParentPlant) {
+                                s += '<option value="' + response3.data.Table[i].PlantID + '" selected=selected>' + response3.data.Table[i].PlantName + '</option>';
+                            }
+                            else {
+                                s += '<option value="' + response3.data.Table[i].PlantID + '">' + response3.data.Table[i].PlantName + '</option>';
+                            }
+                        }
+                        $("#eParentPlant").html(s);
+                    }
+                }).error(function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+                    }
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+             });
+
+                var datas = {
+                    "Flag": "Get_dept",
+                    "CompanyCode": '@Session["CompanyCode"]',
+                    "PlantCode": '@Session["PlantCode"]',
+                };
+                 var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+                $.ajax({
+                    type: "POST",
+                    data: datas,
+                    url:  '@Url.Action("GetMasterdata", "Main")',
+                    dataType: "json",
+                    success: function (response4) {
+                        console.log(response4);
+                        var s = '<option value="">Please Select</option>';
+                        for (var i = 0; i < response4.data.length; i++) {
+                            if (response4.data[i].Code == response.data.Table[0].Dept_id) {
+                                s += '<option value="' + response4.data[i].Code + '" selected=selected>' + response4.data[i].Name + '</option>';
+                            }
+                            else {
+                                s += '<option value="' + response4.data[i].Code + '">' + response4.data[i].Name + '</option>';
+                            }
+                        }
+                        $("#eDept_id").html(s);
+                    }
+                }).error(function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+                    }
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+             });
+            }
+            , error: function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+            }
+        });
+             //}).error(function (response) {
+             //    swal({
+             //        icon: "warning",
+             //        title: "Session Timeout",
+             //        button: true,
+             //        closeModal: false
+             //    })
+             //    window.location = R_url;
+             //});
+    });
+
+    $("body").on("click", "#delete", function () {
+        if (confirm("Do you want to Delete this Function?")) {
+            var row = $(this).closest("tr");
+            var ID = row.find(".Fid span").html();
+            console.log(ID);
+            var myData = {
+                "QueryType": "Delete",
+                "FunctionID": ID,
+                 "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]',
+                "Parameter2": '@Session["LineCode"]',
+            };
+             var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/UserSettings/delete_Function_settings_details',
+                data: myData,
+                 headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+                    swal({
+                        icon: "success",
+                        title: "Function Details Deleted Successfully...!",
+                        button: true,
+                        timer: 4500
+                    })
+                    window.location = '@Url.Action("Function_details", "UserSettings")';
+                }
+            }).error(function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+             });
+        }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('.updated_time').text("N/A");
+        $('.shift').text("N/A");
+
+        if ($.fn.DataTable.isDataTable('#datatable-default')) {
+            $('#datatable-default').DataTable().destroy();
+        }
+
+
+        $('#datatable-default').DataTable({
+
+            "responsive": true,
+            "autoWidth": false,
+            scrollY: true,
+            scrollX: true,
+            scroller: true
+        });
+
+
+    });
+</script>
+
+@*</script>*@

@@ -1,0 +1,53 @@
+﻿@model PlanDigitization_web.Models.MailModel
+@{
+    ViewBag.Title = "Feedbackpage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+
+<p>
+    @using (@Html.BeginForm("Index", "Feedback", FormMethod.Post, new { @id = "form1", @enctype = "multipart/form-data" }))
+    {
+        @Html.ValidationSummary()
+
+
+        <table class="table-condensed">
+            <tbody>
+                <tr>
+                    <td>User Name</td>
+                    <td id="username">@Html.LabelFor(m => m.username, new { @class = "control-label" })</td>
+                </tr>
+                <tr>
+                    <td>Feedback Topic:</td>
+                    <td>@Html.TextBoxFor(m => m.Subject, new { @class = "form-control" })</td>
+                </tr>
+                <tr>
+                    <td>Upload</td>
+                    <td><input name="fileUploader" type="file" class="btn btn-primary" /></td>
+                </tr>
+                <tr>
+                    <td>Comments:</td>
+                    <td>@Html.TextAreaFor(m => m.Body, new { @class = "form-control" })</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <input type="submit" class="btn btn-success" style="margin-left:25%;margin-right:25%" value="Send" />
+    }
+</p>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/bootstrap")
+<script>
+    $(document).ready(function () {
+        alert(sessionStorage.getItem("CompanyCode"))
+        $('#username').text(sessionStorage.getItem("CompanyCode"));
+        //alert(@ViewBag.Message)
+        @*if (@ViewBag.Message == 'Sent') {
+
+            alert('Mail has been sent successfully');
+        }*@
+    });
+</script>

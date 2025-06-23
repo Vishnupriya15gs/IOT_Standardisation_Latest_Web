@@ -1,0 +1,331 @@
+
+@model PlanDigitization_web.Models.Loginmodel
+@using CaptchaMvc.HtmlHelpers
+
+
+@{
+    Layout = null;
+}
+<style>
+    a {
+        display: block !important;
+        /*padding-left:250px;*/
+    }
+
+    .Note {
+        padding-bottom: 10px;
+    }
+
+
+    #CaptchaInputText {
+        border-bottom-color: #000000;
+        border-right-color: black;
+    }
+
+    canvas {
+        max-width: 100%;
+    }
+</style>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>:: TEAL i4Metrics Login ::</title>
+    @Styles.Render("~/assets/css")
+    @Scripts.Render("~/assets/firstscript")
+    @Scripts.Render("~/assets/secondscript")
+    <link rel="icon" href="~/Images/teal-sfs.png" type="image/x-icon">
+    <style type="text/css">
+        .loading {
+            font-family: Arial;
+            font-size: 10pt;
+            /*border: 5px solid #67CFF5;*/
+            width: 100%;
+            height: 100%;
+            display: none;
+            position: fixed;
+            background-color: #0e0e0e4f;
+            z-index: 999;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="loading" align="center">
+        <img src="~/assets1/images/loading.gif" alt="" style="width:150px;padding-top:300px;" />
+    </div>
+    @*<header class="header">
+            <div class="logo-container" style="float:left">
+                <a class="logo">
+                    <img src="~/assets1/images/teallogo.png" style="height:35px;" alt="TEAL" />
+                </a>
+
+            </div>
+            <h3 style="margin-left:45%"><b>i4Metrics Login</b></h3>
+        </header>*@
+
+
+    <div style="background-image: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)),url(/Images/3.png) !important; background-repeat: no-repeat; background-size: cover; ">
+        <a href="/" class="logo pull-left">
+            <img src="~/assets1/images/Teal Logo CTC01.png" height="50" style="margin-top: 19px; background-color: honeydew; margin-left: 10px; border: 0.5px solid white; border-radius: 10px; box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;" alt="Teali4metrics" />
+        </a>
+        <section class="body-sign " style="">
+            <div class="center-sign">
+                <a href="/" class="logo pull-left">
+                    @*<img src="~/assets1/images/LOGO-removebg-preview.png" height="54" style="margin-top: 19px;" alt="Teali4metrics" />*@
+                    @* <img src="~/assets1/images/LOGO-removebg-preview.png" height="54" style="margin-top: 19px; border: 0.5px solid white; border-radius:10px;margin-top:-1px;" alt="Teali4metrics" />*@
+
+                </a>
+                <div class="panel panel-sign">
+                    <div class="panel-title-sign mt-xl text-right" style="">
+                        <h2 class="title text-uppercase text-bold m-none"><i class="fa fa-user mr-xs"></i> Sign In</h2>
+                    </div>
+
+                    <div class="panel-body" style=" box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;">
+                        <form class="form" action="@Url.Action("Checklogin", "Main")" method="post" id="logintrial">
+
+                            <div class="form-group mb-lg">
+                                <label>Username</label>
+                                <div class="input-group input-group-icon">
+                                    <input name="UserName" type="text" title="Username" class="form-control input-md" autocomplete="off" required />
+                                    <span class="input-group-addon">
+                                        <span class="icon icon-lg">
+                                            <i class="fa fa-user"></i>
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group mb-lg">
+                                <div class="clearfix">
+                                    <label class="pull-left">Password</label>
+                                </div>
+                                <div class="input-group input-group-icon">
+                                    <input name="Password" type="password" autocomplete="off" class="form-control input-md" required />
+                                    <span class="input-group-addon">
+                                        <span class="icon icon-lg">
+                                            <i class="fa fa-lock"></i>
+                                        </span>
+                                    </span>
+                                </div>
+                                <br />
+                                @*@Html.Captcha(4)*@
+                                @*@Html.MathCaptcha()*@
+                                @*@Html.MathCaptcha("Click Refresh Captcha ", "Enter the result here", "Is required field", false)*@
+                                @*@Html.Captcha("Refresh", "Enter Captcha Text", 5, "Is required field", true)*@
+                                @*<button style="" type="button" class="mb-xs mt-xs mr-xs btn btn-sm btn-default">Refresh</button>*@
+                                <div class="mb-3 d-flex align-items-center">
+                                    <canvas id="captcha" width="250" height="70" style="background-color: #e5fdfd; "></canvas>
+                                    <button type="button" class="btn btn-secondary" id="refresh-captcha" style="margin-bottom: 25px">
+                                        <i class="fa fa-refresh"></i>  Refresh
+                                    </button>
+                                    <p style="margin-left:217px" id="timer"></p>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="captcha-input" class="form-label">Enter Captcha</label>
+                                    <input type="text" class="form-control" id="captcha-input" required>
+                                </div>
+
+
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12 Note">
+                                    Note: Captcha expires every 2 minutes.
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <button type="submit" id="submitbtn" onclick="" class="btn btn-primary">Sign In</button>
+                                    @*<button type="button" class="btn btn-primary" onclick="return Check_login();">Sign In</button>*@
+                                </div>
+                                <div class="col-sm-4 text-right">
+                                    <a href="@Url.Action("Forgot", "Main")" style="text-decoration:none;" class="pull-right">Forgot Password?</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="~/assets1/javascripts/swal.js"></script>
+    <script src="~/assets1/javascripts/swal_alert.js"></script>
+
+    @if (@TempData["message"] != null)
+    {
+<script type="text/javascript">
+            $(function () {
+                var msg = '@TempData["message"]';
+                if (msg == "Login Successfull...!") {
+                    swal({
+                        icon: "success",
+                        title: "@TempData["message"]",
+                        button: false,
+                        timer: 2500
+                    }).then(function (result) {
+                        var UserID = '@Session["UserID"]';
+                        if (UserID != null) {
+                            window.location = '@Url.Action("MainDashboard", "MainDashboard")';
+                            //window.location = '@Url.Action("FactoryKPIIndex", "FactoryKPI")';
+                            //window.location = '@Url.Action("NewDash", "Main")';
+                        }
+                        else {
+                            swal({
+                                icon: "error",
+                                title: "Invalid Session...!",
+                                button: false,
+                                timer: 1000
+                            })
+                        }
+
+                    })
+                }else {
+                    swal({
+                        icon: "error",
+                        title: "@TempData["message"]",
+                        button: false,
+                        timer: 2500
+                    })
+                }
+        });
+</script>
+    }
+    <script>
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+        function Check_login() {
+            var R_url = '@Url.Action("Dashboard", "Main")';
+            var UserName = $('#User_name').val();
+            var Password = $('#Password').val();
+            if (UserName == "") {
+                $('#User_name').css("border-color", "#a94442");
+                $('#User_name').focus();
+                return false;
+            }
+            else {
+                $('#User_name').css("border-color", "#cccccc");
+            }
+            if (Password == "") {
+                $('#Password').css("border-color", "#a94442");
+                $('#Password').focus();
+                return false;
+            }
+            else {
+                $('#Password').css("border-color", "#cccccc");
+            }
+        }
+    </script>
+    <script>
+        var x;
+        $(document).ready(function () {
+
+            generateCaptcha();
+
+        });
+        $("#refresh-captcha").click(function () {
+            generateCaptcha();
+            $("#captcha-input").val("");
+        });
+        $("#submitbtn").on('click', function (e) {
+
+            e.preventDefault();
+            var captchaInput = $("#captcha-input").val();
+            var captchaCode = sessionStorage.getItem("captchaCode");
+            var submit;
+            if (captchaInput == captchaCode) {
+
+                submit = document.getElementById('logintrial').submit();
+
+            }
+            else {
+                swal({
+                    title: "Enter Valid Captcha",
+                    icon: "error",
+                    timer: '1000',
+                    button: false
+                });
+
+                generateCaptcha();
+                $("#captcha-input").val("");
+                return;
+            }
+
+
+        });
+        function generateCaptcha() {
+
+            intervel();
+            document.getElementById("timer").innerHTML = "";
+
+            var a = $("#captcha")[0],
+                b = a.getContext("2d");
+
+            b.clearRect(0, 0, a.width, a.height);
+
+            var f = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
+                e = "",
+                j = 40,
+                k = 50;
+            // Set 5 Character
+            for (var m = 0; m < 5; m++) {
+
+                var n;
+                if (m == 4) {
+                    n = f.charAt(52 + Math.floor(Math.random() * 10));
+                } else {
+                    n = f.charAt(Math.floor(Math.random() * 62));
+                }
+                e += n;
+
+
+                b.font = j + "px Arial";
+                b.textAlign = "center";
+                b.textBaseline = "middle";
+                b.fontsize = "50px";
+                b.fillStyle = "rgb(" + Math.floor(Math.random() * 256) + "," + Math.floor(Math.random() * 256) + "," + Math.floor(Math.random() * 256) + ")";
+
+
+                b.fillText(n, 20 + m * k, a.height / 2);
+            }
+
+            sessionStorage.setItem("captchaCode", e);
+
+        }
+        function intervel() {
+            clearInterval(x);
+            var countDownDate = new Date(Date.now() + (2 * 60 * 1000)).getTime();
+            // Update the count down every 1 second
+            x = setInterval(function () {
+
+                var now = new Date().getTime();
+
+                // Find the distance between now and the count down date
+                var distance = countDownDate - now;
+
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                if (minutes == 0) {
+                    document.getElementById("timer").innerHTML = "Captcha expires in : " + seconds + " s ";
+                }
+                else {
+                    document.getElementById("timer").innerHTML = "Captcha expires in : 0" + minutes + " m " + seconds + " s ";
+                }
+
+                if (minutes == 0 && seconds < 15) {
+
+                    document.getElementById("timer").style.color = "red";
+                }
+                else {
+                    document.getElementById("timer").style.color = "black";
+                }
+                if (distance < 0) {
+                    clearInterval(x);
+                    generateCaptcha();
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

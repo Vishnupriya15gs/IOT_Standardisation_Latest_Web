@@ -1,0 +1,30 @@
+﻿body {
+}
+
+@media(max-width:576px) {
+    svg .x-axis-title {
+        font-size: 14px !important;
+    }
+}
+
+svg {
+    font-family: var(--bargraph-tooltip-font);
+}
+
+svg .x-axis-title {
+    font-size: 16px;
+}
+
+.bar-label {
+    font-size: 10px;
+}
+
+.axis-label {
+    font-size: 10px; /* Adjust the font size as needed */
+    color: var(--linegraph-line-1);
+}
+
+.modal-content .x-axis-title {
+    font-size: 5px;
+}
+

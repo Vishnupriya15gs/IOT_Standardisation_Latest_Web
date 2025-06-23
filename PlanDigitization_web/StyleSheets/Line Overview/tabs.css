@@ -1,0 +1,50 @@
+﻿
+/*.tab-tiles ul {
+    list-style: none;
+    display: flex;
+    padding: 0px;
+}
+
+.tab-tiles ul li {
+    padding: 8px;
+    margin: 8px;
+    background-color: white;
+    min-width: 50px;
+    text-align: center;
+}
+
+.tab-tiles ul li:hover {
+    border-bottom: 2px solid #0088cc;
+}*/
+/* Your existing styles here */
+/*.tab-tiles ul li.active {
+    border-bottom: 2px solid #0088cc !important;
+}*/
+
+
+.tab-tiles ul {
+    list-style: none;
+    display: flex;
+    padding: 0px;
+}
+
+.tab-tiles ul li {
+    padding: 8px;
+    background: #f4f4f4;
+    min-width: 50px;
+    text-align: center;
+    border-radius: 5px 5px 0px 0px;
+    border-bottom: none;
+    border-left: 1px solid #eeeeee;
+    border-right: 1px solid #eeeeee;
+    border-top: 3px solid #dddddd;
+}
+
+.tab-tiles ul li:hover {
+    border-top: 3px solid #0088cc;
+}
+/* Your existing styles here */
+.tab-tiles ul li.active {
+    border-top: 3px solid #0088cc !important;
+    background-color: white;
+}

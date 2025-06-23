@@ -1,0 +1,2072 @@
+﻿<!--To display Tab title as Alert History -->
+<!--To include layout to page-->
+@{
+    ViewBag.Title = "AlertHistory";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" type="text/css" href="~/assets1/datepicker_normal/jquery-ui-1.8.19.custom.css">
+<!--Header in left side and home button for dashboard page -->
+<header class="page-header">
+    <h2>Alert Generation History</h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("NewDash","Main")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+        </ol>
+    </div>
+</header>
+<!--Displays page when user has alert historic view permission-->
+@if (ViewContext.Controller.HasPermission("AlertHistoric-View"))
+{
+    <div class="row">
+        <div class="col-md-10">
+           <!--Label to display select machine-->
+            <div class="btn-group">
+                <label class="control-label" style="float:right; font-weight:bold;"> Select Machine </label>
+            </div>
+            <!--Dropdown to display machine list-->
+            <div class="btn-group">
+                <select id="subsystem" class="form-control" name="subsystem" title="*">
+                    <option value="">Select Line First</option>
+                </select>
+            </div>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="tabs tabs-danger">
+                <!--Tab to display custom -->
+                <ul class="nav nav-tabs">
+                    <li class="active" id="custom">
+                        <a href="#custom1" data-toggle="tab">Custom</a>
+                    </li>
+                    <li>
+                        <a href="#today" data-toggle="tab">Today</a>
+                    </li>
+                    <li>
+                        <a href="#lastday" data-toggle="tab">Last Day</a>
+                    </li>
+                </ul>
+                <!--Custom tab content-->
+                <div class="tab-content">
+                    <div id="custom1" class="tab-pane active">
+                        <section class="panel">
+                            <div class="form-group">
+                                <!--Date picker to select custom date-->
+                                <label class="col-md-3 control-label">Date range</label>
+                                <div class="col-md-6">
+                                    <div class="input-daterange input-group">
+                                        <span class="input-group-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </span>
+                                        <input type="text" class="form-control datepic" readonly style="text-align:left;" id="start" name="start">
+                                        <span class="input-group-addon">to</span>
+                                        <input type="text" class="form-control datepic" readonly style="text-align:left;" id="end" name="end">
+
+                                    </div>
+
+                                </div>
+                                <!--Button to submit/reset the selection-->
+                                <div class="btn-group">
+                                    <button type="button" id="viewdetails" class="mb-xs mt-xs mr-xs btn btn-primary">View</button>
+                                </div>
+                                <div class="btn-group">
+                                    <button type="button" id="clear" class="mb-xs mt-xs mr-xs btn btn-danger">Reset</button>
+                                </div>
+                            </div>
+
+                            <header class="panel-heading" style="background-color:teal;color:white;">
+                                @*<div class="panel-actions">
+                <a href="#" class="fa fa-caret-down"></a>
+            </div>*@
+                                <h2 class="panel-title" style="color:white;">Historic View </h2>
+                            </header>
+
+                            <!--Button to download data in history table-->
+                            <div class="btn-group" style="float:right;">
+                                <button type="button" class="mb-xs mt-xs mr-xs btn btn-primary" onclick="exportTableToExcel('datatable-custom', 'Alert History')">Download</button>
+                            </div>
+
+                            <!--Div with table content to display historic data-->
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped table-condensed mb-none" id="datatable-custom">
+                                        <thead style="background-color:teal;color:white;">
+                                            <tr>
+                                                <th>S.No</th>
+                                                <th>Alert ID</th>
+                                                <th>Alert Date and Time</th>
+                                                <th>Alert Text</th>
+                                                <th>Group Sent</th>
+                                                <th>Instance </th>
+
+                                            </tr>
+                                        </thead>
+                                        <!--table body which is binded with data from javascript-->
+                                        <tbody class="custom_details"></tbody>
+                                        <!--Span to show error/no data available message-->
+                                        <span class="custom_error" style="color:red;font-size:13px;font-weight:bold;"></span>
+                                    </table>
+                                </div>
+
+                            </div>
+                            <div>
+                                <!--Label to display select machine-->
+                                <div class="btn-group">
+                                    <label class="control-label" style="float:right; font-weight:bold;"> Select AlertID </label>
+                                </div>
+                                <!--Dropdown to display alertid list-->
+                                <div class="btn-group">
+                                    <select id="alertid" class="form-control" name="subsystem" title="*">
+                                        <option value="">Select Date First</option>
+                                    </select>
+                                </div>
+                                <div class="btn-group">
+                                    <label class="control-label" style="float:right; font-weight:bold;"> Select Instance Starttime </label>
+                                </div>
+                                <!--Dropdown to display instance list-->
+                                <div class="btn-group">
+                                    <select id="instance" class="form-control" name="subsystem" title="*">
+                                        <option value="">Select Alertid First</option>
+                                    </select>
+                                </div>
+
+                            </div>
+                            <br />
+                            <header class="panel-heading" style="background-color:teal;color:white;">
+                                @*<div class="panel-actions">
+                                    <a href="#" class="fa fa-caret-down"></a>
+                                </div>*@
+                                <h2 class="panel-title" style="color:white;">Historic View -Comments</h2>
+                            </header>
+
+                            <!--Button to download data in history table-->
+                            <div class="btn-group" style="float:right;">
+                                <button type="button" class="mb-xs mt-xs mr-xs btn btn-primary" onclick="exportTableToExcel('datatable-custom_comment', 'Comment History')">Download</button>
+                            </div>
+
+                            <!--Div with table content to display historic data-->
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped table-condensed mb-none" id="datatable-custom_comment">
+                                        <thead style="background-color:teal;color:white;">
+                                            <tr>
+                                                <th>S.No</th>
+                                                <th>Alert ID</th>
+                                                <th>Alert Name</th>
+                                                <th>Comment Date And Time</th>
+                                                <th>Instance Start Time</th>
+                                                <th>Instance End Time</th>
+                                                <th>Comment</th>
+
+                                            </tr>
+                                        </thead>
+                                        <!--table body which is binded with data from javascript-->
+                                        <tbody class="custom_details_comment"></tbody>
+                                        <!--Span to show error/no data available message-->
+                                        <span class="customcomment_error" style="color:red;font-size:13px;font-weight:bold;"></span>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </section>
+                       
+                    </div>
+                    <!--Today tab content-->
+                    <div id="today" class="tab-pane">
+                        <section class="panel">
+
+                            <!--Button to select today/last day option-->
+                            <div class="btn-group">
+                                <button type="button" id="todaydetails" class="mb-xs mt-xs mr-xs btn btn-primary">Click to Get today's Alert Details</button>
+
+                            </div>
+                            <header class="panel-heading" style="background-color:teal;color:white;">
+                                @*<div class="panel-actions">
+                                    <a href="#" class="fa fa-caret-down"></a>
+                                </div>*@
+                                <h2 class="panel-title" style="color:white;">Historic View -Today </h2>
+                            </header>
+
+                            <!--Button to download data in history table-->
+                            <div class="btn-group" style="float:right;">
+                                <button type="button" class="mb-xs mt-xs mr-xs btn btn-primary" onclick="exportTableToExcel('datatable-today', 'Alert History')">Download</button>
+                            </div>
+
+                            <!--Div with table content to display historic data-->
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped table-condensed mb-none" id="datatable-today">
+                                        <thead style="background-color:teal;color:white;">
+                                            <tr>
+                                                <th>S.No</th>
+                                                <th>Alert ID</th>
+                                                <th>Alert Date and Time</th>
+                                                <th>Alert Text</th>
+                                                <th>Group Sent</th>
+                                                <th>Instance </th>
+
+                                            </tr>
+                                        </thead>
+                                        <!--table body which is binded with data from javascript-->
+                                        <tbody class="today_details"></tbody>
+                                        <!--Span to show error/no data available message-->
+                                        <span class="today_error" style="color:red;font-size:13px;font-weight:bold;"></span>
+                                    </table>
+                                </div>
+
+                                <div>
+                                    <!--Label to display select machine-->
+                                    <div class="btn-group">
+                                        <label class="control-label" style="float:right; font-weight:bold;"> Select AlertID </label>
+                                    </div>
+                                    <!--Dropdown to display alertid list-->
+                                    <div class="btn-group">
+                                        <select id="alertid_today" class="form-control" name="subsystem" title="*">
+                                            <option value="">Select Date First</option>
+                                        </select>
+                                    </div>
+                                    <div class="btn-group">
+                                        <label class="control-label" style="float:right; font-weight:bold;"> Select Instance Starttime </label>
+                                    </div>
+                                    <!--Dropdown to display instance list-->
+                                    <div class="btn-group">
+                                        <select id="instance_today" class="form-control" name="subsystem" title="*">
+                                            <option value="">Select Alertid First</option>
+                                        </select>
+                                    </div>
+
+                                </div>
+                                <br />
+                                <header class="panel-heading" style="background-color:teal;color:white;">
+                                    @*<div class="panel-actions">
+                    <a href="#" class="fa fa-caret-down"></a>
+                </div>*@
+                                    <h2 class="panel-title" style="color:white;">Historic View -Comments</h2>
+                                </header>
+
+                                <!--Button to download data in history table-->
+                                <div class="btn-group" style="float:right;">
+                                    <button type="button" class="mb-xs mt-xs mr-xs btn btn-primary" onclick="exportTableToExcel('datatable-today_comment', 'Comment History')">Download</button>
+                                </div>
+
+                                <!--Div with table content to display historic data-->
+                                <div class="panel-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped table-condensed mb-none" id="datatable-today_comment">
+                                            <thead style="background-color:teal;color:white;">
+                                                <tr>
+                                                    <th>S.No</th>
+                                                    <th>Alert ID</th>
+                                                    <th>Alert Name</th>
+                                                    <th>Comment Date And Time</th>
+                                                    <th>Instance Start Time</th>
+                                                    <th>Instance End Time</th>
+                                                    <th>Comment</th>
+
+                                                </tr>
+                                            </thead>
+                                            <!--table body which is binded with data from javascript-->
+                                            <tbody class="today_details_comment"></tbody>
+                                            <!--Span to show error/no data available message-->
+                                            <span class="todaycomment_error" style="color:red;font-size:13px;font-weight:bold;"></span>
+                                        </table>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </section>
+
+                    </div>
+                    <!--Lastday tab content-->
+                    <div id="lastday" class="tab-pane">
+                        <section class="panel">
+
+                            <!--Button to select today/last day option-->
+                            <div class="btn-group">
+                                <button type="button" id="lastdaydetails" class="mb-xs mt-xs mr-xs btn btn-primary">Click to Get last day's Alert Details</button>
+
+                            </div>
+                            <header class="panel-heading" style="background-color:teal;color:white;">
+                                @*<div class="panel-actions">
+                                    <a href="#" class="fa fa-caret-down"></a>
+                                </div>*@
+                                <h2 class="panel-title" style="color:white;">Historic View -Last Day </h2>
+                            </header>
+
+                            <!--Button to download data in history table-->
+                            <div class="btn-group" style="float:right;">
+                                <button type="button" class="mb-xs mt-xs mr-xs btn btn-primary" onclick="exportTableToExcel('datatable-lastday', 'Alert History')">Download</button>
+                            </div>
+
+
+                            <!--Div with table content to display historic data-->
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped table-condensed mb-none" style="border:solid 1px" id="datatable-lastday">
+                                        <thead style="background-color:teal;color:white;">
+                                            <tr>
+                                                <th>S.No</th>
+                                                <th>Alert ID</th>
+                                                <th>Alert Date and Time</th>
+                                                <th>Alert Text</th>
+                                                <th>Group Sent</th>
+                                                <th>Instance </th>
+
+                                            </tr>
+                                        </thead>
+                                        <!--table body which is binded with data from javascript-->
+                                        <tbody class="lastday_details" style="border:solid 1px"></tbody>
+                                        <!--Span to show error/no data available message-->
+                                        <span class="lastday_error" style="color:red;font-size:13px;font-weight:bold;"></span>
+                                    </table>
+                                </div>
+
+                            </div>
+                            <div>
+                                <!--Label to display select machine-->
+                                <div class="btn-group">
+                                    <label class="control-label" style="float:right; font-weight:bold;"> Select AlertID </label>
+                                </div>
+                                <!--Dropdown to display alertid list-->
+                                <div class="btn-group">
+                                    <select id="alertid_lastday" class="form-control" name="subsystem" title="*">
+                                        <option value="">Select Date First</option>
+                                    </select>
+                                </div>
+                                <div class="btn-group">
+                                    <label class="control-label" style="float:right; font-weight:bold;"> Select Instance Starttime </label>
+                                </div>
+                                <!--Dropdown to display instance list-->
+                                <div class="btn-group">
+                                    <select id="instance_lastday" class="form-control" name="subsystem" title="*">
+                                        <option value="">Select Alertid First</option>
+                                    </select>
+                                </div>
+
+                            </div>
+                            <br />
+                            <header class="panel-heading" style="background-color:teal;color:white;">
+                                @*<div class="panel-actions">
+                <a href="#" class="fa fa-caret-down"></a>
+            </div>*@
+                                <h2 class="panel-title" style="color:white;">Historic View -Comments</h2>
+                            </header>
+
+                            <!--Button to download data in history table-->
+                            <div class="btn-group" style="float:right;">
+                                <button type="button" class="mb-xs mt-xs mr-xs btn btn-primary" onclick="exportTableToExcel('datatable-lastday_comment', 'Comment History')">Download</button>
+                            </div>
+
+                            <!--Div with table content to display historic data-->
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped table-condensed mb-none" id="datatable-lastday_comment">
+                                        <thead style="background-color:teal;color:white;">
+                                            <tr>
+                                                <th>S.No</th>
+                                                <th>Alert ID</th>
+                                                <th>Alert Name</th>
+                                                <th>Comment Date And Time</th>
+                                                <th>Instance Start Time</th>
+                                                <th>Instance End Time</th>
+                                                <th>Comment</th>
+
+                                            </tr>
+                                        </thead>
+                                        <!--table body which is binded with data from javascript-->
+                                        <tbody class="lastday_details_comment"></tbody>
+                                        <!--Span to show error/no data available message-->
+                                        <span class="lastdaycomment_error" style="color:red;font-size:13px;font-weight:bold;"></span>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </section>
+
+                    </div>
+
+                </div>
+                
+                
+            </div>
+        </div>
+    </div>
+}
+
+else
+{
+    <div class="row">
+        <h2 class="panel-title">View Permission is denied</h2>
+    </div>
+}
+
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+<script src="~/assets1/datepicker_normal/datepicker_normal_jquery.min.js"></script>
+<script src="~/assets1/datepicker_normal/jquery-ui-1.8.19.custom.min.js"></script>
+<script src="~/assets1/javascripts/jquery.dataTables.min.js"></script>
+<script src="~/Scripts/bootstrap-datepicker.js"></script>
+
+<script type="text/javascript">
+
+    $('#subsystem').change(function () {
+
+        loadrecentdata();
+
+    });
+
+</script>
+
+<script type="text/javascript">
+    /*Function to create datepiccker object
+     Setting datepicker format and other configuration*/
+    var dateToday = new Date();
+    var yrRange = (dateToday.getFullYear() - 10) + ":" + (dateToday.getFullYear());
+    $(".datepic").datepicker({
+        numberOfMonths: 1,
+        maxDate: '0',
+        dateFormat: 'yy-mm-dd',
+        changeMonth: true,
+        changeYear: true,
+        yearRange: yrRange,
+        orientation: "bottom",
+        endDate: '+0d'
+    });
+    // Getting url from web.config for api call
+    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+    //Clearing values in all selections when reset is selected
+    document.getElementById("clear").addEventListener("click", function () {
+        $('#linecode').val('');
+        $('#subsystem').val('');
+        $('#start').val('');
+        $('#end').val('');
+    })
+    //getting start and end date and passing to getalert data function to retrieve
+    document.getElementById("viewdetails").addEventListener("click", function () {
+        var start = $('#start').val();
+        var end = $('#end').val();
+        getalertdata(start,end);
+
+    })
+    //getting todays date and passing to getalert data function to retrieve
+    document.getElementById("todaydetails").addEventListener("click", function () {
+        var d = new Date();
+        var start = d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate();
+        var end = d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + (d.getDate());
+
+
+        getalerttodaydata(start, end);
+
+    })
+    //getting last day's date and passing to getalert data function to retrieve
+    document.getElementById("lastdaydetails").addEventListener("click", function () {
+        var d = new Date();
+        var start = d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + (d.getDate()-1);
+        var end = d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + (d.getDate() - 1) ;
+        getalertlastdaydata(start, end);
+
+    })
+    /*
+     ** Function to retrieve history details based on the start and end date passed
+     * Function binds the value to the datatable
+     */
+
+    function loadrecentdata() {
+        var active_tab = $('ul .active').attr("id");
+        var linecode = $('#linecode').val();
+        var subsystem = $('#subsystem').val();
+
+        $('.updated_time').text(new Date().toLocaleString());
+        $('.shift').text("N/A");
+
+        $('.line_name').text(linecode);
+        $(".today_error").text('');
+        $(".today_pre_error").text('');
+
+        // To check if line is selected
+        if (linecode == '') {
+            swal({
+                icon: "error",
+                title: "Please Provide Line details",
+                button: false,
+                timer: 4500
+            })
+        }
+        // To check if machine is selected
+        else if (subsystem == '') {
+                swal({
+                    icon: "error",
+                    title: "Please Provide Machine details",
+                    button: false,
+                    timer: 4500
+                })
+        }
+       
+        else {
+            
+            //Creating input json data for passing to api
+            var myData = {
+
+                "LineCode": '@Session["LineCode"]',
+                "MachineCode": subsystem,
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]'
+            };
+            //R_url has return url, to be returned when api call failure
+            var R_url = '@Url.Action("Login", "Main")';
+
+            //user1 variable to be passed for checking token
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+            //ajax call for retrieving alert history
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/Alert/Defaultalerthistorical',
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                data: myData,
+                dataType: "json",
+
+                success: function (response) {
+                        // destroying datatable object is already defined
+                        if ($.fn.DataTable.isDataTable('#datatable-custom')) {
+                            $('#datatable-custom').DataTable().destroy();
+                        }
+                        // Assigning datatable object to the html table
+                        var alerthistory_table=$("#datatable-custom").DataTable({
+                            "responsive": true,
+                             //"dom": 'Bfrtip',
+                        "autoWidth": false,
+                        buttons: [
+                        ],
+                        //"bLengthChange": false,
+                         "lengthMenu": [[10, -1], [10,"All"]]
+
+                        });
+                    //clearing table contents before binding new value
+                    alerthistory_table.clear();
+                    //Adding table rows using data from response
+                    if (response.data.length != 0) {
+                        var j = 1;
+                        for (var i = 0; i < response.data.length; i++) {
+                            var num = i + 1
+                            alerthistory_table.row.add([num, response.data[i].AlertID, response.data[i].AlertDateAndTime, response.data[i].Alerttext, response.data[i].SentGroup, response.data[i].InstanceCount]).draw();
+
+                        }
+                    }
+                    //showing error text when data is empty
+                    else {
+                        $("#datatable-custom").empty()
+                        $(".custom_error").text(response.msg);
+                    }
+
+                },
+                //If token expired /invalid page will be redirected to login
+                error: function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+                    }
+                    //if error other than token, notification will display the actual error message
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                }
+            });
+             var data_getalertid = {
+
+                "LineCode": '@Session["LineCode"]',
+                "MachineCode": subsystem,
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]'
+            };
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/Alert/Defaultalertid',
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                data: data_getalertid,
+                dataType: "json",
+                success: function (response) {
+                    
+                    var s = '<option value="">Select AlertID</option>';
+                    if (response.length > 0) {
+                        for (var i = 0; i < response.length; i++) {
+                            s += '<option value="' + response[i].Alertid + '">' + response[i].Alertid + '</option>';
+                        }
+                        $("#alertid").html(s);
+                    }
+                    else {
+                        var s = '<option value="">No Comments Available</option>';
+                        $("#alertid").html(s);
+                    }
+                    
+                },
+                //If token expired /invalid page will be redirected to login
+                error: function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+
+                    }
+                    //if error other than token, notification will display the actual error message
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                }
+            });
+
+            $('#alertid').change(function () {
+
+                var idalert = $('#alertid').val();
+
+                if (idalert == '' || idalert == '' || idalert == null || idalert == null) {
+                    swal({
+                        icon: "error",
+                        title: "Select Alert Id",
+                        button: false,
+                        timer: 4500
+                    })
+                }
+
+                else
+                {
+                     var data_getinstance = {
+
+                "LineCode": '@Session["LineCode"]',
+                "MachineCode": subsystem,
+                "CompanyCode": '@Session["CompanyCode"]',
+                      "PlantCode": '@Session["PlantCode"]',
+                      "AlertID": this.value
+            };
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/Alert/Defaultinstance',
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                data: data_getinstance,
+                dataType: "json",
+                success: function (response) {
+                    
+                    var s = '<option value="">Select InstanceTime</option>';
+                    s += '<option value="AllInstance">All Instance</option>';
+                    for (var i = 0; i < response.length; i++) {
+                        s += '<option value="' + response[i].InstanceStartTime + '">' + response[i].InstanceStartTime + '</option>';
+                    }
+                    $("#instance").html(s);
+                },
+                //If token expired /invalid page will be redirected to login
+                error: function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+
+                    }
+                    //if error other than token, notification will display the actual error message
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                }
+            });
+                }
+
+                 
+            })
+
+            
+            $('#instance').change(function () {
+
+                var idalert = $('#instance').val();
+
+                if (idalert == '' || idalert == '' || idalert == null || idalert == null) {
+                    swal({
+                        icon: "error",
+                        title: "Select Instance",
+                        button: false,
+                        timer: 4500
+                    })
+                }
+                else
+                {
+                    var data_getcomments = {
+
+                        "LineCode": '@Session["LineCode"]',
+                        "MachineCode": subsystem,
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+                        "AlertID": $('#alertid').val(),
+                        "InstanceStartTime": $('#instance').val()
+                    };
+                    $.ajax({
+                        type: "POST",
+                        url: URL + 'api/Alert/Defaultalertcomments',
+                        headers: {
+                            Authorization: 'Bearer ' + user1
+                        },
+                        data: data_getcomments,
+                        dataType: "json",
+                        success: function (response) {
+                            // destroying datatable object is already defined
+                            if ($.fn.DataTable.isDataTable('#datatable-custom_comment')) {
+                                $('#datatable-custom_comment').DataTable().destroy();
+                            }
+                            // Assigning datatable object to the html table
+                            var alerthistory_table = $("#datatable-custom_comment").DataTable({
+                                "responsive": true,
+                                //"dom": 'Bfrtip',
+                                "autoWidth": false,
+                                buttons: [
+                                ],
+                                //"bLengthChange": false,
+                                "lengthMenu": [[10, -1], [10, "All"]]
+
+
+                            });
+                            //clearing table contents before binding new value
+                            alerthistory_table.clear();
+                            //Adding table rows using data from response
+                            if (response.length != 0) {
+                                var j = 1;
+                                for (var i = 0; i < response.length; i++) {
+                                    var num = i + 1
+                                    alerthistory_table.row.add([num, response[i].AlertID, response[i].Alert_Name, response[i].LastResponseDateTime, response[i].StartTime, response[i].LastTime, response[i].Comment]).draw();
+
+                                }
+                            }
+                            //showing error text when data is empty
+                            else {
+                                $("#datatable-custom_comment").empty()
+                                $(".custom_error").text(response.msg);
+                            }
+
+                        },
+                        //If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                            //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                    });
+                }
+            })
+                
+                 
+
+        }
+    }
+
+    function getalertdata(start,end) {
+        var active_tab = $('ul .active').attr("id");
+        var linecode = $('#linecode').val();
+        var subsystem = $('#subsystem').val();
+
+        $('.updated_time').text(new Date().toLocaleString());
+        $('.shift').text("N/A");
+
+        $('.line_name').text(linecode);
+        $(".custom_error").text('');
+        $(".custom_pre_error").text('');
+
+        // To check if line is selected
+        if (linecode == '') {
+            swal({
+                icon: "error",
+                title: "Please Provide Line details",
+                button: false,
+                timer: 4500
+            })
+        }
+        // To check if machine is selected
+        else if (subsystem == '') {
+                swal({
+                    icon: "error",
+                    title: "Please Provide Machine details",
+                    button: false,
+                    timer: 4500
+                })
+        }
+        //To check if start date is selected
+        else if (start == '') {
+                swal({
+                    icon: "error",
+                    title: "Please Provide start date",
+                    button: false,
+                    timer: 4500
+                })
+        }
+        //To check if end date is selected
+        else if (end == '') {
+                swal({
+                    icon: "error",
+                    title: "Please Provide End date",
+                    button: false,
+                    timer: 4500
+                })
+        }
+        //To check if selected start date is less than end date
+        else {
+            if (start>end) {
+                swal({
+                    icon: "error",
+                    title: "Please Provide Dates correctly...",
+                    button: false,
+                    timer: 4500
+                })
+            }
+            //Creating input json data for passing to api
+            var myData = {
+
+                "LineCode": '@Session["LineCode"]',
+                "MachineCode": subsystem,
+                "fromdate": start,
+                "todate": end,
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]'
+            };
+            //R_url has return url, to be returned when api call failure
+            var R_url = '@Url.Action("Login", "Main")';
+
+            //user1 variable to be passed for checking token
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+            //ajax call for retrieving alert history
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/Alert/Getalerthistorical',
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                async: false,
+                data: myData,
+                dataType: "json",
+
+                success: function (response) {
+                        // destroying datatable object is already defined
+                        if ($.fn.DataTable.isDataTable('#datatable-custom')) {
+                            $('#datatable-custom').DataTable().destroy();
+                        }
+                        // Assigning datatable object to the html table
+                        var alerthistory_table=$("#datatable-custom").DataTable({
+                            "responsive": true,
+                             //"dom": 'Bfrtip',
+                        "autoWidth": false,
+                        buttons: [
+                        ],
+                        //"bLengthChange": false,
+                         "lengthMenu": [[10, -1], [10,"All"]]
+
+                        });
+                    //clearing table contents before binding new value
+                    alerthistory_table.clear();
+                    //Adding table rows using data from response
+                    if (response.data.length != 0) {
+                        var j = 1;
+                        for (var i = 0; i < response.data.length; i++) {
+                            var num = i + 1
+                            alerthistory_table.row.add([num, response.data[i].AlertID, response.data[i].AlertDateAndTime, response.data[i].Alerttext, response.data[i].SentGroup, response.data[i].InstanceCount]).draw();
+
+                        }
+                    }
+                    //showing error text when data is empty
+                    else {
+                        $("#datatable-custom").empty()
+                        $(".custom_error").text(response.msg);
+                    }
+
+                },
+                //If token expired /invalid page will be redirected to login
+                error: function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+                    }
+                    //if error other than token, notification will display the actual error message
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                }
+            });
+            var data_getalertid = {
+
+                "LineCode": '@Session["LineCode"]',
+                "MachineCode": subsystem,
+                "fromdate": start,
+                "todate": end,
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]'
+            };
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/Alert/Getalertid',
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                data: data_getalertid,
+                dataType: "json",
+                success: function (response) {
+                    
+                    var s = '<option value="">Select AlertID</option>';
+                    if (response.length > 0) {
+                        for (var i = 0; i < response.length; i++) {
+                            s += '<option value="' + response[i].Alertid + '">' + response[i].Alertid + '</option>';
+                        }
+                        $("#alertid").html(s);
+                    }
+                    else {
+                        var s = '<option value="">No Comments Available</option>';
+                        $("#alertid").html(s);
+                    }
+                    
+                },
+                //If token expired /invalid page will be redirected to login
+                error: function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+
+                    }
+                    //if error other than token, notification will display the actual error message
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                }
+            });
+
+            $('#alertid').change(function () {
+
+                 var idalert = $('#alertid').val();
+
+                if (idalert == '' || idalert == '' || idalert == null || idalert == null) {
+                    swal({
+                        icon: "error",
+                        title: "Select Alert Id",
+                        button: false,
+                        timer: 4500
+                    })
+                }
+                else
+                {
+                     var data_getinstance = {
+
+                "LineCode": '@Session["LineCode"]',
+                "MachineCode": subsystem,
+                "fromdate": start,
+                "todate": end,
+                "CompanyCode": '@Session["CompanyCode"]',
+                      "PlantCode": '@Session["PlantCode"]',
+                      "AlertID": this.value
+            };
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/Alert/Getinstance',
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                data: data_getinstance,
+                dataType: "json",
+                success: function (response) {
+                    var s = '<option value="">Select InstanceTime</option>';
+                    s += '<option value="AllInstance">All Instance</option>';
+                    for (var i = 0; i < response.length; i++) {
+                        s += '<option value="' + response[i].InstanceStartTime + '">' + response[i].InstanceStartTime + '</option>';
+                    }
+                    $("#instance").html(s);
+                },
+                //If token expired /invalid page will be redirected to login
+                error: function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+
+                    }
+                    //if error other than token, notification will display the actual error message
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                }
+            });
+                }
+
+                 
+            })
+            $('#instance').change(function () {
+
+
+                 var idalert = $('#instance').val();
+
+                if (idalert == '' || idalert == '' || idalert == null || idalert == null) {
+                    swal({
+                        icon: "error",
+                        title: "Select Instance",
+                        button: false,
+                        timer: 4500
+                    })
+                }
+                else
+                {
+                    var data_getcomments = {
+
+                "LineCode": '@Session["LineCode"]',
+                "MachineCode": subsystem,
+                "fromdate": start,
+                "todate": end,
+                "CompanyCode": '@Session["CompanyCode"]',
+                      "PlantCode": '@Session["PlantCode"]',
+                      "AlertID": $('#alertid').val(),
+                      "InstanceStartTime": $('#instance').val()
+            };
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/Alert/Getalertcomments',
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                data: data_getcomments,
+                dataType: "json",
+                success: function (response) {
+                    // destroying datatable object is already defined
+                    if ($.fn.DataTable.isDataTable('#datatable-custom_comment')) {
+                        $('#datatable-custom_comment').DataTable().destroy();
+                    }
+                    // Assigning datatable object to the html table
+                    var alerthistory_table = $("#datatable-custom_comment").DataTable({
+                        "responsive": true,
+                             //"dom": 'Bfrtip',
+                        "autoWidth": false,
+                        buttons: [
+                        ],
+                        //"bLengthChange": false,
+                         "lengthMenu": [[10, -1], [10,"All"]]
+
+
+                    });
+                    //clearing table contents before binding new value
+                    alerthistory_table.clear();
+                    //Adding table rows using data from response
+                    if (response.length != 0) {
+                        var j = 1;
+                        for (var i = 0; i < response.length; i++) {
+                            var num = i + 1
+                            alerthistory_table.row.add([num, response[i].AlertID,response[i].Alert_Name, response[i].LastResponseDateTime, response[i].StartTime, response[i].LastTime, response[i].Comment]).draw();
+
+                        }
+                    }
+                    //showing error text when data is empty
+                    else {
+                        $("#datatable-custom_comment").empty()
+                        $(".custom_error").text(response.msg);
+                    }
+
+                },
+                //If token expired /invalid page will be redirected to login
+                error: function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+
+                    }
+                    //if error other than token, notification will display the actual error message
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                }
+            });
+                }
+
+                  
+            })
+
+        }
+    }
+     function getalerttodaydata(start,end) {
+        var active_tab = $('ul .active').attr("id");
+        var linecode = $('#linecode').val();
+        var subsystem = $('#subsystem').val();
+
+        $('.updated_time').text(new Date().toLocaleString());
+        $('.shift').text("N/A");
+
+        $('.line_name').text(linecode);
+        $(".today_error").text('');
+        $(".today_pre_error").text('');
+
+        // To check if line is selected
+        if (linecode == '') {
+            swal({
+                icon: "error",
+                title: "Please Provide Line details",
+                button: false,
+                timer: 4500
+            })
+        }
+        // To check if machine is selected
+        else if (subsystem == '') {
+                swal({
+                    icon: "error",
+                    title: "Please Provide Machine details",
+                    button: false,
+                    timer: 4500
+                })
+        }
+       
+        else {
+            
+            //Creating input json data for passing to api
+            var myData = {
+
+                "LineCode": '@Session["LineCode"]',
+                "MachineCode": subsystem,
+                "fromdate": start,
+                "todate": end,
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]'
+            };
+            //R_url has return url, to be returned when api call failure
+            var R_url = '@Url.Action("Login", "Main")';
+
+            //user1 variable to be passed for checking token
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+            //ajax call for retrieving alert history
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/Alert/Getalerthistorical',
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                data: myData,
+                dataType: "json",
+
+                success: function (response) {
+                        // destroying datatable object is already defined
+                        if ($.fn.DataTable.isDataTable('#datatable-today')) {
+                            $('#datatable-today').DataTable().destroy();
+                        }
+                        // Assigning datatable object to the html table
+                        var alerthistory_table=$("#datatable-today").DataTable({
+                           "responsive": true,
+                             //"dom": 'Bfrtip',
+                        "autoWidth": false,
+                        buttons: [
+                        ],
+                        //"bLengthChange": false,
+                         "lengthMenu": [[10, -1], [10,"All"]]
+
+                        });
+                    //clearing table contents before binding new value
+                    alerthistory_table.clear();
+                    //Adding table rows using data from response
+                    if (response.data.length != 0) {
+                        var j = 1;
+                        for (var i = 0; i < response.data.length; i++) {
+                            var num = i + 1
+                            alerthistory_table.row.add([num, response.data[i].AlertID, response.data[i].AlertDateAndTime, response.data[i].Alerttext, response.data[i].SentGroup, response.data[i].InstanceCount]).draw();
+
+                        }
+                    }
+                    //showing error text when data is empty
+                    else {
+                        $("#datatable-today").empty()
+                        $(".today_error").text(response.msg);
+                    }
+
+                },
+                //If token expired /invalid page will be redirected to login
+                error: function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+                    }
+                    //if error other than token, notification will display the actual error message
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                }
+            });
+            var data_getalertid = {
+
+                "LineCode": '@Session["LineCode"]',
+                "MachineCode": subsystem,
+                "fromdate": start,
+                "todate": end,
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]'
+            };
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/Alert/Getalertid',
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                data: data_getalertid,
+                dataType: "json",
+                success: function (response) {
+                    
+                    var s = '<option value="">Select AlertID</option>';
+                    if (response.length > 0) {
+                        for (var i = 0; i < response.length; i++) {
+                            s += '<option value="' + response[i].Alertid + '">' + response[i].Alertid + '</option>';
+                        }
+                        $("#alertid_today").html(s);
+                    }
+                    else {
+                        var s = '<option value="">No Comments Available</option>';
+                        $("#alertid_today").html(s);
+                    }
+                   
+                },
+                //If token expired /invalid page will be redirected to login
+                error: function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+
+                    }
+                    //if error other than token, notification will display the actual error message
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                }
+            });
+
+            $('#alertid_today').change(function () {
+
+                 var idalert = $('#alertid').val();
+
+                if (idalert == '' || idalert == '' || idalert == null || idalert == null) {
+                    swal({
+                        icon: "error",
+                        title: "Select Alert Id",
+                        button: false,
+                        timer: 4500
+                    })
+                }
+                else
+                {
+                     var data_getinstance = {
+
+                "LineCode": '@Session["LineCode"]',
+                "MachineCode": subsystem,
+                "fromdate": start,
+                "todate": end,
+                "CompanyCode": '@Session["CompanyCode"]',
+                      "PlantCode": '@Session["PlantCode"]',
+                      "AlertID": $('#alertid_today').val()
+            };
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/Alert/Getinstance',
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                data: data_getinstance,
+                dataType: "json",
+                success: function (response) {
+                    var s = '<option value="">Select InstanceTime</option>';
+                    s += '<option value="AllInstance">All Instance</option>';
+
+                    for (var i = 0; i < response.length; i++) {
+                        s += '<option value="' + response[i].InstanceStartTime + '">' + response[i].InstanceStartTime + '</option>';
+                    }
+                    $("#instance_today").html(s);
+                },
+                //If token expired /invalid page will be redirected to login
+                error: function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+
+                    }
+                    //if error other than token, notification will display the actual error message
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                }
+            });
+                }
+
+                 
+            })
+            $('#instance_today').change(function () {
+
+                var idalert = $('#instance').val();
+
+                if (idalert == '' || idalert == '' || idalert == null || idalert == null) {
+                    swal({
+                        icon: "error",
+                        title: "Select Instance",
+                        button: false,
+                        timer: 4500
+                    })
+                }
+                else
+                {
+                    var data_getcomments = {
+
+                "LineCode": '@Session["LineCode"]',
+                "MachineCode": subsystem,
+                "fromdate": start,
+                "todate": end,
+                "CompanyCode": '@Session["CompanyCode"]',
+                      "PlantCode": '@Session["PlantCode"]',
+                      "AlertID": $('#alertid_today').val(),
+                      "InstanceStartTime": $('#instance_today').val()
+            };
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/Alert/Getalertcomments',
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                data: data_getcomments,
+                dataType: "json",
+                success: function (response) {
+                    // destroying datatable object is already defined
+                    if ($.fn.DataTable.isDataTable('#datatable-today_comment')) {
+                        $('#datatable-today_comment').DataTable().destroy();
+                    }
+                    // Assigning datatable object to the html table
+                    var alerthistory_table = $("#datatable-today_comment").DataTable({
+                        "responsive": true,
+                             //"dom": 'Bfrtip',
+                        "autoWidth": false,
+                        buttons: [
+                        ],
+                        //"bLengthChange": false,
+                         "lengthMenu": [[10, -1], [10,"All"]]
+
+
+                    });
+                    //clearing table contents before binding new value
+                    alerthistory_table.clear();
+                    //Adding table rows using data from response
+                    if (response.length != 0) {
+                        var j = 1;
+                        for (var i = 0; i < response.length; i++) {
+                            var num = i + 1
+                            alerthistory_table.row.add([num, response[i].AlertID,response[i].Alert_Name, response[i].LastResponseDateTime, response[i].StartTime, response[i].LastTime, response[i].Comment]).draw();
+
+                        }
+                    }
+                    //showing error text when data is empty
+                    else {
+                        $("#datatable-today_comment").empty()
+                        $(".today_error").text(response.msg);
+                    }
+
+                },
+                //If token expired /invalid page will be redirected to login
+                error: function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+
+                    }
+                    //if error other than token, notification will display the actual error message
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                }
+            });
+                }
+
+                  
+            })
+
+        }
+    }
+     function getalertlastdaydata(start,end) {
+        var active_tab = $('ul .active').attr("id");
+        var linecode = $('#linecode').val();
+        var subsystem = $('#subsystem').val();
+
+        $('.updated_time').text(new Date().toLocaleString());
+        $('.shift').text("N/A");
+
+        $('.line_name').text(linecode);
+        $(".lasttoday_error").text('');
+        $(".lasttoday_pre_error").text('');
+
+        // To check if line is selected
+        if (linecode == '') {
+            swal({
+                icon: "error",
+                title: "Please Provide Line details",
+                button: false,
+                timer: 4500
+            })
+        }
+        // To check if machine is selected
+        else if (subsystem == '') {
+                swal({
+                    icon: "error",
+                    title: "Please Provide Machine details",
+                    button: false,
+                    timer: 4500
+                })
+        }
+        
+        else {
+            
+            //Creating input json data for passing to api
+            var myData = {
+
+                "LineCode": '@Session["LineCode"]',
+                "MachineCode": subsystem,
+                "fromdate": start,
+                "todate": end,
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]'
+            };
+            //R_url has return url, to be returned when api call failure
+            var R_url = '@Url.Action("Login", "Main")';
+
+            //user1 variable to be passed for checking token
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+            //ajax call for retrieving alert history
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/Alert/Getalerthistorical',
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                data: myData,
+                dataType: "json",
+
+                success: function (response) {
+                        // destroying datatable object is already defined
+                        if ($.fn.DataTable.isDataTable('#datatable-lastday')) {
+                            $('#datatable-lastday').DataTable().destroy();
+                        }
+                        // Assigning datatable object to the html table
+                        var alerthistory_table=$("#datatable-lastday").DataTable({
+                            "responsive": true,
+                             //"dom": 'Bfrtip',
+                        "autoWidth": false,
+                        buttons: [
+                        ],
+                        //"bLengthChange": false,
+                         "lengthMenu": [[10, -1], [10,"All"]]
+
+                        });
+                    //clearing table contents before binding new value
+                    alerthistory_table.clear();
+                    //Adding table rows using data from response
+                    if (response.data.length != 0) {
+                        var j = 1;
+                        for (var i = 0; i < response.data.length; i++) {
+                            var num = i + 1
+                            alerthistory_table.row.add([num, response.data[i].AlertID, response.data[i].AlertDateAndTime, response.data[i].Alerttext, response.data[i].SentGroup, response.data[i].InstanceCount]).draw();
+
+                        }
+                    }
+                    //showing error text when data is empty
+                    else {
+                        $("#datatable-lastday").empty()
+                        $(".lastday_error").text(response.msg);
+                    }
+
+                },
+                //If token expired /invalid page will be redirected to login
+                error: function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+                    }
+                    //if error other than token, notification will display the actual error message
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                }
+            });
+             var data_getalertid = {
+
+                "LineCode": '@Session["LineCode"]',
+                "MachineCode": subsystem,
+                "fromdate": start,
+                "todate": end,
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]'
+            };
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/Alert/Getalertid',
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                data: data_getalertid,
+                dataType: "json",
+                success: function (response) {
+                   
+                    var s = '<option value="">Select AlertID</option>';
+                    if (response.length > 0) {
+                        for (var i = 0; i < response.length; i++) {
+                            s += '<option value="' + response[i].Alertid + '">' + response[i].Alertid + '</option>';
+                        }
+                        $("#alertid_lastday").html(s);
+                    }
+                    else {
+                        var s = '<option value="">No Comments Available</option>';
+                        $("#alertid_lastday").html(s);
+                    }
+                },
+                //If token expired /invalid page will be redirected to login
+                error: function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+
+                    }
+                    //if error other than token, notification will display the actual error message
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                }
+            });
+
+            $('#alertid_lastday').change(function () {
+
+                var idalert = $('#alertid').val();
+
+                if (idalert == '' || idalert == '' || idalert == null || idalert == null) {
+                    swal({
+                        icon: "error",
+                        title: "Select Alert Id",
+                        button: false,
+                        timer: 4500
+                    })
+                }
+                else
+                {
+                    var data_getinstance = {
+
+                "LineCode": '@Session["LineCode"]',
+                "MachineCode": subsystem,
+                "fromdate": start,
+                "todate": end,
+                "CompanyCode": '@Session["CompanyCode"]',
+                      "PlantCode": '@Session["PlantCode"]',
+                      "AlertID": $('#alertid_lastday').val()
+            };
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/Alert/Getinstance',
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                data: data_getinstance,
+                dataType: "json",
+                success: function (response) {
+                    var s = '<option value="">Select InstanceTime</option>';
+                    s += '<option value="AllInstance">All Instance</option>';
+
+                    for (var i = 0; i < response.length; i++) {
+                        s += '<option value="' + response[i].InstanceStartTime + '">' + response[i].InstanceStartTime + '</option>';
+                    }
+                    $("#instance_lastday").html(s);
+                },
+                //If token expired /invalid page will be redirected to login
+                error: function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+
+                    }
+                    //if error other than token, notification will display the actual error message
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                }
+            });
+                }
+
+                  
+            })
+            $('#instance_lastday').change(function () {
+
+
+                 var idalert = $('#instance').val();
+
+                if (idalert == '' || idalert == '' || idalert == null || idalert == null) {
+                    swal({
+                        icon: "error",
+                        title: "Select Instance",
+                        button: false,
+                        timer: 4500
+                    })
+                }
+                else
+                {
+                     var data_getcomments = {
+                
+                "LineCode": '@Session["LineCode"]',
+                "MachineCode": subsystem,
+                "fromdate": start,
+                "todate": end,
+                "CompanyCode": '@Session["CompanyCode"]',
+                      "PlantCode": '@Session["PlantCode"]',
+                      "AlertID": $('#alertid_lastday').val(),
+                      "InstanceStartTime": $('#instance_lastday').val()
+            };
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/Alert/Getalertcomments',
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                data: data_getcomments,
+                dataType: "json",
+                success: function (response) {
+                    // destroying datatable object is already defined
+                    if ($.fn.DataTable.isDataTable('#datatable-lastday_comment')) {
+                        $('#datatable-lastday_comment').DataTable().destroy();
+                    }
+
+                    // Assigning datatable object to the html table
+                        var alerthistory_table=$("#datatable-lastday_comment").DataTable({
+                            "responsive": true,
+                             //"dom": 'Bfrtip',
+                        "autoWidth": false,
+                        buttons: [
+                        ],
+                        //"bLengthChange": false,
+                         "lengthMenu": [[10, -1], [10,"All"]]
+
+
+                        });
+                    
+                    //clearing table contents before binding new value
+                    alerthistory_table.clear();
+                    //Adding table rows using data from response
+                    if (response.length != 0) {
+                        var j = 1;
+                        for (var i = 0; i < response.length; i++) {
+                            var num = i + 1
+                            alerthistory_table.row.add([num, response[i].AlertID,response[i].Alert_Name, response[i].LastResponseDateTime, response[i].StartTime, response[i].LastTime, response[i].Comment]).draw();
+
+                        }
+
+                    }
+                    //showing error text when data is empty
+                    else {
+                        $("#datatable-lastday_comment").empty()
+                        $(".today_error").text(response.msg);
+                    }
+
+                },
+                //If token expired /invalid page will be redirected to login
+                error: function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+
+                    }
+                    //if error other than token, notification will display the actual error message
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                }
+            });
+                }
+
+                 
+            })
+
+        }
+    }
+</script>
+<script type="text/javascript">
+    /*
+     Function to check if,
+     line code,plantcode and company code selected on initial page load
+     */
+    $(function () {
+        var CompanyCode = '@Session["CompanyCode"]';
+        var PlantCode = '@Session["PlantCode"]';
+        var LineCode = '@Session["LineCode"]';
+        if (CompanyCode == "" && PlantCode == "" && LineCode == "") {
+            swal({
+                icon: "error",
+                title: "Please Select Customer, Plant and Line...!",
+                button: true,
+                timer: 4500
+            })
+            return;
+        }
+        else
+            if (CompanyCode == "") {
+                swal({
+                    icon: "error",
+                    title: "Please Select Customer...!",
+                    button: true,
+                    timer: 4500
+                })
+                return;
+            }
+            else
+                if (PlantCode == "") {
+                    swal({
+                        icon: "error",
+                        title: "Please Select Plant...!",
+                        button: true,
+                        timer: 4500
+                    })
+                    return;
+                }
+                if (LineCode == "") {
+                    swal({
+                        icon: "error",
+                        title: "Please Select Line...!",
+                        button: true,
+                        timer: 4500
+                    })
+                    return;
+                }
+                /*Api call to retrieve machine list for selected line and display*/
+                else {
+                    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+                    //json data to send to api
+                     var myData1 = {
+                        "Flag": "Subsystem",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+                        "LineCode":'@Session["LineCode"]',
+                    };
+                     var R_url = '@Url.Action("Login", "Main")';
+                     var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+                    // Retrieving machine list and binding in dropdown
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("GetSettingdatas1", "Main")',
+                        data: myData1,
+                        dataType: "json",
+                        success: function (response) {
+                            var s = '<option value="">Select Machine</option>';
+                            for (var i = 0; i < response.data.length; i++) {
+                                s += '<option value="' + response.data[i].Code + '">' + response.data[i].Name + '</option>';
+                            }
+                            $("#subsystem").html(s);
+                        },
+                        //If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                             //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                    });
+
+                }
+
+    });
+</script>
+
+<script>
+    /*
+     Function to download table contents
+     Parameters - tableid and downloaded file name
+     */
+    function exportTableToExcel1(tableID, filename = '') {
+        var downloadLink;
+        //  Create additional contents like company code,plantcode
+         @*var companycode_table='@Session["CompanyCode"].ToString()';
+        var plantcode_table = '@Session["PlantCode"].ToString()';
+        var line_name = '@Session["LineCode"]';
+        var dataType = 'application/vnd.ms-excel';
+        var tableSelect = document.getElementById(tableID);
+        var tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
+        var html1 = "<p>Date : " + new Date().toLocaleString() + "<br>Company Name: " + companycode_table + "<br>Plant Name: " + plantcode_table + "<br>Line Name :" + line_name + " <p>"
+        var HTML = html1 + tableHTML;
+
+        // Specify file name
+        filename = filename ? filename + '.xls' : 'excel_data.xls';
+
+        // Create download link element
+        downloadLink = document.createElement("a");
+
+        document.body.appendChild(downloadLink);
+
+        if (navigator.msSaveOrOpenBlob) {
+            var blob = new Blob(['\ufeff', HTML], {
+                type: dataType
+            });
+            navigator.msSaveOrOpenBlob(blob, filename);
+        } else {
+            // Create a link to the file
+            downloadLink.href = 'data:' + dataType + ', ' + HTML;
+
+            // Setting the file name
+            downloadLink.download = filename;
+
+            //triggering the function
+            downloadLink.click();*@
+
+    //}
+        //new for checking
+          var companycode_table='@Session["CompanyCode"].ToString()';
+        var plantcode_table='@Session["PlantCode"].ToString()';
+        var table = document.getElementById(tableID);
+        var html1 = "<p>Date : " + new Date().toLocaleString() + "<br>Company Name: " + companycode_table + "<br>Plant Name: " + plantcode_table + " <p>"
+       // var html1 = "<p>Date : " + new Date().toLocaleString() + "<br>Company Name: " + companycode_table+"<br>Plant Name: " + plantcode_table + "<br>Line Name :" + line_name + "<br>Shift: " + window.shift + " <p>"
+        var html = html1+table.outerHTML;
+
+
+            var url = 'data:application/vnd.ms-excel,' + escape(html); // Set your html table into url
+            //console.log(url)
+            //elem.setAttribute("href", url);
+            //elem.setAttribute("download", "export.xls"); // Choose the file name
+            var link = document.createElement("a");
+            link.download = filename;
+            link.href = url;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            delete link;
+
+        return false;
+
+
+    }
+
+    //new
+    var exportTableToExcel = (function () {
+        var uri = 'data:application/vnd.ms-excel;base64,'
+            , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="https://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><meta http-equiv="content-type" content="text/plain; charset=UTF-8"/></head><body><table>{table}</table></body></html>'
+            , base64 = function (s) { return window.btoa(unescape(encodeURIComponent(s))) }
+            , format = function (s, c) { return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; }) }
+        return function (table, name='Alert History') {
+            var companycode_table='@Session["CompanyCode"].ToString()';
+        var plantcode_table = '@Session["PlantCode"].ToString()';
+            var html1 = "<p>Date : " + new Date().toLocaleString() + "<br>Company Name: " + companycode_table + "<br>Plant Name: " + plantcode_table + " <p>"
+            if (!table.nodeType) table = document.getElementById(table)
+            var ctx = { worksheet: name || 'Worksheet', table: html1 + table.innerText }
+            //window.location.href = uri + base64(format(template, ctx))
+
+            var link = document.createElement("a");
+            link.download = 'Alert History';
+            link.href = uri + base64(format(template, ctx));
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            delete link;
+        }
+    })()
+
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('.updated_time').text("N/A");
+        $('.shift').text("N/A");
+
+        
+    });
+</script>
+
+

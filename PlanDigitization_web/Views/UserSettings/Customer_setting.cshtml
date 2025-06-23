@@ -1,0 +1,1130 @@
+﻿@model IEnumerable<PlanDigitization_web.Models.Customer>
+@{
+    ViewBag.Title = "Customer_setting";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="page-header">
+    <h2> Customer </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("MainDashboard","MainDashboard")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li><span>Settings</span></li>
+            <li><span>Customer</span></li>
+        </ol>
+    </div>
+</header>
+
+<!-- Add New Customer-->
+<div class="row" id="divnew" style="display:none;">
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Add_Customer","UserSettings")" enctype="multipart/form-data" method="post">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Add New Customer</h2>
+                </header>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Company Code <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="CompanyCode" id="CompanyCode" class="form-control" title="Company Code" placeholder="Company Code" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Company Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="CompanyName" id="CompanyName" class="form-control" title="Company Name" placeholder="Company Name" required />
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+
+                        <label class="col-sm-2 control-label"> Domain Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="DomainName" id="DomainName" class="form-control" title="Domain Name" placeholder="Domain Name" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Contact Person FirstName <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="ContactPerson_FirstName" id="ContactPerson_FirstName" class="form-control" title="First Name" placeholder="First Name" required />
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+
+                        <label class="col-sm-2 control-label"> Contact Person  LastName <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="ContactPerson_LastName" id="ContactPerson_LastName" class="form-control" title="Last Name" placeholder="Last Name" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Contact Mobile No <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="ContactPerson_Mobile_NO" id="ContactPerson_Mobile_NO" minlength="10" maxlength="10" onkeypress="return isNumberKey(event)" class="form-control" title="Mobile No" placeholder="Mobile No" required />
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+
+                        <label class="col-sm-2 control-label"> Contact Email <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="email" name="ContactPerson_Email" id="ContactPerson_Email" class="form-control" title="Email" placeholder="Email" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Location Name <span class="required">*</span> </label>
+                        <div class="col-sm-4">
+                            <input type="text" name="LocationName" id="LocationName" class="form-control" title="Location Name" required placeholder="Location Name" />
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+
+                        <label class="col-sm-2 control-label"> Address <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <textarea type="text" name="Address" id="Address" title="Address" class="form-control" placeholder="Address" required autocomplete="off"></textarea>
+                        </div>
+                        <label class="col-sm-2 control-label"> Country <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control Country" name="Country" id="Country" required title="Select Country" onchange="Get_State();"></select>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+
+                        <label class="col-sm-2 control-label"> State <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control State" name="state" id="State" required title="Select State" onchange="Get_City()"></select>
+                        </div>
+                        <label class="col-sm-2 control-label"> City <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control City" name="City" id="City" title="Select City" required></select>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+                        <label class="col-sm-2 control-label"> Postal Code<span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="PostalCode" id="PostalCode" class="form-control checkdot" minlength="6" maxlength="7" title="Postal Code" required placeholder="Postal Code" onkeypress="return isNumberKey(event)" />
+                        </div>
+                    </div>
+                    <div>
+                        <label class="col-sm-2 control-label" style="margin-top:12px;"> Logo <span class="required">*(upload only *png,*jpg,*jpeg files)</span></label>
+                        <div class="col-sm-4" style="margin-top:12px;">
+                            @*<input type="file" class="form-control" id="Logo" name="Logo" />*@
+                            <input type="file" class="form-control" id="Logo" onchange="return funvalidationfile(this.id);" name="Logo" accept="image/*" required />
+                            <span class="required">Please select an image less than 3 mb </span>
+                        </div>
+                        <div>
+                            <span class="required" id="file_error"></span>
+                        </div>
+
+                    </div>
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+<!-- Customer Details-->
+<div class="row" id="divdetails">
+    <div class="col-md-12">
+        <section class="panel">
+            <header class="panel-heading" style="background-color:teal;color:white;">
+                @if (ViewContext.Controller.HasPermission("CustomerDetails-Add"))
+                {
+                    <div class="panel-actions">
+                        <button class="btn btn-primary" id="add"><i class="fa fa-plus" aria-hidden="true"> Add New</i></button>
+                    </div>
+                }
+                <h2 class="panel-title" style="color:white;">List of Customers : </h2>
+            </header>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="panel-body">
+                        @if (ViewContext.Controller.HasPermission("CustomerDetails-View"))
+                        {
+                            <table class="table table-bordered table-striped mb-none" id="datatable-default" data-swf-path="assets1/vendor/jquery-datatables/extras/TableTools/swf/copy_csv_xls_pdf.swf">
+                                <thead style="background-color:teal;color:white;">
+                                    <tr>
+                                        <th class="centercls"> S.No </th>
+                                        <th>Company Code</th>
+                                        <th>Company <br /> Name</th>
+                                        <th>Domain <br /> Name</th>
+                                        <th> Contact Person Name </th>
+                                        <th> Mobile No </th>
+                                        <th> Email</th>
+                                        <th style="text-align:center;width:150px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{int RowNo = 0;}
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr class="gradeX">
+                                            <td>
+                                                @{RowNo++;}@RowNo
+                                            </td>
+                                            <td class="CompanyCode">
+                                                <span>@Html.Encode(item.CompanyCode)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.CompanyName)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.DomainName)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.ContactPerson_FirstName) @Html.Encode(item.ContactPerson_LastName)</span>
+                                            </td>
+
+                                            @*modified for Standardisation*@
+                                        <td>    
+                                            <span>@Html.Encode(item.ContactPerson_Mobile_NO)</span>
+                                        </td>
+                                            <td>
+                                                <span>@Html.Encode(item.ContactPerson_Email)</span>
+                                            </td>
+                                            <td style="text-align:center;">
+                                                @if (ViewContext.Controller.HasPermission("CustomerDetails-Edit"))
+                                                {
+                                                    <button class="btn btn-primary" style="margin-top: 10px" id="edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
+                                                }
+                                                @if (ViewContext.Controller.HasPermission("CustomerDetails-Delete"))
+                                                {
+                                                    <button class="btn btn-danger" style="margin-top: 10px" id="delete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <h2>View permission is denied</h2>}
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!--Edit Customer Details-->
+<div class="row" id="divedit" style="display:none;">
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Update_Customer","UserSettings")" enctype="multipart/form-data" method="post">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Update Customer</h2>
+                </header>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Company Code <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="eCompanyCode" name="CompanyCode" class="form-control" title="Company Code" readonly placeholder="Company Code" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Company Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="CompanyName" id="eCompanyName" class="form-control" title="Company Name" placeholder="Company Name" required />
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+
+                        <label class="col-sm-2 control-label"> Domain Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="DomainName" id="eDomainName" class="form-control" title="Domain Name" placeholder="Domain Name" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Contact Person FirstName <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="ContactPerson_FirstName" id="eContactPerson_FirstName" class="form-control" title="First Name" placeholder="First Name" required />
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+
+                        <label class="col-sm-2 control-label"> Contact Person  LastName <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="ContactPerson_LastName" id="eContactPerson_LastName" class="form-control" title="Last Name" placeholder="Last Name" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Contact Mobile No <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="ContactPerson_Mobile_NO" id="eContactPerson_Mobile_NO" minlength="10" maxlength="10" class="form-control" onkeypress="return isNumberKey(event)" title="Mobile No" placeholder="Mobile No" required />
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+
+                        <label class="col-sm-2 control-label"> Contact Email <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="email" name="ContactPerson_Email" id="eContactPerson_Email" class="form-control" title="Email" placeholder="Email" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Location Name </label>
+                        <div class="col-sm-4">
+                            <input type="text" name="LocationName" id="eLocationName" class="form-control" title="Location Name" required placeholder="Location Name" />
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+
+                        <label class="col-sm-2 control-label"> Address <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <textarea type="text" name="Address" id="eAddress" title="Address" class="form-control" placeholder="Address" required autocomplete="off"></textarea>
+                        </div>
+                        <label class="col-sm-2 control-label"> Country <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control Country" name="Country" id="eCountry" required title="Select Country" onchange="Get_eState();"></select>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+
+                        <label class="col-sm-2 control-label"> State <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control State" name="state" id="eState" required title="Select State" onchange="Get_eCity();"></select>
+                        </div>
+                        <label class="col-sm-2 control-label"> City <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control City" name="City" id="eCity" title="Select City" required></select>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+
+                        <label class="col-sm-2 control-label"> Postal Code<span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="PostalCode" id="ePostalCode" class="form-control checkdot" maxlength="6" title="Postal Code" required placeholder="Postal Code" onkeypress="return isNumberKey(event)" />
+                        </div>
+                    </div>
+                    <div>
+                        <label class="col-sm-2 control-label" style="margin-top:12px;"> Logo <span class="required">*(upload only *png,*jpg,*jpeg files)</span></label>
+                        <div class="col-sm-4" style="margin-top:12px;">
+                            @*<input type="file" class="form-control" id="Logo" name="Logo" accept="image/*" required />*@
+                            @*<input type="file" name="Logo" id="Logo" accept="image/apng, image/jpeg, image/png" required />*@
+                            <input type="file" class="form-control" id="Logo1" name="Logo" onchange="return funvalidationfile(this.id);" accept="image/*" />
+                            @*<input type="hidden" name="PreLogo" id="PreLogo" />*@
+                            <span class="required">Please select an image less than 3 mb </span>
+                            <span id="PreLogo"></span>
+
+                            <input type="hidden" class="PreLogo" name="PreLogo" />
+                        </div>
+                        <div class="col-sm-4">
+                            <img id="myImg" src="" width="107" height="98">
+                        </div>
+                    </div>
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+@if (@TempData["message"] != null)
+{
+    <script type="text/javascript">
+    $(function () {
+        var msg = '@TempData["message"]';
+        if (msg == "Inserted") {
+            swal({
+                icon: "success",
+                title: "Details Added Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Updated") {
+            swal({
+                icon: "success",
+                title: "Details Updated Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Already CompanyCode") {
+            swal({
+                icon: "error",
+                title: "Failed to Add.Company Code already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+       else if (msg == "Already PhoneNo") {
+            swal({
+                icon: "error",
+                title: "Failed to Add.Phone Number already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+       else if (msg == "Already Email") {
+            swal({
+                icon: "error",
+                title: "Failed to Add.Email ID already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+        else {
+            swal({
+                icon: "error",
+                title: "Failed to Add",
+                button: true,
+                timer: 4500
+            })
+        }
+    });
+    </script>
+}
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+        $('.checkdot').keydown(function (event) {
+            if ((event.which != 46) && (event.which < 48 || event.which > 57) && (event.which != 8)) {
+                event.preventDefault();
+            }
+        });
+    });
+    $("#ContactPerson_Mobile_NO").on("keypress keyup blur paste", function (event) {
+        var that = this;
+
+        //paste event
+        if (event.type === "paste") {
+            setTimeout(function () {
+                $(that).val($(that).val().replace(/[^\d].+/, ""));
+            }, 100);
+        } else {
+
+            if (event.which < 48 || event.which > 57) {
+                event.preventDefault();
+            } else {
+                $(this).val($(this).val().replace(/[^\d].+/, ""));
+            }
+        }
+
+    });
+
+    $("#eContactPerson_Mobile_NO").on("keypress keyup blur paste", function (event) {
+        var that = this;
+
+        //paste event
+        if (event.type === "paste") {
+            setTimeout(function () {
+                $(that).val($(that).val().replace(/[^\d].+/, ""));
+            }, 100);
+        } else {
+
+            if (event.which < 48 || event.which > 57) {
+                event.preventDefault();
+            } else {
+                $(this).val($(this).val().replace(/[^\d].+/, ""));
+            }
+        }
+
+    });
+
+    function funvalidationfile(id) {
+        var valid = true;
+        var file_name = "";
+        var file_type = "";
+        var file_size = "";
+        var error_msg = "";
+        var valid_size = 3 * 1000 * 1000;
+        var display_error = document.getElementById('file_error');
+        var file = document.getElementById(id);
+
+        if (file.files.length != 0) {
+            file_name = file.files[0].name;
+            file_size = file.files[0].size;
+            file_type = file.files[0].type;
+
+            if (file_type != "image/png" && file_type != "image/jpeg" && file_type != "image/gif") {
+                valid = false;
+
+                error_msg = error_msg + "\n* Only 'PNG', 'JPG/JPEG' and 'GIF' file type supported.";
+                 }
+
+            if (file_size > valid_size) {
+                valid = false;
+                error_msg = error_msg + "\n* Please select an image less than 3 mb";
+            }
+
+        }
+        else {
+            valid = false;
+            error_msg = error_msg + "\n* Please select any image file.";
+        }
+
+
+        if (valid == true) {
+           /* alert("File pass all validation. Now it is ready to send.");*/
+            /*Write ajax code here to send file to the server.*/
+            return true;
+        }
+        else {
+            swal({
+                icon: "warning",
+                title:error_msg,
+                button: true,
+                closeModal: false
+            })
+          //  $("#Logo").val("");
+            file.value = "";
+            return false;
+        }
+
+    }
+
+    $(function () {
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+        var data = {
+            "QueryType": "Country_list"
+        };
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+        $.ajax({
+            type: "POST",
+            data: data,
+             headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+            url: URL + 'api/UserSettings/User_settings_details',
+            dataType: "json",
+            success: function (response) {
+                var s = '<option value="">Please Select</option>';
+                for (var i = 0; i < response.data.Table.length; i++) {
+                    s += '<option value="' + response.data.Table[i].Unique_id + '">' + response.data.Table[i].Name + '</option>';
+                }
+                $(".Country").html(s);
+            }
+        }).error(function (response) {
+            if (response.status == "401") {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            }
+            else {
+                swal({
+                    icon: "warning",
+                    title: response.responseText,
+                    button: true,
+                    closeModal: false
+                })
+
+            }
+             });
+    });
+
+    function Get_State()
+    {
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+        var data = {
+            "QueryType": "State_list",
+            "Parameter": $('.Country').val()
+        };
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+        $.ajax({
+            type: "POST",
+            data: data,
+            headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+            url: URL + 'api/UserSettings/User_settings_details',
+            dataType: "json",
+            beforeSend: function () {
+                $('.loading').show();
+            },
+            complete: function () {
+                $('.loading').hide();
+            },
+            success: function (response) {
+                console.log(response);
+                var s = '<option value="">Please Select</option>';
+                for (var i = 0; i < response.data.Table.length; i++) {
+                    s += '<option value="' + response.data.Table[i].Unique_id + '">' + response.data.Table[i].State_name + '</option>';
+                }
+                $(".State").html(s);
+            }
+        }).error(function (response) {
+            if (response.status == "401") {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            }
+            else {
+                swal({
+                    icon: "warning",
+                    title: response.responseText,
+                    button: true,
+                    closeModal: false
+                })
+
+            }
+             });
+    }
+
+    function Get_City()
+    {
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+        var data = {
+            "QueryType": "City_list",
+            "Parameter": $('.State').val()
+        };
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+        $.ajax({
+            type: "POST",
+            data: data,
+             headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+            url: URL + 'api/UserSettings/User_settings_details',
+            dataType: "json",
+            beforeSend: function () {
+                $('.loading').show();
+            },
+            complete: function () {
+                $('.loading').hide();
+            },
+            success: function (response) {
+                var s = '<option value="">Please Select</option>';
+                for (var i = 0; i < response.data.Table.length; i++) {
+                    s += '<option value="' + response.data.Table[i].Unique_id + '">' + response.data.Table[i].City_Name + '</option>';
+                }
+                $(".City").html(s);
+            }
+        }).error(function (response) {
+            if (response.status == "401") {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            }
+            else {
+                swal({
+                    icon: "warning",
+                    title: response.responseText,
+                    button: true,
+                    closeModal: false
+                })
+
+            }
+             });
+    }
+
+    function Get_eState()
+    {
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+        var data = {
+            "QueryType": "State_list",
+            "Parameter": $('#eCountry').val()
+        };
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+        $.ajax({
+            type: "POST",
+            data: data,
+             headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+            url: URL + 'api/UserSettings/User_settings_details',
+            dataType: "json",
+            beforeSend: function () {
+                $('.loading').show();
+            },
+            complete: function () {
+                $('.loading').hide();
+            },
+            success: function (response) {
+                console.log(response);
+                var s = '<option value="">Please Select</option>';
+                for (var i = 0; i < response.data.Table.length; i++) {
+                    s += '<option value="' + response.data.Table[i].Unique_id + '">' + response.data.Table[i].State_name + '</option>';
+                }
+                $("#eState").html(s);
+            }
+        }).error(function (response) {
+            if (response.status == "401") {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            }
+            else {
+                swal({
+                    icon: "warning",
+                    title: response.responseText,
+                    button: true,
+                    closeModal: false
+                })
+
+            }
+             });
+    }
+
+    function Get_eCity()
+    {
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+        var data = {
+            "QueryType": "City_list",
+            "Parameter": $('#eState').val()
+        };
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+        $.ajax({
+            type: "POST",
+            data: data,
+             headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+            url: URL + 'api/UserSettings/User_settings_details',
+            dataType: "json",
+            beforeSend: function () {
+                $('.loading').show();
+            },
+            complete: function () {
+                $('.loading').hide();
+            },
+            success: function (response) {
+                var s = '<option value="">Please Select</option>';
+                for (var i = 0; i < response.data.Table.length; i++) {
+                    s += '<option value="' + response.data.Table[i].Unique_id + '">' + response.data.Table[i].City_Name + '</option>';
+                }
+                $("#eCity").html(s);
+            }
+        }).error(function (response) {
+            if (response.status == "401") {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            }
+            else {
+                swal({
+                    icon: "warning",
+                    title: response.responseText,
+                    button: true,
+                    closeModal: false
+                })
+
+            }
+             });
+    }
+
+</script>
+<script type="text/javascript">
+    $("#add").click(function () {
+        $("#divnew").show();
+        $("#divdetails").hide();
+        $("#divedit").hide();
+    });
+
+    $(".cancel").click(function () {
+        $("#divnew").hide();
+        $("#divdetails").show();
+        $("#divedit").hide();
+    });
+
+</script>
+<script type="text/javascript">
+    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+    $("body").on("click", "#delete", function () {
+        if (confirm("Do you want to Delete this Customer and all the users of this customer?")) {
+            var row = $(this).closest("tr");
+            var CompanyCode = row.find(".CompanyCode span").html();
+            var myData = {
+                "QueryType": "Delete_Customer",
+                "Parameter": CompanyCode
+            };
+             var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/UserSettings/delete_User_settings_details',
+                data: myData,
+                headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+                    swal({
+                        icon: "success",
+                        title: "Customer Details Deleted Successfully...!",
+                        button: true,
+                        timer: 4500
+                    })
+                   window.location = '@Url.Action("Customer_setting", "UserSettings")';
+                }
+            }).error(function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+             });
+        }
+    });
+
+    $("body").on("click", "#edit", function () {
+        var row = $(this).closest("tr");
+        var CompanyCode = row.find(".CompanyCode span").html();
+
+        var myData = {
+            "QueryType": "Edit_Customer",
+            "Parameter": CompanyCode
+        };
+
+        $("#divedit").show();
+        $("#divnew").hide();
+        $("#divdetails").hide();
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+        $.ajax({
+            type: "POST",
+            url: URL + 'api/UserSettings/User_settings_details',
+            data: myData,
+             headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+            dataType: "json",
+            beforeSend: function () {
+                $('.loading').show();
+            },
+            complete: function () {
+                $('.loading').hide();
+            },
+            success: function (response) {
+                $('#eCompanyCode').val(response.data.Table[0].CompanyCode);
+                $('#eCompanyName').val(response.data.Table[0].CompanyName);
+                $('#eDomainName').val(response.data.Table[0].DomainName);
+                $('#eContactPerson_FirstName').val(response.data.Table[0].ContactPerson_FirstName);
+                $('#eContactPerson_LastName').val(response.data.Table[0].ContactPerson_LastName);
+                $('#eContactPerson_Mobile_NO').val(response.data.Table[0].ContactPerson_Mobile_NO);
+                $('#eContactPerson_Email').val(response.data.Table[0].ContactPerson_Email);
+                $('#eLocationName').val(response.data.Table[0].LocationName);
+                $('#eAddress').val(response.data.Table[0].Address);
+                $('#ePostalCode').val(response.data.Table[0].PostalCode);
+                $('#PreLogo').text(response.data.Table[0].Logo);
+                $(".PreLogo").val(response.data.Table[0].Logo);
+
+                document.getElementById("myImg").src = "../Images/"+ response.data.Table[0].Logo;
+
+                var data = {
+                    "QueryType": "Country_list"
+                };
+                 var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+                $.ajax({
+                    type: "POST",
+                    data: data,
+                     headers: {
+                     Authorization: 'Bearer ' + user1
+                    },
+                    url: URL + 'api/UserSettings/User_settings_details',
+                    dataType: "json",
+                    success: function (response1) {
+                        var s = '<option value="">Please Select</option>';
+                        for (var i = 0; i < response1.data.Table.length; i++) {
+                            if (response1.data.Table[i].Unique_id == response.data.Table[0].Country) {
+                                s += '<option value="' + response1.data.Table[i].Unique_id + '" selected=selected>' + response1.data.Table[i].Name + '</option>';
+                            }
+                            else {
+                                s += '<option value="' + response1.data.Table[i].Unique_id + '">' + response1.data.Table[i].Name + '</option>';
+                            }
+                        }
+                        $("#eCountry").html(s);
+
+
+
+                        var data1 = {
+                            "QueryType": "State_list",
+                            "Parameter": $('#eCountry').val()
+                        };
+                         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+                        $.ajax({
+                            type: "POST",
+                            data: data1,
+                            headers: {
+                                 Authorization: 'Bearer ' + user1
+                             },
+                            url: URL + 'api/UserSettings/User_settings_details',
+                            dataType: "json",
+                            success: function (response2) {
+                                var s = '<option value="">Please Select</option>';
+                                for (var i = 0; i < response2.data.Table.length; i++) {
+                                    if (response2.data.Table[i].Unique_id == response.data.Table[0].state) {
+                                        s += '<option value="' + response2.data.Table[i].Unique_id + '" selected=selected>' + response2.data.Table[i].State_name + '</option>';
+                                    }
+                                    else {
+                                        s += '<option value="' + response2.data.Table[i].Unique_id + '">' + response2.data.Table[i].State_name + '</option>';
+                                    }
+                                }
+                                $("#eState").html(s);
+
+                                var data3 = {
+                                    "QueryType": "City_list",
+                                    "Parameter": $('#eState').val()
+                                };
+                                 var R_url = '@Url.Action("Login", "Main")';
+                                var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+                                // $.ajax({
+                                //        type: 'Get',
+                                //        url: URL + 'api/UserSettings/GetEmployee',
+                                //        headers: {
+                                //                Authorization: 'Bearer ' + user1
+                                //        },
+                                //        dataType: 'json'
+                                //}).success(function (response) {
+                                $.ajax({
+                                    type: "POST",
+                                    data: data3,
+                                    headers: {
+                                                Authorization: 'Bearer ' + user1
+                                        },
+                                    url: URL + 'api/UserSettings/User_settings_details',
+                                    dataType: "json",
+                                    success: function (response3) {
+                                        var s = '<option value="">Please Selec t</option>';
+                                        for (var i = 0; i < response3.data.Table.length; i++) {
+                                            if (response3.data.Table[i].Unique_id == response.data.Table[0].City) {
+                                                s += '<option value="' + response3.data.Table[i].Unique_id + '" selected=selected>' + response3.data.Table[i].City_Name + '</option>';
+                                            }
+                                            else {
+                                                s += '<option value="' + response3.data.Table[i].Unique_id + '">' + response3.data.Table[i].City_Name + '</option>';
+                                            }
+                                        }
+                                        $("#eCity").html(s);
+                                    }
+                                }).error(function (response) {
+                                    if (response.status == "401") {
+                                        swal({
+                                            icon: "warning",
+                                            title: "Session Timeout",
+                                            button: true,
+                                            closeModal: false
+                                        })
+                                        window.location = R_url;
+                                    }
+                                    else {
+                                        swal({
+                                            icon: "warning",
+                                            title: response.responseText,
+                                            button: true,
+                                            closeModal: false
+                                        })
+
+                                    }
+                                });
+                            }
+                        }).error(function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+                            }
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+             });
+                    }
+                }).error(function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+                    }
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+             });
+            }
+            , error: function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+            }
+        });
+             //}).error(function (response) {
+             //    swal({
+             //        icon: "warning",
+             //        title: "Session Timeout",
+             //        button: true,
+             //        closeModal: false
+             //    })
+             //    window.location = R_url;
+             //});
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('.updated_time').text("N/A");
+        $('.shift').text("N/A");
+
+        if ($.fn.DataTable.isDataTable('#datatable-default')) {
+            $('#datatable-default').DataTable().destroy();
+        }
+
+        $('#datatable-default').DataTable({
+
+            "responsive": true,
+            "autoWidth": false,
+            scrollY: true,
+            scrollX: true,
+            scroller: true
+        });
+    });
+</script>

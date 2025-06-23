@@ -1,0 +1,172 @@
+﻿﻿@{
+    ViewBag.Title = "Production";
+}
+
+@Styles.Render("~/assets/css")
+<link rel="stylesheet" href="~/StyleSheets/Line Overview/Production/Layout.css" />
+
+<!--charts-->
+<link rel="stylesheet" href="~/StyleSheets/Charts/tooltipBars.css" />
+<link rel="stylesheet" href="~/StyleSheets/Charts/svg.css" />
+<link rel="stylesheet" href="~/StyleSheets/Charts/bargraphBars.css" />
+<link rel="stylesheet" href="~/StyleSheets/Charts/linegraphLines.css" />
+<link rel="stylesheet" href="~/StyleSheets/Charts/CircularBargraph.css" />
+@*<link rel="stylesheet" href="~/StyleSheets/Charts/pieChart.css"/>*@
+
+<!--tab-->
+<link rel="stylesheet" href="~/StyleSheets/Line Overview/tabs.css" />
+
+<!--modal-->
+<link rel="stylesheet" href="~/StyleSheets/Line Overview/modal.css" />
+
+<!--table-->
+<link rel="stylesheet" href="~/StyleSheets/Tables/table_simple.css" />
+<link rel="stylesheet" href="~/StyleSheets/Tables/table_pagination.css" />
+
+<!--other Text-->
+<link rel="stylesheet" href="~/StyleSheets/Line Overview/Production/OtherText.css" />
+
+<!--Tooltip-->
+<link rel="stylesheet" href="~/StyleSheets/tooltip/leftTooltip.css" />
+
+
+<header class="page-header">
+    <h2>
+        Line Overview - Production Dashboard
+    </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li class="breadcrumb-item">
+                <a href="@Url.Action("MainDashboard", "MainDashboard")">
+                    <div id="lefttooltip">
+                        <i class="fa fa-th"></i>
+                        <span class="tooltiptexts">
+                            <span class="name">Main Dashboard</span>
+                        </span>
+                    </div>
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="@Url.Action("QualityDashboard", "LineOverView_Quality")" class="">
+                    <div id="lefttooltip">
+                        <i class="fa fa-check-square-o"></i>
+                        <span class="tooltiptexts">
+                            <span class="name">Quality Dashboard</span>
+                        </span>
+                    </div>
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="@Url.Action("Maintenance", "LineOverview")">
+                    <div id="lefttooltip">
+                        <i class="fa  fa-wrench"></i>
+                        <span class="tooltiptexts">
+                            <span class="name">Maintenance Dashboard</span>
+                        </span>
+                    </div>
+                </a>
+            </li>
+        </ol>
+    </div>
+</header>
+
+
+<div class="container-main">
+    @*<div class="container-main-title">Production Dashboard</div>*@
+    <div class="tab-tiles">
+        <ul id="tabList">
+            <li data-tab="S1" class="add">S1</li>
+            <li data-tab="S2" class="add">S2</li>
+            <li data-tab="S3" class="add">S3</li>
+        </ul>
+    </div>
+    <div class="tab-container" id="tabContainer">
+
+    </div>
+</div>
+
+
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+<script src="~/Scripts/LineOverview/Tabs.js"></script>
+@*<script src="~/Scripts/Charts/Bargraph/Bargraph.js"></script>*@
+<script src="~/Scripts/Charts/BarLinegraph/BargraphLinegraphTarget.js"></script>
+<script src="~/Scripts/Charts/BarLinegraph/BargraphGroupedBarsLine.js"></script>
+<script src="~/Scripts/Charts/CircularBargraph/Cicularbargraph.js"></script>
+@*<script src="~/Scripts/Charts/Piechart.js"></script>*@
+<script src="~/Scripts/LineOverview/Production/ProdDataCalls.js"></script>
+<script src="~/Scripts/LineOverview/Production/OtherText.js"></script>
+<script src="~/Scripts/LineOverview/Modal.js"></script>
+<script src="~/Scripts/Tables/table_pagination.js"></script>
+<script>
+	var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+	var sURL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+	var company = '@Session["CompanyCode"]';
+	var plant = '@Session["PlantCode"]';
+	var line = '@Session["LineCode"]';
+	var R_url = '@Url.Action("Login", "Main")';
+	var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+	var dynamicContent = `<div class="container-1">
+                                <div class="box-8" id="chartTarget">
+                                </div>
+                                <div class="box-8" id="chartTarget11">
+                                </div>
+                                <div class="box-2" id="chartKPI">
+                                    <div class="box2-1">
+									    EOL - Key Performance Indicator
+                                        <div id="lefttooltip">
+                                            <i class="glyphicon glyphicon-info-sign gi-8x"></i>
+                                            <span class="tooltiptexts">
+                                                <span class="name" id="batchDetails"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="box2-2">
+                                        <div class="box-21">
+                                            <div class="box-211"></div>
+                                            <div class="box-211" id="KPI_APQ"></div>
+                                        </div>
+                                        <div class="box-22">
+                                            <div class="box-221" id="KPI_Prod"></div>
+                                            <div class="box-221" id="KPI_CT"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                           </div>
+                           <div class="container-2">
+                                <div class="box-3" id="utli_overview">
+                                </div>
+                                <div class="box-9" id="chartTarget1">
+                                </div>
+                          </div>
+                           <div class="container-2">
+                                <div class="box-3" id="charts2">
+                                </div>
+                                <div class="box-3">
+                                    <div class="container-4">
+                                        <div class="box-9" id="alarm_title"></div>
+                                        <div class="box-3">
+                                            <select id="downtime_option" name="downtime_option" onchange="get_value();">
+            					                <option value="1">Duration</option>
+            					                <option value="2">Occurence</option>
+        				                    </select>
+                                        </div>
+                                    </div>
+                                    <div class="container-5">
+                                        <div id="charts_drilldown" style="height:184px;width:360px;box-shadow:none;"></div>
+                                    </div>
+                                </div>
+                                <div class="box-3 add" id="charts">
+                                    <div class="container-4">
+                                        <div class="box-9" id="rej_title"></div>
+                                    </div>
+                                    <div class="container-5">
+                                        <div id="charts_drilldown_rej" style="height:184px;width:360px;box-shadow:none;"></div>
+                                    </div>
+                                </div>
+                          </div>`;
+	Tabs(dynamicContent);
+	ProdDataCalls(URL, sURL, company, plant, line, R_url, user1);
+</script>
+<script>
+</script>

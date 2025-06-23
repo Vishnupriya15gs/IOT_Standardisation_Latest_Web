@@ -1,0 +1,382 @@
+﻿
+@{
+    ViewBag.Title = "Skill_Wise_Report";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<header class="page-header">
+    <h2> Skill Wise Eligibility Report </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("NewDash","Main")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li><span>Settings</span></li>
+            <li><span>Skill Wise Eligibility Report</span></li>
+        </ol>
+    </div>
+</header>
+
+
+
+<div class="row" id="select_div" style="display:block;">
+
+    <div class="col-md-12">
+        <section class="panel">
+
+            <header class="panel-heading" style="background-color:teal;color:white;">
+                <div class="panel-actions">
+                    @*<button class="btn btn-primary" id="add"><i class="fa fa-plus" aria-hidden="true"> Add New</i></button>*@
+                </div>
+                <h2 class="panel-title" style="color:white;"> Skill Wise Eligibility Report </h2>
+            </header>
+
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="panel-body">
+
+                        <div class="form-group">
+
+                            <label class="col-sm-2 control-label"> Select Machine <span class="required">*</span></label>
+
+                            <div class="col-sm-2">
+                                <select class="form-control" id="sMachine_id" name="Machine" required>
+                                </select>
+                            </div>
+
+
+                            <label class="col-sm-2 control-label"> select Operator  <span class="required">*</span></label>
+
+                            <div class="col-sm-2">
+                                <select class="form-control" id="sOperator_id" name="Operator" required>
+                                </select>
+                            </div>
+
+                            <div class="col-lg" style="text-align:right;">
+                                <button type="submit" id="btn_apply" class="btn btn-primary  ">Apply</button>
+                                <button type="button" id="apply_cancel" class="btn btn-danger ">Reset</button>
+
+                            </div>
+
+                        </div>
+                        <br />
+
+                        <!--------Table View-------->
+
+                        <div id="details_table" style="display:none;">
+                            <div class="form-group ">
+                                <div class="panel-body">
+                                    <div class="form-group">
+                                        <div class="panel-body">
+                                            <table class="table table-bordered table-striped mb-none  details_table" id="datatable-default" data-swf-path="assets1/vendor/jquery-datatables/extras/TableTools/swf/copy_csv_xls_pdf.swf">
+                                                <thead style="background-color:teal;color:white;">
+
+                                                </thead>
+                                                <tbody class="" id="div_details">
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div id="Report_error" style="color:red;font-size:15px;font-weight:bold;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </div>
+
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+
+
+<script>
+
+     $("#apply_cancel").click(function (event) {
+
+         $("#details_table").hide();
+            window.location = '@Url.Action("Skill_Wise_Report", "Operatorallocation")';
+
+     });
+
+</script>
+
+
+
+
+
+<script>
+
+    $(document).ready(function () {
+
+
+        //-----load Machine data------
+
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+        var myDatas1 =
+            {
+                "QueryType": "Assets",
+                "Parameter": '@Session["PlantCode"]',
+                "Parameter1": '@Session["CompanyCode"]',
+                "Parameter2": '@Session["LineCode"]',
+
+
+            };
+
+         $.ajax({
+             type: "POST",
+             data: myDatas1,
+             headers: {
+                 Authorization: 'Bearer ' + user1
+             },
+             url: URL + "api/UserSettings/User_settings_details",
+             dataType: "json",
+
+             success: function (response) {
+
+                 var s = '<option value="0">Select Machine</option>';
+                 for (var i = 0; i < response.data.Table.length; i++) {
+                     s += '<option value="' + response.data.Table[i].AssetID + '">' + response.data.Table[i].AssetName + '</option>';
+                 }
+                 $("#sMachine_id").html(s);
+             }
+
+             }).error(function (response) {
+
+                     if (response.status == "401") {
+                         swal({
+                             icon: "warning",
+                             title: "Token is not valid",
+                             button: true,
+                             closeModal: false
+                         })
+                         window.location = R_url;
+                     }
+                     else {
+                         swal({
+                             icon: "warning",
+                             title: response.responseText,
+                             button: true,
+                             closeModal: false
+                         })
+                     }
+
+
+
+         });
+
+        $("#sMachine_id").change(function () {
+
+            //-----load operator data------
+
+                   var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+                   var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+                   var R_url = '@Url.Action("Login", "Main")';
+                   var machine = $("#sMachine_id").val()
+                   var data = {
+                         "QueryType": "Get_Operators",
+                         "Parameter":machine,
+                         "Parameter1": '@Session["CompanyCode"]',
+                         "Parameter2": '@Session["PlantCode"]',
+                  };
+                    $.ajax({
+                        type: "POST",
+                        data: data,
+                         headers: {
+                                 Authorization: 'Bearer ' + user1
+                             },
+                        url: URL + 'api/UserSettings/User_settings_details',
+                        dataType: "json",
+                        success: function (response) {
+
+
+                            var s = '<option value="0">Select Operator</option>';
+                            for (var i = 0; i < response.data.Table.length; i++) {
+                                s += '<option value="' + response.data.Table[i].OP_ID + '">' + response.data.Table[i].OperatorName + '</option>';
+                            }
+                            $("#sOperator_id").html(s);
+                        }
+                    }).error(function (response) {
+                        if (response.status == "401") {
+                            swal({
+                                icon: "warning",
+                                title: "Token is not valid",
+                                button: true,
+                                closeModal: false
+                            })
+                            window.location = R_url;
+                        }
+                        else {
+                            swal({
+                                icon: "warning",
+                                title: response.responseText,
+                                button: true,
+                                closeModal: false
+                            })
+
+                        }
+                    });
+
+
+        });
+         //-------apply function------------
+
+        $("#btn_apply").click(function (event) {
+
+            var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+            var Machine = $("#sMachine_id").val();
+            var Operator = $("#sOperator_id").val();
+
+
+            $("#details_table").show();
+             myData = {
+               "QueryType": "",
+               "Parameter": '@Session["PlantCode"]',
+               "Parameter1": '@Session["CompanyCode"]',
+               "Parameter2": Machine,
+               "Parameter3": Operator,
+             }
+
+            if (Machine == "0" || Machine == "") {
+
+                swal({
+                    icon: "warning",
+                    title: "Please Select Machine...!",
+                    button: true,
+                    timer: 4500
+                })
+            }
+            else if (Operator == "0" || Operator == "") {
+
+                swal({
+                    icon: "warning",
+                    title: "Please Select Operator...!",
+                    button: true,
+                    timer: 4500
+                })
+            }
+
+            else {
+
+                 $.ajax({
+
+                    type: "POST",
+                    url: URL + 'api/UserSettings/User_settings_details',
+                    data: myData,
+                    headers: {
+                        Authorization: 'Bearer ' + user1
+                    },
+                    dataType: "json",
+                    beforeSend: function () {
+                        $('.loading').show();
+                    },
+                    complete: function () {
+                        $('.loading').hide();
+                    },
+                    success: function (response) {
+
+                        var rowsCnt = document.getElementById("datatable-default").getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
+                        if (rowsCnt > 0) {
+                            for (var i = 0; i < rowsCnt; i++) {
+                                document.getElementById("datatable-default").deleteRow(1);
+                            }
+                        }
+
+                        if (response.data.Table.length != 0) {
+                            $("#slots_error").html("");
+
+                            var col = [];
+                            for (var i = 0; i < response.data.Table.length; i++) {
+                                for (var key in response.data.Table[i]) {
+                                    if (col.indexOf(key) === -1) {
+                                        col.push(key);
+                                    }
+                                }
+                            }
+
+                            // Create a table.
+                            var table = document.getElementById("datatable-default");
+
+                            // Create table header row using the extracted headers above.
+                            var tr = table.insertRow(-1);                   // table row.
+
+                            for (var i = 0; i < col.length; i++) {
+                                var th = document.createElement("th").style.display;      // table header.
+                                th.innerText = col[i];
+                                tr.appendChild(th);
+                            }
+
+                            // add json data to the table as rows.
+                            for (var i = 0; i < response.data.Table.length; i++) {
+
+                                tr = table.insertRow(-1);
+
+                                for (var j = 0; j < col.length; j++) {
+                                    var tabCell = tr.insertCell(-1);
+                                    tabCell.innerText = response.data.Table[i][col[
+                                        j]];
+                                }
+                            }
+
+                            // Now, add the newly created table with json data, to a container.
+                            var divShowData = document.getElementById('datatable-default');
+                            divShowData.innerText = "";
+                            divShowData.appendChild(table);
+                        }
+
+                        else {
+
+                            $("#details_table").hide();
+                            $("#Report_error").html(" Skillwise Report Details Not Found...!");
+                        }
+
+                    }
+
+                   });
+
+                 }
+        });
+    });
+
+
+</script>
+
+<script>
+
+    $(document).ready(function () {
+
+        $('.updated_time').text("N/A");
+        $('.shift').text("N/A");
+
+        if ($.fn.DataTable.isDataTable('#datatable-default')) {
+
+            $('#datatable-default').DataTable().destroy();
+        }
+
+
+        $('#datatable-default').DataTable({
+            "responsive": true,
+            "autoWidth": false,
+            scrollY: true,
+            scrollX: true,
+            scroller: true
+        });
+
+
+    });
+
+</script>
+

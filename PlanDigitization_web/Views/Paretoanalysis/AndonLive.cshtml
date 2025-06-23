@@ -1,0 +1,166 @@
+﻿
+@{
+    ViewBag.Title = "AndonLive";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+    <header class="page-header">
+        <h2>ANDON Live</h2>
+        <div class="right-wrapper pull-right">
+            <ol class="breadcrumbs">
+                <li>
+                    <a href="@Url.Action("NewDash","Main")">
+                        <i class="fa fa-home"></i>
+                    </a>
+                </li>
+                @*<li><span>Inter-Department Alerts</span></li>
+                <li><span>RealTime Dashboard</span></li>
+                <li><span>ANDON Live Dashboard</span></li>*@
+            </ol>
+        </div>
+    </header>
+@if (ViewContext.Controller.HasPermission("AndonLive-View"))
+{
+    <div class="row andonlive">
+
+    </div>
+}
+else
+{
+    <div class="row">
+        <h2 class="panel-title">View Permission is denied</h2>
+    </div>
+}
+<script src="~/assets1/javascripts/swal.js"></script>
+<script type="text/javascript">
+    var URL = '@System.Configuration.ConfigurationManager.AppSettings["signalr_url"]';
+    //$.getScript(URL + 'Scripts/jquery.signalR-2.4.1.min.js', function () {
+    //    $.getScript(URL + 'signalr/hubs/', function () {
+    //        // Declare a proxy to reference the hub.
+    //        $.connection.hub.url = URL + 'signalr';
+    //        var notifications = $.connection.PlantDigitizationhub;
+    //        //debugger;
+    //        // Create a function that the hub can call to broadcast messages.
+    //        notifications.client.updateDatas = function () {
+    //            getandonlivedata()
+    //        };
+    //        // Start the connection.
+    //        $.connection.hub.start().done(function () {
+    //            getandonlivedata();
+    //        }).fail(function (e) {
+    //            console.log(e);
+    //        });
+    //    });
+
+        function getandonlivedata() {
+            var vars = [], hash;
+            var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+            $('.updated_time').text(new Date().toLocaleString());
+           // $('.shift').text("N/A");
+            $('.shift_n').show();
+            $('.updated_time_n').show();
+
+            for (var i = 0; i < hashes.length; i++) {
+                hash = hashes[i].split('?');
+                vars.push(hash[0]);
+                vars[hash[0]] = hash[1];
+            }
+            var myData = {
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]',
+                "Line_code" : vars[0],
+            };
+            var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+            $.ajax({
+                type: 'Post',
+                url: URL + 'api/OEE/GetEmployee',
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                dataType: 'json'
+            }).success(function (response) {
+            $.ajax({
+                type: 'POST',
+                url: URL + 'api/Andon/GetAndonLivedata',
+                data: myData,
+                dataType: 'json'
+            }).success(function (response) {
+                if (response.data.length != 0) {
+                    //alert("inside")
+                    var j = 1;
+                    var cols = '';
+                    var sc = '';
+                    for (var i = 0; i < response.data.length; i++)
+                    {
+                        if (response.data[i].Status == "Open") {
+                            sc = 'danger';
+                        }
+                        else {
+                            sc = 'success';
+                        }
+                        cols += "<div class='col-md-12 col-lg-12 col-xl-6'>";
+                        cols += "<section class='panel panel-horizontal'>";
+                        cols += "<header class='panel-heading bg-white'>";
+                        cols += "<div class='panel-heading-icon bg-"+sc+" mt-sm'>";
+                        cols += "<i class='fa fa-exclamation-triangle'></i>";
+                        cols += "</div>";
+                        cols += "</header>";
+                        cols += "<div class='panel-body p-lg'>";
+                        cols += "<div class='col-sm-4'><h3 class='text-semibold mt-sm'>Breakdown Alert</h3></div>";
+                        cols += "<div class='col-sm-8'><button type='button' class='mb-xs mt-xs mr-xs btn btn-sm btn-warning pull-right'><i class='fa fa-clock-o'></i> Start Time: " + response.data[i].Start_time + " <span id='start_time'></span></button></div>";
+                        cols += "<div class='col-sm-12 text-center'>";
+                        cols += "<button type='button' class='mb-xs mt-xs mr-xs btn btn-sm btn-default'><i class='fa fa-home'></i> Line:" + response.data[i].Line_code + "</button>";
+                        cols += "<button type='button' class='mb-xs mt-xs mr-xs btn btn-sm btn-default'><i class='fa fa-ge'></i> Station name: " + response.data[i].Machine_code + " </button>";
+                        cols += "<button type='button' class='mb-xs mt-xs mr-xs btn btn-sm btn-default'><i class='fa fa-info'></i> Alert ID:" + response.data[i].Andon_reason + "</button>";
+
+                         cols += "<button type='button' class='mb-xs mt-xs mr-xs btn btn-sm btn-default'><i class='fa fa-mail-forward '></i> Alert From:" + response.data[i].From_department + "</button>";
+                        cols += "<button type='button' class='mb-xs mt-xs mr-xs btn btn-sm btn-default'><i class='fa fa-mail-reply'></i> Alert To:" + response.data[i].To_department + "</button>";
+                        cols += "</div>";
+                        //cols += "<div class='col-sm-12'>";
+                       //cols += "</div>";
+                        cols += "</div>";
+                        cols += "</section>";
+                        cols += "</div>";
+                        j++;
+                    }
+                    $(".andonlive").html(cols);
+                }
+                else
+                {
+                    $(".andonlive").empty();
+                    $(".andonlive").html('No ANDON ALERTS Available');
+                }
+            }).error(function (response) {
+
+            });
+            }).error(function (response) {
+
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+
+            });
+            setTimeout(getandonlivedata, 120000);
+        }
+    //});
+    $(document).ready(function () {
+        getandonlivedata();
+});
+</script>
+

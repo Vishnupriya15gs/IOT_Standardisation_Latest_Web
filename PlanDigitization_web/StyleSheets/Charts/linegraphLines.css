@@ -1,0 +1,11 @@
+﻿
+svg .linegraphLine {
+    stroke: var(--linegraph-line-1 !important);
+    stroke-width: 2px;
+}
+
+svg .linegraphCircle {
+    fill: var(--linegraph-circle-1);
+}
+
+

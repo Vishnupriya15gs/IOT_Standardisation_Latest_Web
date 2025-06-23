@@ -1,0 +1,32 @@
+﻿path.progress-bar {
+    fill: var(--progress-bar-path);
+    stroke-width: 1;
+    stroke: var(--progress-bar-path);
+}
+
+circle.progress-bar {
+    fill: var(--progress-bar-path);
+    stroke-width: 1;
+    stroke: var(--progress-bar-path);
+}
+
+.progress-bar-bg {
+    fill: var(--progress-bar-bg);
+    stroke-width: 1;
+    stroke: var(--progress-bar-bg);
+}
+
+.progress-label {
+    fill: var(--progress-bar-label);
+    font-family: 'Open Sans', sans-serif;
+    font-size: 20px;
+    text-anchor: middle;
+    font-weight: bolder;
+}
+
+.progress-label1 {
+    fill: var(--progress-bar-label);
+    font-family: 'Open Sans', sans-serif;
+    font-size: 12px;
+    text-anchor: middle;
+}

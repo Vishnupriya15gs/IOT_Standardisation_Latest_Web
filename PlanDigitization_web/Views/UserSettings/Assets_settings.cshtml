@@ -1,0 +1,783 @@
+﻿@model IEnumerable<PlanDigitization_web.Models.assets>
+@{ ViewBag.Title = "Assets_settings";
+    Layout = "~/Views/Shared/_Layout.cshtml"; }
+
+<header class="page-header">
+    <h2> Assets Details </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("MainDashboard","MainDashboard")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li><span>Settings</span></li>
+            <li><span>Assets</span></li>
+        </ol>
+    </div>
+</header>
+
+<div class="row" id="divnew" style="display:none;">
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Insert_assetdetails","UserSettings")" method="post">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Add New Assets</h2>
+                </header>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Asset ID <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="AssetID" name="AssetID" class="form-control" title="Asset ID" placeholder="Asset ID" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Asset Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="AssetName" id="AssetName" class="form-control" title="Asset Name" placeholder="Asset Name" required />
+                        </div>
+                    </div>
+                    <div class="form-group" style=" margin-top: 12px;">
+
+                        <label class="col-sm-2 control-label"> Asset Description <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="AssetDescription" id="AssetDescription" class="form-control" title="AssetDescription" placeholder="Asset Description" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> End Of Line <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control" name="ShiftID" id="" title="Select EOL" required>
+                                <option value="0">Not an End of Line</option>
+                                <option value="1">An End of Line</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" style=" margin-top: 12px;">
+
+                        <label class="col-sm-2 control-label"> Gateway <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            @*<input type="text" name="ewonnumber" id="ewonnumber" class="form-control" title="Ewon Number" placeholder="Ewon Number" required />*@
+                            <select class="form-control" name="ewonnumber" id="ewonnumber" title="Select Ewon Device" required>
+                            </select>
+                        </div>
+
+                    </div>
+                    @*<div class="form-group">
+                            <label class="col-sm-2 control-label"> Function Name <span class="required">*</span></label>
+                            <div class="col-sm-4">
+                                <select class="form-control FunctionName" name="FunctionName" id="FunctionName" title="Select Function" required></select>
+                            </div>
+
+                        </div>*@
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+<!-- Asset Details-->
+<div class="row" id="divdetails">
+    <div class="col-md-12">
+        <section class="panel">
+            <header class="panel-heading" style="background-color:teal;color:white;">
+                @if (ViewContext.Controller.HasPermission("AssetSetting-Add"))
+                {
+                    <div class="panel-actions">
+                        <button class="btn btn-primary" id="add"><i class="fa fa-plus" aria-hidden="true"> Add New</i></button>
+                    </div>}
+                <h2 class="panel-title" style="color:white;">List of Assets : </h2>
+            </header>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="panel-body">
+                        @if (ViewContext.Controller.HasPermission("AssetSetting-View"))
+                        {
+                            <table class="table table-bordered table-striped mb-none" id="datatable-default" data-swf-path="assets1/vendor/jquery-datatables/extras/TableTools/swf/copy_csv_xls_pdf.swf">
+                                <thead style="background-color:teal;color:white;">
+                                    <tr>
+                                        <th class="centercls"> S.No </th>
+                                        <th style="display:none;"></th>
+                                        <th> Asset ID</th>
+                                        <th>Asset Name</th>
+                                        <th> Asset Description </th>
+                                        <th> Function Name </th>
+                                        @*<th>Ewon Number</th>*@
+                                        <th>End Of Line</th>
+                                        <th style="text-align:center;width:150px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{int RowNo = 0;}
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr class="gradeX">
+                                            <td>
+                                                @{RowNo++;}@RowNo
+                                            </td>
+                                            <td class="AssetID" style="display:none;">
+                                                <span>@Html.Encode(item.Unique_id)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.AssetID)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.AssetName)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.AssetDescription)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.funname)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.sname)</span>
+                                            </td>
+                                            <td style="text-align:center;">
+                                                @if (ViewContext.Controller.HasPermission("AssetSetting-Edit"))
+                                                {
+                                                    <button class="btn btn-primary" style="margin-top: 10px" id="edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>}
+                                                @if (ViewContext.Controller.HasPermission("AssetSetting-Delete"))
+                                                {
+                                                    <button class="btn btn-danger" style="margin-top: 10px" id="delete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>}
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table> }
+                        else
+                        {
+                            <h2>View permission is denied</h2>}
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!--Edit Asset Details-->
+<div class="row" id="divedit" style="display:none;">
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Update_assetdetails","UserSettings")" method="post">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Update Assets</h2>
+                </header>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Asset ID <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="eAssetID" name="AssetID" class="form-control" title="Asset ID" placeholder="Asset ID" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Asset Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="AssetName" id="eAssetName" class="form-control" title="AssetName" placeholder="Asset Name" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input type="hidden" id="eUnique_id" name="Unique_id" />
+
+                        <label class="col-sm-2 control-label"> Asset Description <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="AssetDescription" id="eAssetDescription" class="form-control" title="Asset Description" placeholder="Asset Description" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> End Of Line <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control" name="ShiftID" id="eShiftID" title="Select Shift" required>
+                                <option value="0">Not an End of Line</option>
+                                <option value="1">An End of Line</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Gateway <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control" name="ewonnumber" id="eewonnumber" title="Select Ewon Device" required>
+                            </select>
+                            @*<input type="text" id="eewonnumber" name="ewonnumber" class="form-control" title="Ewon Number" placeholder="Ewon Number" required />*@
+                        </div>
+
+                    </div>
+                    @*<div class="form-group">
+                            <label class="col-sm-2 control-label"> Function Name <span class="required">*</span></label>
+                            <div class="col-sm-4">
+                                <select class="form-control FunctionName" name="FunctionName" id="eFunctionName" title="Select Function" required></select>
+                            </div>
+
+                        </div>*@
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+@if (@TempData["message"] != null)
+{
+    <script type="text/javascript">
+    $(function () {
+        var msg = '@TempData["message"]';
+        if (msg == "Inserted") {
+            swal({
+                icon: "success",
+                title: "Details Added Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Updated") {
+            swal({
+                icon: "success",
+                title: "Details Updated Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Already AssetID") {
+            swal({
+                icon: "error",
+                title: "Failed to Add.Asset ID already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Already AssetName") {
+           swal({
+                icon: "error",
+                title: "Failed to Add.Asset Name already exists",
+                button: true,
+                timer: 4500
+           })
+        }
+        else if (msg == "Already EOL") {
+            swal({
+                icon: "error",
+                title: "Failed.End of Line already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+        else {
+          swal({
+                icon: "error",
+                title: "Failed to Add",
+                button: true,
+                timer: 4500
+          })
+        }
+    });
+    </script>
+}
+<script type="text/javascript">
+    $("#add").click(function () {
+        $("#divnew").show();
+        $("#divdetails").hide();
+        $("#divedit").hide();
+
+             var data = {
+                 "QueryType": "Get_ewondevicename",
+                 "Parameter1": '@Session["PlantCode"]',
+                 "Parameter": '@Session["CompanyCode"]',
+                 "Parameter2": '@Session["LineCode"]',
+
+                  "CompanyCode": '@Session["CompanyCode"]',
+                    "PlantCode": '@Session["PlantCode"]',
+                    "LineCode": '@Session["LineCode"]'
+        };
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             $.ajax({
+                 type: "POST",
+                 data: data,
+                 headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                 url: URL + "api/UserSettings/User_settings_details",
+                 dataType: "json",
+
+                 success: function (response) {
+
+                     if (response.data.Table.length > 0) {
+
+                         var s = '<option value="">Please Select</option>';
+                         for (var i = 0; i < response.data.Table.length; i++) {
+
+                             s += '<option value="' + response.data.Table[i].devicename + '">' + response.data.Table[i].devicename + '</option>';
+                         }
+                         $("#ewonnumber").html(s);
+
+                     }
+
+
+                 }
+             })
+
+
+
+
+
+
+    });
+
+    $(".cancel").click(function () {
+        $("#divnew").hide();
+        $("#divdetails").show();
+        $("#divedit").hide();
+    });
+
+</script>
+<script type="text/javascript">
+    @*$(function () {
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+        var myData = {
+            "QueryType": "NewFunction",
+            "Parameter" : '@Session["PlantCode"]',
+            "Parameter1": '@Session["CompanyCode"]',
+            "Parameter2": '@Session["LineCode"]'
+        };
+        var myDatas = {
+            "QueryType": "ShiftSettings",
+            "Parameter" : '@Session["PlantCode"]',
+            "Parameter1": '@Session["CompanyCode"]'
+        };
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+        $.ajax({
+            type: "POST",
+            data: myData,
+             headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+            url: URL + 'api/UserSettings/User_settings_details',
+            dataType: "json",
+            success: function (response) {
+                var s = '<option value="">Please Select</option>';
+                for (var i = 0; i < response.data.Table.length; i++) {
+                    s += '<option value="' + response.data.Table[i].FunctionID + '">' + response.data.Table[i].FunctionName + '</option>';
+                }
+                $(".FunctionName").html(s);
+            }
+        }).error(function (response) {
+            if (response.status == "401") {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            }
+            else {
+                swal({
+                    icon: "warning",
+                    title: response.responseText,
+                    button: true,
+                    closeModal: false
+                })
+
+            }
+        });
+
+
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+        //$.ajax({
+        //    type: "POST",
+        //    data: myDatas,
+        //    headers: {
+        //             Authorization: 'Bearer ' + user1
+        //         },
+        //    url: URL + 'api/UserSettings/User_settings_details',
+        //    dataType: "json",
+        //    success: function (response) {
+        //        var s = '<option value="">Please Select</option>';
+        //        for (var i = 0; i < response.data.Table.length; i++) {
+        //            s += '<option value="' + response.data.Table[i].ID + '">' + response.data.Table[i].ShiftName + '</option>';
+        //        }
+        //        $(".ShiftID").html(s);
+        //    }
+        //}).error(function (response) {
+        //         swal({
+        //             icon: "warning",
+        //             title: "Session Timeout",
+        //             button: true,
+        //             closeModal: false
+        //         })
+        //         window.location = R_url;
+        //     });
+    });*@
+</script>
+<script type="text/javascript">
+    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+    $("body").on("click", "#edit", function () {
+        var row = $(this).closest("tr");
+        var ID = row.find(".AssetID span").html();
+
+        var myData = {
+            "QueryType": "Edit_Assets",
+            "Parameter": ID,
+             "CompanyCode": '@Session["CompanyCode"]',
+            "PlantCode": '@Session["PlantCode"]',
+            "LineCode": '@Session["LineCode"]',
+        };
+
+        $("#divedit").show();
+        $("#divnew").hide();
+        $("#divdetails").hide();
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+        $.ajax({
+            type: "POST",
+            url: URL + 'api/Values/User_settings_details',
+            data: myData,
+             headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+            dataType: "json",
+            beforeSend: function () {
+                $('.loading').show();
+            },
+            complete: function () {
+                $('.loading').hide();
+            },
+            success: function (response) {
+                $('#eAssetID').val(response.data.Table[0].AssetID);
+                $('#eAssetName').val(response.data.Table[0].AssetName);
+                $('#eAssetDescription').val(response.data.Table[0].AssetDescription);
+               // $('#eewonnumber').val(response.data.Table[0].ewonnumber);
+                $('#eUnique_id').val(response.data.Table[0].Unique_id);
+
+                //alert(response.data.Table[0].sname)
+                $('#eShiftID').val(response.data.Table[0].EOL);
+
+
+
+             var data = {
+                 "QueryType": "Get_ewondevicename",
+                 "Parameter1": '@Session["PlantCode"]',
+                 "Parameter": '@Session["CompanyCode"]',
+                 "Parameter2": '@Session["LineCode"]',
+
+                  "CompanyCode": '@Session["CompanyCode"]',
+                    "PlantCode": '@Session["PlantCode"]',
+                    "LineCode": '@Session["LineCode"]'
+        };
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             $.ajax({
+                 type: "POST",
+                 data: data,
+                 headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                 url: URL + "api/UserSettings/User_settings_details",
+                 dataType: "json",
+
+                 success: function (response1) {
+
+                     if (response1.data.Table.length > 0) {
+
+                         var s = '<option value="">Select</option>';
+                         for (var i = 0; i < response1.data.Table.length; i++) {
+
+                             if (response1.data.Table[i].devicename == response.data.Table[0].ewonnumber) {
+                                 s += '<option value="' + response1.data.Table[i].devicename + '" selected=selected>' + response1.data.Table[i].devicename + '</option>';
+                             }
+                             else {
+                                 s += '<option value="' + response1.data.Table[i].devicename + '">' + response1.data.Table[i].devicename + '</option>';
+                             }
+                         }
+
+                         $("#eewonnumber").html(s);
+
+                     }
+
+
+                 }
+             })
+
+
+
+
+                var s = '<option value="">Select</option>';
+                for (var i = 0; i < response.data.Table.length; i++) {
+                    if (response.data.Table[i].ewonnumber == response.data.Table[0].ewonnumber) {
+                        s += '<option value="' + response.data.Table[i].ewonnumber + '" selected=selected>' + response.data.Table[i].ewonnumber + '</option>';
+                    }
+                    else {
+                        s += '<option value="' + response.data.Table[i].ewonnumber + '">' + response.data.Table[i].ewonnumber + '</option>';
+                    }
+                }
+
+                $("#eewonnumber").html(s);
+
+                @*var myData = {
+                    "QueryType": "NewFunction",
+                    "Parameter" : '@Session["PlantCode"]',
+                    "Parameter1": '@Session["CompanyCode"]',
+                    "Parameter2": '@Session["LineCode"]'
+                };
+                var myDatas = {
+                    "QueryType": "ShiftSettings",
+                    "Parameter" : '@Session["PlantCode"]',
+                    "Parameter1": '@Session["CompanyCode"]'
+                };
+                 var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+                $.ajax({
+                    type: "POST",
+                    data: myData,
+                     headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                    url: URL + 'api/UserSettings/User_settings_details',
+                    dataType: "json",
+                    success: function (response1) {
+                        var s = '<option value="">Please Select</option>';
+                        for (var i = 0; i < response1.data.Table.length; i++) {
+                            if (response1.data.Table[i].FunctionID == response.data.Table[0].FunctionName) {
+                                s += '<option value="' + response1.data.Table[i].FunctionID + '" selected=selected>' + response1.data.Table[i].FunctionName + '</option>';
+                            }
+                            else {
+                                s += '<option value="' + response1.data.Table[i].FunctionID + '">' + response1.data.Table[i].FunctionName + '</option>';
+                            }
+                        }
+                        $(".FunctionName").html(s);
+                    }
+                }).error(function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+                    }
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                });*@
+
+
+
+                 var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+                //$.ajax({
+                //    type: "POST",
+                //    data: myDatas,
+                //    headers: {
+                //     Authorization: 'Bearer ' + user1
+                // },
+                //    url: URL + 'api/UserSettings/User_settings_details',
+                //    dataType: "json",
+                //    success: function (response2) {
+                //        var s = '<option value="">Please Select</option>';
+                //        for (var i = 0; i < response2.data.Table.length; i++) {
+                //            if (response2.data.Table[i].ID == response.data.Table[0].ShiftID) {
+                //                s += '<option value="' + response2.data.Table[i].ID + '" selected=selected>' + response2.data.Table[i].ShiftName + '</option>';
+                //            }
+                //            else {
+                //                s += '<option value="' + response2.data.Table[i].ID + '">' + response2.data.Table[i].ShiftName + '</option>';
+                //            }
+                //        }
+
+
+                //        $(".ShiftID").html(s);
+                //    }
+                //}).error(function (response) {
+                //     swal({
+                //         icon: "warning",
+                //         title: "Session Timeout",
+                //         button: true,
+                //         closeModal: false
+                //     })
+                //     window.location = R_url;
+                //});
+
+
+            },
+             error: function (response) {
+                 if (response.status == "401") {
+                     swal({
+                         icon: "warning",
+                         title: "Session Timeout",
+                         button: true,
+                         closeModal: false
+                     })
+                     window.location = R_url;
+                 }
+                 else {
+                     swal({
+                         icon: "warning",
+                         title: response.responseText,
+                         button: true,
+                         closeModal: false
+                     })
+
+                 }
+            }
+        });
+             //}).error(function (response) {
+             //    swal({
+             //        icon: "warning",
+             //        title: "Session Timeout",
+             //        button: true,
+             //        closeModal: false
+             //    })
+             //    window.location = R_url;
+             //});
+    });
+
+    $("body").on("click", "#delete", function () {
+        if (confirm("Do you want to Delete this Asset?")) {
+            var row = $(this).closest("tr");
+            var ID = row.find(".AssetID span").html();
+
+            var myData = {
+                "QueryType": "Delete_Assets",
+                "Parameter": ID,
+                "CompanyCode": '@Session["CompanyCode"]',
+                         "PlantCode": '@Session["PlantCode"]',
+                         "LineCode": '@Session["LineCode"]'
+            };
+             var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/Values/delete_User_settings_details',
+                data: myData,
+                 headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+                    swal({
+                        icon: "success",
+                        title: "Asset Details Deleted Successfully...!",
+                        button: true,
+                        timer: 4500
+                    })
+                   window.location = '@Url.Action("Assets_settings", "UserSettings")';
+                }
+            }).error(function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+             });
+        }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('.updated_time').text("N/A");
+        $('.shift').text("N/A");
+
+        if ($.fn.DataTable.isDataTable('#datatable-default')) {
+            $('#datatable-default').DataTable().destroy();
+        }
+
+        $('#datatable-default').DataTable({
+
+            "responsive": true,
+            "autoWidth": false,
+            scrollY: true,
+            scrollX: true,
+            scroller: true
+        });
+    });
+</script>

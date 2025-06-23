@@ -1,0 +1,521 @@
+﻿
+
+@model IEnumerable<PlanDigitization_web.Models.manual>
+@{ ViewBag.Title = "Feedbackpage";
+    Layout = "~/Views/Shared/_Layout.cshtml"; }
+
+
+<header class="page-header">
+    <h2>Upload Manual </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("MainDashboard","MainDashboard")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            @*<li><span>Feedback</span></li>*@
+        </ol>
+    </div>
+</header>
+
+
+
+<div class="row" id="divnew">
+    <div class="col-md-12">
+        <p>
+            @using (@Html.BeginForm("UploadFile", "DataView", FormMethod.Post, new { @enctype = "multipart/form-data" }))
+            {
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Upload New File</h2>
+                </header>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <div class="col-sm-4">
+                            <input name="fileUploader" type="file" class="btn btn-primary" required onchange="return funvalidationfile(this);" />
+                            <span style="color:red">* png, jpg, txt, jpeg,pdf,.xls,.xlsx extensions only less than 3mb</span>
+                        </div>
+                        <label class="col-sm-2 control-label"style="left: 95px;top: 5px;">Remarks: <span class="required">*</span></label>
+                        <div class="col-sm-2">
+
+                            <input type="text" class="form-control" name="remarks" required />
+                        </div>
+                        <div class="col-sm-2">
+                            <input type="submit" class="btn btn-success" onclick="return check()" style="margin-left:25%;margin-right:25%" value="Upload" />
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            }
+
+        </p>
+
+    </div>
+</div>
+
+
+<div class="row" id="divdetails">
+    <div class="col-md-12">
+        <section class="panel">
+            <header class="panel-heading">
+
+                <h2 class="panel-title">List of Files </h2>
+            </header>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="panel-body">
+                        <table class="table table-bordered table-striped mb-none" id="datatable-default1">
+                            <thead>
+                                <tr>
+                                    @*<th class="centercls"> S.No </th>*@
+                                    <th style="display:none;"></th>
+                                    <th class="text-center"> Filename </th>
+                                    <th class="text-center"> Remarks </th>
+                                    <th class="text-center"> Uploaded By </th>
+                                    <th class="text-center"> Date </th>
+                                    <th class="text-center"> Action</th>
+
+                                </tr>
+                            </thead>
+                            <tbody class="tabledata">
+                                @foreach (var item in Model)
+                                {
+                                    <tr class="gradeX">
+                                        <td class="filename text-center">
+                                            <span>@Html.Encode(item.filename)</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span>@Html.Encode(item.remarks)</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span>@Html.Encode(item.UserName)</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span>@Html.Encode(item.Uploadedtime)</span>
+                                        </td>
+
+                                        <td class="uniqueid text-center" style="display:none;">
+                                            <span>@Html.Encode(item.id)</span>
+                                        </td>
+
+                                        <td style="text-align: center;">
+                                            @if (ViewContext.Controller.HasPermission("UploadManualSetting-View"))
+                                            {
+                                                <button class="btn btn-primary" style="margin-top: 10px;" id="download"><i class="fa fa-download" aria-hidden="true"></i></button>}
+                                            @if (ViewContext.Controller.HasPermission("UploadManualSetting-Delete"))
+                                            {
+                                                <button class="btn btn-danger" style="margin-top: 10px" id="delete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>}
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                    </div>
+                    @*<footer class="panel-footer">
+                            <div class="row">
+                                <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+
+                                    <button type="reset" id="cancel" class="btn btn-danger cancel">Back</button>
+                                </div>
+                            </div>
+                        </footer>*@
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+@if (@TempData["message"] != null)
+{
+    <script type="text/javascript">
+    $(function () {
+        var msg = '@TempData["message"]';
+        //alert(msg)
+        //console.log(msg)
+
+        if (msg =="Inserted") {
+            swal({
+                icon: "success",
+                title: "Document Stored Successfully...!",
+                button: true,
+                timer: 4500
+            }).then(function (result) {
+                    window.location = '@Url.Action("UploadManual", "DataView")';
+             })
+            msg = "";
+        }
+        else if (msg == "File extension not supported") {
+            swal({
+                icon: "error",
+                title: "File extension not supported...!",
+                button: true,
+                timer: 4500
+            }).then(function (result) {
+                    window.location = '@Url.Action("UploadManual", "DataView")';
+             })
+            msg = "";
+        }
+            else if (msg == "File") {
+            swal({
+                icon: "error",
+                title: "File already Exists.Rename file or add new file...!",
+                button: true,
+                timer: 4500
+            }).then(function (result) {
+                    window.location = '@Url.Action("UploadManual", "DataView")';
+             })
+            msg = "";
+        }
+             else if (msg == "Deleted") {
+            swal({
+                icon: "error",
+                title: "File Deleted Successfuly...!",
+                button: true,
+                timer: 4500
+            }).then(function (result) {
+                    window.location = '@Url.Action("UploadManual", "DataView")';
+             })
+            msg = "";
+        }
+        else {
+
+            swal({
+                icon: "error",
+                title: "Error sending mail",
+                button: true,
+                timer: 4500
+            }).then(function (result) {
+                    window.location = '@Url.Action("UploadManual", "DataView")';
+             })
+             msg = "";
+        }
+
+    });
+    </script>
+}
+<script>
+    $("body").on("click", "#delete", function () {
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+        if (confirm("Do you want to Delete this Document?")) {
+            var row = $(this).closest("tr");
+            var ID = row.find(".uniqueid span").html();
+            var filename = row.find(".filename span").html();
+
+            var myData = {
+                "QueryType": "Delete",
+                "id": ID,
+                "filename":filename,
+                "CompanyCode": '@Session["CompanyCode"]',
+            "PlantCode": '@Session["PlantCode"]',
+             "LineCode": '@Session["LineCode"]'
+            };
+
+            var R_url = '@Url.Action("Login", "Main")';
+                     var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/UserSettings/manualupload',
+                data: myData,
+                headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                dataType: "json",
+                success: function (response) {
+                     var url2 = '@Url.Action("Deleteupload", "DataView")';
+
+                    $.ajax({
+                        type: "POST",
+                        url: url2,
+                        data: myData,
+                        async: false,
+                        headers: {
+                            Authorization: 'Bearer ' + user1
+                        },
+                        dataType: "json",
+                        success: function (response) {
+
+                        }
+                    })
+
+                    if (response == "Deleted") {
+                        swal({
+                            icon: "success",
+                            title: "Details Deleted Successfully...!",
+                            button: true,
+                            timer: 4500
+                        })
+                        window.location = '@Url.Action("UploadManual", "DataView")';
+                    }
+                    else {
+                        swal({
+                            icon: "error",
+                            title: "Deletion failed...!",
+                            button: true,
+                            timer: 4500
+                        })
+                        window.location = '@Url.Action("UploadManual", "DataView")';
+                    }
+
+                },
+                        //If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                            //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+            }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+
+
+
+        }
+    });
+</script>
+<script>
+    $("body").on("click", "#download", function () {
+     
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+
+           var CompanyCode= '@Session["CompanyCode"]'
+            var PlantCode= '@Session["PlantCode"]'
+             var LineCode= '@Session["LineCode"]'
+            var row = $(this).closest("tr");
+          var filename = row.find(".filename span").html();
+          
+
+         // var path1 = window.location.href + "/Manuals/" + CompanyCode + "/" + PlantCode + "/" + LineCode + "/" + filename;
+          var splitpath = window.location.pathname.split("/");
+
+          // console.log(splitpath[1]);
+          //var path1 = window.location.protocol + "//" + window.location.host +"/"+ splitpath[1] + "/Manuals/" + CompanyCode + "/" + PlantCode + "/" + LineCode + "/"+filename;
+          var path1 = window.location.protocol + "//" + window.location.host + "/Manuals/" + CompanyCode + "/" + PlantCode + "/" + LineCode + "/" + filename;
+        
+        //console.log(path1)
+         // window.open(path1, '_blank');
+          var link = document.createElement("a");
+          link.download = filename;
+          link.href = path1;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          delete link;
+
+          return false;
+
+    });
+</script>
+<script>
+     @*$("body").on("click", "#download", function () {
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+            var row = $(this).closest("tr");
+            var filename = row.find(".filename span").html();
+
+         var myData = {
+             "filename": filename
+            };
+
+            var R_url = '@Url.Action("Login", "Main")';
+                     var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/UserSettings/manualupload',
+                data: myData,
+                headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                dataType: "json",
+                success: function (response) {
+
+                    if (response == "Deleted") {
+                        swal({
+                            icon: "success",
+                            title: "Details Deleted Successfully...!",
+                            button: true,
+                            timer: 4500
+                        })
+                        window.location = '@Url.Action("UploadManual", "DataView")';
+                    }
+                    else {
+                        swal({
+                            icon: "error",
+                            title: "Deletion failed...!",
+                            button: true,
+                            timer: 4500
+                        })
+                        window.location = '@Url.Action("UploadManual", "DataView")';
+                    }
+
+                },
+                        //If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                            //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+            }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+
+    });*@
+</script>
+<script type="text/javascript">
+    $("#show").click(function () {
+        $("#divnew").hide();
+        $("#divdetails").show();
+    });
+
+    $(".cancel").click(function () {
+        $("#divnew").show();
+        $("#divdetails").hide();
+    });</script>
+
+<script type="text/javascript">
+
+    function check()
+    {
+       
+        var plant = '@Session["PlantCode"]';
+
+        var company = '@Session["CompanyCode"]';
+
+        if (plant = "" || company == "" || plant == null || company == null) {
+             swal({
+                    icon: "warning",
+                    title: "Company And Plant Code needed",
+                    button: true,
+                    closeModal: false
+                })
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
+
+
+    function funvalidationfile(ctrl) {
+            for (var i = 0; i < ctrl.files.length; i++) {
+                var file = ctrl.files[i];
+
+                var iSize = (ctrl.files[i].size / 1024 / 1024);
+
+                var FileName = file.name;
+                var FileExt = FileName.substr(FileName.lastIndexOf('.') + 1);
+                //if (FileExt.toUpperCase() != "jpg" || FileExt.toUpperCase() != "png" || FileExt.toUpperCase() != "jpeg" || FileExt.toUpperCase() != "txt") {
+                //    $(ctrl).val("");
+                //    alert("Please upload files having extensions: .jpg .png .jpeg .txt only");
+                //    return false;
+                //}
+
+                if (iSize > 3) {
+                    $(ctrl).val("");
+                    alert("File size should be less than 3 MB");
+                    return false;
+                    @*var R_url = '@Url.Action("UploadManual", "DataView")';
+                    window.location = R_url *@
+                }
+                if (FileExt.toUpperCase() != "JPG" )
+                {
+                    if (FileExt.toUpperCase() != "PNG" )
+                    {
+                        if (FileExt.toUpperCase() != "JPEG")
+                        {
+                            if (FileExt.toUpperCase() != "TXT")
+                            {
+                                if (FileExt.toUpperCase() != "PDF") {
+
+                                    if (FileExt.toUpperCase() != "XLS") {
+
+                                        if (FileExt.toUpperCase() != "XLSX") {
+
+                                            $(ctrl).val("");
+                                            alert("Please upload files having extensions: .jpg .png .jpeg .txt pdf xls only");
+                                            return false;
+                                        }
+                                    }
+                                }
+                            }
+                         return true;
+                        }
+                    return true;
+                    }
+                return true;
+                }
+
+            }
+            return true;
+        }
+
+
+
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        $('.updated_time').text("N/A");
+        $('.shift').text("N/A");
+    });</script>

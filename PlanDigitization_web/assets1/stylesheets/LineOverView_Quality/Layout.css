@@ -1,0 +1,201 @@
+﻿* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color:white;
+}
+span {
+    font-size: 15px;
+    /* font-weight: 100; */
+    font-weight: bold;
+}
+h4 {
+    font-size: 16px;
+    color: black;
+    margin-bottom: 0px;
+    text-align: center;
+}
+
+/* Float two columns side by side */
+.column {
+    float: left;
+    width: 50%;
+    padding: 0 2px;
+}
+
+
+/* Remove extra left and right margins, due to padding */
+.row {
+    margin: 0px -5px;
+}
+
+
+    /* Clear floats after the columns */
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+/* Responsive columns */
+@media screen and (max-width: 600px) {
+    .column {
+        width: 100%;
+        display: block;
+        margin-bottom: 20px;
+        justify-content: center; /* Align items horizontally in the center */
+        align-items: center; /* Align items vertically in the center */
+        box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    }
+}
+
+/* Style the counter cards */
+.card {
+    /*box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);*/
+    /*padding: 16px;
+    text-align: center;*/
+    /*background-color: #f1f1f1;*/
+    box-shadow: 0 1px 5px 0 rgb(0 0 0 / 16%);
+    padding: 2px;
+    text-align: center;
+}
+
+.row2 {
+    margin: 0px -5px;
+}
+/* Float two columns side by side */
+.column2 {
+    float: left;
+    width: 33.33%;
+    padding: 0px 2px;
+}
+
+/*//Container layout*/
+.grid-container {
+    display: grid;
+    gap: 2px;
+    /*background-color: blanchedalmond;*/
+    padding: 2px;
+}
+
+.grid-container > div {
+    /*background-color: rgba(255, 255, 255, 0.8);*/
+    text-align: center;
+    padding: 20px 0;
+    font-size: 30px;
+}
+
+/*table {
+    width: 80%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}*/
+table, th, td {
+    border: 1px solid #ddd;
+    border-collapse: collapse;
+    text-align: center;
+}
+/*tr:hover {
+    background-color:lightgrey;
+}*/
+th {
+    background-color: #f2f2f2;
+    letter-spacing: 1px;
+    color: #333;
+}
+
+td {
+    color: #555;
+}
+
+/* Hover effect */
+tbody tr:hover {
+    background-color: #f5f5f5;
+}
+.card-layout1 {
+    padding: 2px 2px 9px 2px;
+    box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.09);
+    height: 300px;
+}
+
+
+.pie-section {
+    height: 105px;
+    width: 300px;
+    margin: 0 0 0 0;
+}
+.pie-table1 {
+    width: 27%;
+    margin-left: 15px ;
+    margin-top: 25px;
+}
+.pie-table2 {
+    width: 50%;
+    margin-top: -152px;
+    margin-left: 240px;
+}
+.pie-table3 {
+    width: 50%;
+    margin-left: 240px;
+    margin-top: 60px;
+}
+
+.bar {
+    fill: steelblue;
+}
+
+.line {
+    fill: none;
+    stroke: black;
+    stroke-width: 2px;
+}
+
+.x-axis path,
+.x-axis line,
+.y-axis path,
+.y-axis line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+.popuptable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+    .popuptable th, .popuptable td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: left;
+    }
+
+    .popuptable th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #333;
+    }
+
+    .popuptable td {
+        color: #555;
+    }
+
+    /* Hover effect */
+    .popuptable tbody tr:hover {
+        background-color: #f5f5f5;
+    }
+
+.box-2
+{
+    margin-left:25%;
+}

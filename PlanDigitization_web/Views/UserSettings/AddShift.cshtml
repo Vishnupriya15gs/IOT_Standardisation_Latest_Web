@@ -1,0 +1,122 @@
+﻿@model PlanDigitization_web.Models.Shift
+
+@{
+    ViewBag.Title = "AddShift";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/Content/jquery.timepicker.css" rel="stylesheet" />
+<header class="page-header">
+    <h2> Shift Settings Details </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("NewDash","Main")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li><span>Settings</span></li>
+            <li><span>Shift Details</span></li>
+        </ol>
+    </div>
+</header>
+
+<!-- Add New Shift-->
+
+
+@using (Html.BeginForm("Insert_Shifts", "UserSettings", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div class="row" id="divnew" style="">
+        <div class="col-md-12">
+            @* <form class="form" action="@Url.Action("Insert_Shifts", "UserSettings")" method="post">*@
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Add New Shift</h2>
+                </header>
+                <div class="panel-body">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Line_Code, new { @class = "control-label col-md-2" })
+
+                        <div class="col-md-4">
+                            @Html.DropDownList("Line_Code", ViewBag.LineCode as SelectList, "Select Line", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Line_Code, "", new { @class = "text-danger" })
+
+                        </div>
+                        @*<label class="col-sm-2 control-label"> Line <span class="required">*</span></label>
+                            <div class="col-sm-4">
+                                <select id="linecode" class="form-control" name="Line_Code" title="*"></select>
+                            </div>*@
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ShiftName)
+                        <div class="col-sm-4">
+
+                            @Html.TextBoxFor(model => model.ShiftName)
+                            @Html.ValidationMessageFor(model => model.ShiftName)
+                        </div>
+                        @*<label class="col-sm-2 control-label"> Shift Name <span class="required">*</span></label>*@
+                        @*<div class="col-sm-4">
+                                <input type="text" id="ShiftName" name="ShiftName" class="form-control" title="Enter Shift" placeholder="Shift Name" required />
+                            </div>*@
+                        @Html.LabelFor(model => model.StartTime)
+                        <div class="col-sm-4">
+                            @Html.TextBoxFor(model => model.StartTime, new { @class = "form-control timepicker", id = "StartTime", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.StartTime)
+                        </div>
+                        @*<label class="col-sm-2 control-label"> Start Time <span class="required">*</span></label>
+                            <div class="col-sm-4">
+                                <input type="text" id="StartTime" name="StartTime" class="form-control timepicker" title="Enter Start" placeholder="Start Time" autocomplete="off" required />
+                            </div>*@
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.EndTime)
+                        <div class="col-sm-4">
+                            @Html.TextBoxFor(model => model.EndTime, new { @class = "form-control timepicker", id = "EndTime", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.EndTime)
+                        </div>
+                        @Html.LabelFor(model => model.BreakTime)
+                        <div class="col-sm-4">
+                            @Html.TextBoxFor(model => model.BreakTime, new { @class = "form-control", id = "BreakTime", @required = "required" })
+                            @Html.ValidationMessageFor(model => model.BreakTime)
+                        </div>
+                        @*<label class="col-sm-2 control-label"> End Time <span class="required">*</span></label>
+                            <div class="col-sm-4">
+                                <input type="text" id="EndTime" name="EndTime" class="form-control timepicker" title="Enter End" placeholder="End Time" autocomplete="off" required />
+                            </div>*@
+                        @*<label class="col-sm-2 control-label"> Break Time <span class="required">*</span></label>
+                            <div class="col-sm-4">
+                                <input type="number" id="BreakTime" name="BreakTime" class="form-control" title="Enter Break" placeholder="Break Time" required />
+                            </div>*@
+                    </div>
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+            @*</form>*@
+        </div>
+    </div>
+}
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+<script src="~/Scripts/jquery.timepicker.js"></script>
+
+<script type="text/javascript">
+    $('.timepicker').timepicker({
+        timeFormat: 'HH:mm',
+        dynamic: true,
+        dropdown: true,
+        scrollbar: true
+    });
+
+</script>

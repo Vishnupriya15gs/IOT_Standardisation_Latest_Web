@@ -1,0 +1,8 @@
+------Warn(2025-06-23 11:56:21.9584)DESKTOP-P0SA13C------
+                       Exception Type:System.Threading.Tasks.TaskCanceledException |                       Exception Message:A task was canceled. |                       Stack Trace: |                       Additional Info:System.AggregateException: One or more errors occurred. ---> System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   --- End of inner exception stack trace ---
+   at System.Threading.Tasks.Task`1.GetResultCore(Boolean waitCompletionNotification)
+   at PlanDigitization_web.Controllers.UserSettingsController.<Insert_users>d__43.MoveNext() in C:\Users\COE\Documents\new  code_20250521\latest one\TVS_frontend_std-master\TVS_frontend_std-master\PlanDigitization_web\Controllers\UserSettingsController.cs:line 2559
+---> (Inner Exception #0) System.Threading.Tasks.TaskCanceledException: A task was canceled.<---
+
+

@@ -1,0 +1,307 @@
+﻿@model IEnumerable<PlanDigitization_web.Models.URL_table>
+@{ ViewBag.Title = "Portal_URL_settings";
+    Layout = "~/Views/Shared/_Layout.cshtml"; }
+
+
+<header class="page-header">
+    <h2> Portal URL Details </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("MainDashboard","MainDashboard")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li><span>Settings</span></li>
+            <li><span>Portal URL</span></li>
+        </ol>
+    </div>
+</header>
+<div class="row" id="divnew" style="display:none;">
+    <div class="col-md-2"></div>
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Insert_URL","UserSettings")" method="post">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Insert Portal URL</h2>
+                </header>
+                <div class="panel-body">
+                    <input type="hidden" id="Unique_id" name="Unique_id" />
+                    <div class="form-group">
+
+                        <label class="col-sm-2 control-label"> Portal URL <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="Urlname" name="URL" class="form-control space" title="Enter URL" placeholder="Portal URL" required />
+                        </div>
+                    </div>
+
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+
+<!-- Department Details-->
+<div class="row" id="divdetails">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <section class="panel">
+            <header class="panel-heading" style="background-color:teal;color:white;">
+                @if (ViewContext.Controller.HasPermission("PortalURLDetails-Add"))
+                {
+                    <div class="panel-actions">
+                        <button class="btn btn-primary" id="add"><i class="fa fa-plus" aria-hidden="true"> Add New</i></button>
+                    </div>
+                }
+                <h2 class="panel-title" style="color:white;">Portal URL : </h2>
+
+            </header>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="panel-body">
+                        @if (ViewContext.Controller.HasPermission("PortalURLDetails-View"))
+                        {
+                            <table class="table table-bordered table-striped mb-none" id="datatable-default">
+                                <thead style="background-color:teal;color:white;">
+                                    <tr>
+
+                                        <th style="display:none;"></th>
+                                        <th> Portal URL </th>
+                                        <th style="text-align:center;width:150px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr class="gradeX">
+
+                                            <td class="ID" style="display:none;">
+                                                <span>@Html.Encode(item.Unique_id)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.URL)</span>
+                                            </td>
+
+                                            <td style="text-align:center;">
+                                                @if (ViewContext.Controller.HasPermission("PortalURLDetails-Edit"))
+                                                {
+                                                    <button class="btn btn-primary" style="margin-top: 10px" id="edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>}
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!--Edit Department Details-->
+<div class="row" id="divedit" style="display:none;">
+    <div class="col-md-2"></div>
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Update_URL","UserSettings")" method="post">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Update Portal URL</h2>
+                </header>
+                <div class="panel-body">
+                    <input type="hidden" id="eUnique_id" name="Unique_id" />
+                    <div class="form-group">
+
+                        <label class="col-sm-2 control-label"> Portal URL <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="eUrlname" name="URL" class="form-control space" title="Enter URL" placeholder="Portal URL" required />
+                        </div>
+                    </div>
+
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+@if (@TempData["message"] != null)
+{
+    <script type="text/javascript">
+    $(function () {
+        var msg = '@TempData["message"]';
+        if (msg == "Inserted") {
+            swal({
+                icon: "success",
+                title: "Details Added Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Updated") {
+            swal({
+                icon: "success",
+                title: "Details Updated Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+
+        else {
+            swal({
+                icon: "error",
+                title: "Failed to Add",
+                button: true,
+                timer: 4500
+            })
+        }
+
+    });
+    </script>
+}
+
+<script type="text/javascript">
+    $("#add").click(function () {
+        $("#divnew").show();
+        $("#divdetails").hide();
+        $("#divedit").hide();
+    });
+
+    $(".cancel").click(function () {
+        $("#divnew").hide();
+        $("#divdetails").show();
+        $("#divedit").hide();
+    });
+
+    $(document).on("keydown", ".space", function (evt) {
+
+        var caretPos = $(this)[0].selectionStart
+        if (evt.keyCode == 32 && caretPos == 0) {
+            return false;
+        }
+    });
+
+</script>
+
+<script type="text/javascript">
+    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+    $("body").on("click", "#edit", function () {
+        var row = $(this).closest("tr");
+        var ID = row.find(".ID span").html();
+
+        var myData = {
+            "QueryType": "Edit_URL",
+            "Parameter": ID,
+            "CompanyCode": '@Session["CompanyCode"]',
+            "PlantCode": '@Session["PlantCode"]',
+            "LineCode": ''
+        };
+
+        $("#divedit").show();
+        $("#divnew").hide();
+        $("#divdetails").hide();
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+        $.ajax({
+            type: "POST",
+            url: URL + 'api/UserSettings/User_settings_details',
+            data: myData,
+             headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+            dataType: "json",
+            beforeSend: function () {
+                $('.loading').show();
+            },
+            complete: function () {
+                $('.loading').hide();
+            },
+            success: function (response) {
+                $('#eUrlname').val(response.data.Table[0].URL);
+                $('#eUnique_id').val(response.data.Table[0].Unique_id);
+            }
+            }).error(function (response) {
+            if (response.status == "401") {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            }
+            else {
+                swal({
+                    icon: "warning",
+                    title: response.responseText,
+                    button: true,
+                    closeModal: false
+                })
+
+            }
+             });
+    });
+
+
+</script>
+<script>
+    $(document).ready(function () {
+        var table = $('#datatable-default').DataTable();
+        var tablecount = table.rows().count();
+        if (tablecount != 0) {
+            $("#add").hide();
+        }
+        $('.updated_time').text("N/A");
+        $('.shift').text("N/A");
+
+        if ($.fn.DataTable.isDataTable('#datatable-default')) {
+            $('#datatable-default').DataTable().destroy();
+        }
+
+        $('#datatable-default').DataTable({
+
+            "responsive": true,
+            "autoWidth": false,
+            scrollY: true,
+            scrollX: true,
+            scroller: true
+        });
+
+
+    });
+
+</script>

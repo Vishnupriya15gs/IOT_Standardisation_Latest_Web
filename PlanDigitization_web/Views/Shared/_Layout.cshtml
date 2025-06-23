@@ -1,0 +1,2056 @@
+﻿<!doctype html>
+<html class="fixed js flexbox flexboxlegacy csstransforms csstransforms3d no-overflowscrolling no-mobile-device custom-scroll sidebar-left-collapsed">
+<head>
+
+
+    <!-- Basic -->
+    <meta charset="UTF-8">
+
+    <title>:: TEAL i4Metrics ::</title>
+    <link rel="icon" href="~/Images/teal-sfs.png" type="image/x-icon">
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <!-- Root CSS -->
+    <link rel="stylesheet" href="~/StyleSheets/root.css" />
+
+    <!-- Vendor CSS -->
+    <link rel="stylesheet" href="~/assets1/vendor/bootstrap/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/assets1/vendor/font-awesome/css/font-awesome.css" />
+    <link rel="stylesheet" href="~/assets1/vendor/magnific-popup/magnific-popup.css" />
+    <link rel="stylesheet" href="~/assets1/vendor/bootstrap-datepicker/css/datepicker3.css" />
+
+    <!-- Specific Page Vendor CSS -->
+    <link rel="stylesheet" href="~/assets1/vendor/jquery-ui/css/ui-lightness/jquery-ui-1.10.4.custom.css" />
+    <link rel="stylesheet" href="~/assets1/vendor/bootstrap-multiselect/bootstrap-multiselect.css" />
+    <link rel="stylesheet" href="~/assets1/vendor/morris/morris.css" />
+
+    <!-- Theme CSS -->
+    <link rel="stylesheet" href="~/assets1/stylesheets/theme.css" />
+
+    <!-- Skin CSS -->
+    <link rel="stylesheet" href="~/assets1/stylesheets/skins/default.css" />
+
+    <!-- Theme Custom CSS -->
+    <link rel="stylesheet" href="~/assets1/stylesheets/theme-custom.css">
+
+    <!-- Head Libs -->
+    <script src="~/assets1/vendor/modernizr/modernizr.js"></script>
+    <style type="text/css">
+        .page-header1 {
+            display: flex;
+            align-content: center;
+            align-items: center;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .myDIV:hover + .hide.resolution-tooltip {
+            display: inline !important;
+        }
+
+        .fa-desktop.myDIV:before {
+            width: fit-content;
+        }
+
+        .updated_time {
+            display: inline-block;
+        }
+
+        .resolution-tooltip {
+            position: fixed;
+            bottom: 40px;
+            color: black !important;
+            left: 77px;
+            background: #ffffff;
+            padding: 0 10px;
+            border-radius: 3px;
+            box-shadow: rgb(0 0 0 / 25%) 0px 54px 55px, rgb(0 0 0 / 12%) 0px -12px 30px, rgb(0 0 0 / 12%) 0px 4px 6px, rgb(0 0 0 / 17%) 0px 12px 13px, rgb(0 0 0 / 9%) 0px -3px 5px;
+        }
+
+        .fa-desktop.myDIV:before {
+            width: 16px;
+            display: block;
+            font-size: 20px;
+            padding-top: 5px;
+        }
+
+        .resolution-tooltip::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border: 5px solid #ffffff;
+            display: block;
+            left: 13px;
+            top: 16px;
+            transform: rotate(45deg);
+            border-top-color: transparent;
+            border-left-color: transparent;
+        }
+
+        .footer1 {
+            width: auto;
+            height: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 39px !important;
+        }
+
+
+        .loading {
+            font-family: Arial;
+            font-size: 10pt;
+            /*border: 5px solid #67CFF5;*/
+            width: 110%;
+            height: 100%;
+            display: none;
+            position: fixed;
+            background-color: #0e0e0e4f;
+            z-index: 999999;
+            margin-left: -40px;
+            padding: 0px;
+        }
+    </style>
+    <script src="~/Scripts/d3.min.js"></script>
+    <script type="text/javascript">
+        function isNumberKey(evt) {
+            var charCode = (evt.which) ? evt.which : event.keyCode
+            if (charCode != 46 && charCode > 31
+                && (charCode < 48 || charCode > 57))
+                return false;
+            return true;
+        }
+        function alphaOnly(evt) {
+            var key = (evt.which) ? evt.which : event.keyCode
+            if ((key >= 65 && key <= 90) || (key > 96 && key < 123) || key == 8)
+                return true;
+            return false;
+        };
+
+    </script>
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        div#layout {
+            text-align: center;
+        }
+
+        div#container {
+            width: 1000px;
+            height: 600px;
+            margin: auto;
+            background-color: #f6f6f6;
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .bar {
+            fill: #4d97f3;
+        }
+
+        text {
+            font-size: 12px;
+            color: black;
+        }
+
+        path {
+            stroke: gray;
+        }
+
+        line {
+            stroke: gray;
+        }
+
+            line#limit {
+                stroke: #FED966;
+                stroke-width: 3;
+                stroke-dasharray: 3 6;
+            }
+
+        .grid path {
+            stroke-width: 0;
+        }
+
+        .grid .tick line {
+            stroke: #9FAAAE;
+            stroke-opacity: 0.3;
+        }
+
+        text.divergence {
+            font-size: 14px;
+            fill: #2F4A6D;
+        }
+
+        text.value {
+            font-size: 12px;
+        }
+
+        text.title {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        text.label {
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        text.source {
+            font-size: 10px;
+        }
+
+
+
+        .footer1 {
+            height: 50px;
+            left: 0;
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            /*background-color: #002929;*/
+            background-color: #282828;
+            box-shadow: 1px 3px 0 1px #2f3139;
+            color: white;
+        }
+
+        html.fixed .page-header1 {
+            margin: 0;
+            right: 0;
+            left: 84px;
+            position: relative;
+        }
+
+        button[value=""],
+        button[value="0"] {
+            display: none;
+        }
+
+        /*html.fixed .footer1 {
+                position: fixed;
+                z-index: 1020;
+            }*/
+
+        /*.footer1 {
+            background-color: #f6f6f6;
+            background-image: -webkit-linear-gradient(#f6f6f6 0%, white 45%);
+            background-image: linear-gradient(#f6f6f6 0%, white 45%);
+            border-bottom: 1px solid #E9E9E6;
+            border-top: 3px solid #EDEDED;
+            z-index: 1000;
+        }*/
+
+        /*.customerlogo
+                {
+                    margin-left:420px;
+                }*/
+        /*@@media only screen and (min-width: 992px) {
+                    .customerlogo {
+                        padding-top: 20px;
+                    }
+                }
+
+                @@media only screen and (max-width: 600px) {
+                    .customerlogo {
+                        padding-top: -18px;
+                        padding-right: 0;
+                    }
+                }
+
+                @@media only screen and (min-width: 1200px) {
+                    .customerlogo {
+                        padding-top: 0px;
+                    }
+                }
+
+                @@media only screen and (max-width: 400px) {
+                    .customerlogo {
+                        margin-top: -15px;
+                    }
+                }*/
+    </style>
+    <style>
+        /* width */
+        .dropdown-menu-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        /* Track */
+        .dropdown-menu-scroll::-webkit-scrollbar-track {
+            /*box-shadow: inset 0 0 5px grey;*/
+            border-radius: 10px;
+            background: white;
+        }
+
+        /* Handle */
+        .dropdown-menu-scroll::-webkit-scrollbar-thumb {
+            background: gray;
+            border-radius: 10px;
+        }
+
+            /* Handle on hover */
+            .dropdown-menu-scroll::-webkit-scrollbar-thumb:hover {
+                background: #2471A3
+            }
+    </style>
+    <style>
+        .notification-menu i.fa {
+            display: inline-block;
+            border-radius: 60px;
+            /*box-shadow: 0 0 2px #888;*/
+            padding: 0.5em 0.6em;
+            /*box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;*/
+            box-shadow: rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset;
+        }
+
+        .notification-menu a {
+            color: grey;
+        }
+    </style>
+    <style>
+        #tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+            #tooltip .tooltiptext {
+                visibility: hidden;
+                width: 200px;
+                background-color: grey;
+                color: white;
+                text-align: center;
+                border-radius: 6px;
+                padding: 5px 0;
+                position: absolute;
+                z-index: 1;
+                top: 44px;
+                right: 95%;
+                display: inline-block;
+            }
+
+            #tooltip:hover .tooltiptext {
+                visibility: visible;
+            }
+    </style>
+    @*datatable*@
+    <style>
+        .dataTables_filter label {
+            display: flex;
+            align-items: center;
+        }
+
+            .dataTables_filter label input[type="search"] {
+                margin: 0 0 0 10px;
+            }
+
+        .active_n > a {
+            color: #0088cc !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading" align="center">
+        <img src="~/assets1/images/loading.gif" alt="" style="width:150px;padding-top:300px;" />
+    </div>
+    <script type="text/javascript">
+        var modal, loading;
+        function ShowProgress() {
+            modal = document.createElement("DIV");
+            modal.className = "modal";
+            document.body.appendChild(modal);
+            loading = document.getElementsByClassName("loading")[0];
+            loading.style.display = "block";
+            var top = Math.max(window.innerHeight / 2 - loading.offsetHeight / 2, 0);
+            var left = Math.max(window.innerWidth / 2 - loading.offsetWidth / 2, 0);
+            loading.style.top = top + "px";
+            loading.style.left = left + "px";
+        };
+        ShowProgress();
+        function disableBack() { window.history.forward() }
+        window.onpageshow = function (evt) { if (evt.persisted) disableBack() }
+        window.onload = function () {
+            disableBack();
+            setTimeout(function () {
+                loading.style.display = "none";
+            }, 2000);
+        };
+    </script>
+    <section class="body">
+        <!-- start: header -->
+        <header class="header">
+            @*<div class="logo-container" style="width:25%;float:left">
+
+                    <svg style="width:50%;height:20%;margin-right:30%;" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="297mm" height="80mm" viewBox="0 0 297 80" version="1.1" id="svg4878" inkscape:version="0.92.1 r15371" sodipodi:docname="teal.svg">
+                        <defs id="defs4872" />
+                        <sodipodi:namedview id="base" pagecolor="#ffffff" bordercolor="#666666" borderopacity="1.0" inkscape:pageopacity="0.0" inkscape:pageshadow="2" inkscape:zoom="0.35" inkscape:cx="-64.285714" inkscape:cy="560" inkscape:document-units="mm" inkscape:current-layer="layer1" showgrid="false" units="mm" inkscape:window-width="1366" inkscape:window-height="705" inkscape:window-x="-8" inkscape:window-y="-8" inkscape:window-maximized="1" />
+                        <metadata id="metadata4875">
+                            <rdf:RDF>
+                                <cc:Work rdf:about="">
+                                    <dc:format>image/svg+xml</dc:format>
+                                    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+                                    <dc:title />
+                                </cc:Work>
+                            </rdf:RDF>
+                        </metadata>
+                        <g inkscape:label="Layer 1" inkscape:groupmode="layer" id="layer1" transform="translate(0,-217)">
+                            <path d="m 205.54803,270.78798 h 20.52226 l 2.42734,-7.87696 h -18.23962 c -5.1975,0 -6.75154,-2.27146 -5.76038,-5.477 l 8.82104,-28.53335 h -11.27166 l -8.04177,27.11908 c -1.81489,6.12007 0.42287,14.76823 11.54279,14.76823 z" style="fill:#868688;fill-rule:evenodd;stroke-width:0.63126165" id="path2" inkscape:connector-curvature="0" inkscape:export-xdpi="96" inkscape:export-ydpi="96" />
+                            <path d="m 92.525492,228.90079 h -20.36627 l -2.245018,7.84654 h 18.745 c 5.197809,0 6.695036,2.64421 5.774529,5.8497 l -8.094227,28.19102 H 97.59629 l 7.50331,-27.27277 c 2.62788,-9.55081 -3.30409,-14.61449 -12.574108,-14.61449 z" style="fill:#868688;fill-rule:evenodd;stroke-width:0.63126165" id="path4" inkscape:connector-curvature="0" inkscape:export-xdpi="96" inkscape:export-ydpi="96" />
+                            <path d="m 113.60023,270.7881 h 24.69586 l 2.2111,-7.8467 h -20.13263 c -4.41606,0 -4.90422,-2.89497 -4.23905,-5.23083 l 1.27697,-4.4843 h 20.94003 l 2.22084,-7.8467 h -20.92613 l 2.45825,-8.63205 h 25.82662 c 1.1821,-3.35289 3.10366,-5.94827 5.55555,-7.84673 h -39.96726 l -8.69115,31.67659 c -1.67631,6.11005 2.63672,10.21072 8.771,10.21072 z" style="fill:#00afb2;fill-rule:evenodd;stroke-width:0.63126165" id="path6" inkscape:connector-curvature="0" inkscape:export-xdpi="96" inkscape:export-ydpi="96" />
+                            <path d="m 197.30643,228.90079 c -10.47479,0 -19.93868,0 -30.4132,0 -8.84877,0 -13.74572,4.10069 -15.4681,10.21067 l -8.92619,31.67664 h 11.32799 c 2.74063,-10.07341 5.24396,-19.34968 7.9842,-29.42297 0.63531,-2.33541 3.94072,-4.61761 6.98555,-4.61761 h 15.02402 c -2.37695,8.63224 -3.00367,10.97441 -3.81716,13.92878 h -16.24995 l -2.13485,7.8467 h 16.21552 c -0.52489,1.89018 -1.80806,6.53008 -3.39669,12.2651 h 11.00351 c 4.16204,-14.69861 7.6805,-27.19266 11.86535,-41.88731 z" style="fill:#00afb2;fill-rule:evenodd;stroke-width:0.63126165" id="path8" inkscape:connector-curvature="0" inkscape:export-xdpi="96" inkscape:export-ydpi="96" />
+                            <path d="M 10.952407,279.14425 H 8.6712777 v -0.56562 h 5.1846173 v 0.56562 h -2.281318 v 6.10826 h -0.62217 z m 5.882854,-0.56562 h 0.62217 v 6.67388 h -0.62217 z m 5.882663,0.56562 h -2.281127 v -0.56562 h 5.184615 v 0.56562 h -2.281315 v 6.10826 h -0.622173 z m 7.928268,-0.56562 h 0.640983 l 2.809177,6.67388 h -0.697669 l -0.725763,-1.7722 h -3.534811 l -0.754233,1.7722 h -0.650451 z m 0.292212,0.67866 -1.555304,3.65762 h 3.063639 z m 6.071285,-0.67866 h 0.801324 l 4.062611,5.84436 h 0.01909 v -5.84436 h 0.621982 v 6.67388 h -0.801135 l -4.062799,-5.84433 h -0.01885 v 5.84433 h -0.622171 z m 14.187479,0 h 4.081612 v 0.56562 h -3.459441 v 2.37542 h 3.242539 v 0.56562 h -3.242539 v 2.60163 h 3.610311 v 0.56559 h -4.232482 z m 7.54181,0 h 0.801261 l 4.062673,5.84436 h 0.01885 v -5.84436 h 0.622044 v 6.67388 h -0.801134 l -4.062862,-5.84433 h -0.01885 v 5.84433 h -0.622171 z m 14.790462,6.24034 c -0.389553,0.21998 -0.793245,0.37542 -1.211266,0.46651 -0.417833,0.0914 -0.843682,0.13671 -1.277231,0.13671 -0.509114,0 -0.975616,-0.0864 -1.399886,-0.25915 -0.424081,-0.17274 -0.786994,-0.41478 -1.088675,-0.72595 -0.301679,-0.31102 -0.537329,-0.68176 -0.70695,-1.11227 -0.169683,-0.43053 -0.254461,-0.90026 -0.254461,-1.40916 0,-0.50913 0.08477,-0.97721 0.254461,-1.40469 0.169611,-0.42731 0.405271,-0.79647 0.70695,-1.10749 0.301681,-0.31114 0.664594,-0.55469 1.088675,-0.73056 0.42427,-0.17584 0.890772,-0.26399 1.399886,-0.26399 0.992911,0 1.794235,0.30799 2.403655,0.92392 l -0.452363,0.47129 c -0.100565,-0.11954 -0.224725,-0.23096 -0.372318,-0.33477 -0.147661,-0.10378 -0.307992,-0.19158 -0.480831,-0.26397 -0.172833,-0.072 -0.353443,-0.12884 -0.542001,-0.16963 -0.188436,-0.0408 -0.373835,-0.0611 -0.556142,-0.0611 -0.433615,0 -0.824743,0.0754 -1.173517,0.22618 -0.34896,0.15079 -0.645781,0.35824 -0.890963,0.62216 -0.244928,0.26393 -0.433551,0.57495 -0.56542,0.93314 -0.132058,0.35824 -0.198099,0.74475 -0.198099,1.15956 0,0.4148 0.06602,0.80112 0.198099,1.15936 0.131867,0.35824 0.320492,0.66922 0.56542,0.93314 0.245182,0.26393 0.542003,0.47135 0.890963,0.62216 0.348774,0.15079 0.739902,0.22619 1.173517,0.22619 0.358241,0 0.694451,-0.0282 1.008692,-0.0847 0.314178,-0.0565 0.600142,-0.16009 0.857823,-0.31103 v -2.24355 h -1.602585 v -0.56543 h 2.224567 z m 3.780625,-6.24034 h 0.622173 v 6.67388 h -0.622173 z m 4.402862,0 h 0.801259 l 4.062676,5.84436 h 0.01909 v -5.84436 h 0.621982 v 6.67388 h -0.801135 l -4.062802,-5.84433 h -0.01885 v 5.84433 h -0.62222 z m 9.285543,0 h 4.081674 v 0.56562 H 91.62064 v 2.37542 h 3.242604 v 0.56562 H 91.62064 v 2.60163 h 3.610312 v 0.56559 H 90.99847 Z m 7.541809,0 h 4.081621 v 0.56562 h -3.45945 v 2.37542 h 3.24261 v 0.56562 h -3.24261 v 2.60163 h 3.61032 v 0.56559 h -4.232491 z m 8.163991,2.94104 h 1.31971 c 0.32674,0 0.59225,-0.0408 0.79647,-0.12263 0.20415,-0.0816 0.36285,-0.18204 0.47597,-0.30148 0.11325,-0.11953 0.1902,-0.24842 0.23097,-0.38653 0.0408,-0.13839 0.0612,-0.26393 0.0612,-0.37704 0,-0.11333 -0.0205,-0.23888 -0.0612,-0.37719 -0.0408,-0.13814 -0.11774,-0.26695 -0.23097,-0.38634 -0.11312,-0.11953 -0.27183,-0.22022 -0.47597,-0.30167 -0.20421,-0.0818 -0.46973,-0.12263 -0.79647,-0.12263 h -1.31971 z m -0.62217,-2.94104 h 1.75326 c 0.088,0 0.20736,0.002 0.35824,0.01 0.15081,0.007 0.31418,0.025 0.49011,0.0565 0.17606,0.0315 0.35521,0.0818 0.53734,0.15079 0.18218,0.0692 0.34574,0.16963 0.49011,0.30167 0.14463,0.13194 0.26393,0.29854 0.35824,0.49965 0.0943,0.20089 0.14141,0.44611 0.14141,0.73523 0,0.32049 -0.055,0.58442 -0.16501,0.79184 -0.10985,0.20734 -0.24815,0.37542 -0.41461,0.50426 -0.16658,0.12884 -0.35035,0.22451 -0.55147,0.28754 -0.20113,0.0627 -0.39277,0.10689 -0.57514,0.13194 l 1.94188,3.20499 h -0.70701 l -1.8758,-3.16724 h -1.15937 v 3.16724 h -0.62217 z m 7.54181,0 h 0.62217 v 6.67388 h -0.62217 z m 4.40279,0 h 0.80133 l 4.06267,5.84436 h 0.0189 v -5.84436 h 0.62198 v 6.67388 h -0.80107 l -4.06286,-5.84433 h -0.0189 v 5.84433 h -0.62217 z m 14.79053,6.24034 c -0.38955,0.21998 -0.79324,0.37542 -1.21127,0.46651 -0.41783,0.0914 -0.84368,0.13671 -1.27729,0.13671 -0.50905,0 -0.97556,-0.0864 -1.39983,-0.25915 -0.42408,-0.17274 -0.78699,-0.41478 -1.08867,-0.72595 -0.30168,-0.31102 -0.53739,-0.68176 -0.70701,-1.11227 -0.16961,-0.43053 -0.25446,-0.90026 -0.25446,-1.40916 0,-0.50913 0.0848,-0.97721 0.25446,-1.40469 0.16961,-0.42731 0.40533,-0.79647 0.70701,-1.10749 0.30168,-0.31114 0.66459,-0.55469 1.08867,-0.73056 0.42427,-0.17584 0.89078,-0.26399 1.39983,-0.26399 0.99297,0 1.79423,0.30799 2.40372,0.92392 l -0.45237,0.47129 c -0.10056,-0.11954 -0.22472,-0.23096 -0.37238,-0.33477 -0.14759,-0.10378 -0.30793,-0.19158 -0.48083,-0.26397 -0.17283,-0.072 -0.35338,-0.12884 -0.542,-0.16963 -0.18844,-0.0408 -0.37377,-0.0611 -0.55614,-0.0611 -0.43355,0 -0.82475,0.0754 -1.17345,0.22618 -0.34897,0.15079 -0.64585,0.35824 -0.89097,0.62216 -0.24499,0.26393 -0.43355,0.57495 -0.56548,0.93314 -0.13206,0.35824 -0.19803,0.74475 -0.19803,1.15956 0,0.4148 0.066,0.80112 0.19803,1.15936 0.13194,0.35824 0.32049,0.66922 0.56548,0.93314 0.24512,0.26393 0.542,0.47135 0.89097,0.62216 0.3487,0.15079 0.7399,0.22619 1.17345,0.22619 0.35824,0 0.69451,-0.0282 1.00869,-0.0847 0.31424,-0.0565 0.6002,-0.16009 0.85782,-0.31103 v -2.24355 h -1.60258 v -0.56543 h 2.22463 z m 12.35885,-1.50827 0.96145,-1.73446 h 0.64092 l -1.20658,2.13044 1.51779,1.59293 h -0.83906 l -0.99915,-1.07453 c -0.27025,0.36449 -0.56708,0.65512 -0.89079,0.87197 -0.32369,0.21663 -0.71794,0.32514 -1.18299,0.32514 -0.28291,0 -0.54829,-0.0453 -0.79664,-0.13671 -0.2482,-0.0911 -0.46348,-0.22141 -0.64559,-0.39118 -0.18228,-0.16964 -0.32675,-0.37377 -0.43361,-0.61265 -0.10689,-0.23873 -0.16033,-0.50587 -0.16033,-0.80132 0,-0.25767 0.0441,-0.48385 0.13194,-0.67873 0.0878,-0.19469 0.20256,-0.36752 0.34397,-0.51838 0.14148,-0.15078 0.30327,-0.28754 0.48543,-0.40994 0.18228,-0.12263 0.37074,-0.24355 0.56562,-0.36306 -0.0942,-0.11309 -0.18992,-0.23095 -0.28755,-0.35344 -0.0973,-0.12263 -0.18371,-0.24978 -0.25913,-0.38183 -0.0754,-0.13194 -0.13838,-0.2686 -0.18848,-0.40994 -0.0503,-0.14125 -0.0754,-0.28755 -0.0754,-0.43843 0,-0.23868 0.0456,-0.45236 0.13671,-0.64097 0.0911,-0.18848 0.21377,-0.34714 0.36752,-0.47598 0.15389,-0.12883 0.33307,-0.22785 0.53739,-0.29682 0.20423,-0.0692 0.41619,-0.10379 0.63631,-0.10379 0.19468,0 0.38331,0.0346 0.56543,0.10379 0.18228,0.0692 0.34409,0.16486 0.4855,0.28735 0.14124,0.12264 0.25299,0.27018 0.33457,0.44308 0.0818,0.17274 0.12263,0.36607 0.12263,0.57977 0,0.23866 -0.0425,0.44611 -0.12717,0.62216 -0.0849,0.17584 -0.19779,0.333 -0.33929,0.47131 -0.14148,0.13814 -0.30005,0.2607 -0.47617,0.36756 -0.17584,0.10689 -0.35824,0.21068 -0.54668,0.31117 z m -1.68744,-4.33608 c -0.28267,0 -0.52161,0.0864 -0.71628,0.25908 -0.19492,0.17297 -0.29234,0.40066 -0.29234,0.6836 0,0.11309 0.0239,0.22928 0.0709,0.34869 0.047,0.1193 0.10689,0.23573 0.17894,0.34877 0.0723,0.11309 0.15079,0.21998 0.23573,0.32049 0.0849,0.10045 0.162,0.19159 0.23095,0.2734 0.13194,-0.0692 0.27024,-0.14458 0.4148,-0.22642 0.14459,-0.0816 0.27648,-0.17584 0.39579,-0.28268 0.11954,-0.10688 0.21855,-0.22785 0.29707,-0.36291 0.0785,-0.13504 0.11762,-0.29055 0.11762,-0.46668 0,-0.26392 -0.0878,-0.4792 -0.26392,-0.64559 -0.17584,-0.16653 -0.39902,-0.2498 -0.66926,-0.2498 z m -0.46182,2.93159 c -0.15079,0.088 -0.30005,0.18204 -0.44769,0.28268 -0.14768,0.10068 -0.28294,0.2121 -0.40548,0.33461 -0.12239,0.12264 -0.22165,0.26092 -0.29687,0.41481 -0.0754,0.15413 -0.11309,0.32839 -0.11309,0.5232 0,0.21377 0.0391,0.40533 0.11786,0.57495 0.0785,0.16987 0.18538,0.31581 0.32042,0.4384 0.13528,0.12263 0.29544,0.21688 0.48085,0.28275 0.18538,0.0661 0.38184,0.099 0.58929,0.099 0.17583,0 0.34086,-0.0282 0.4947,-0.0847 0.15413,-0.0565 0.29707,-0.13193 0.42894,-0.22618 0.13217,-0.0942 0.25447,-0.20279 0.36771,-0.32517 0.11309,-0.12263 0.21663,-0.25299 0.31102,-0.3913 z m 14.00832,-3.32758 h 0.64099 l 2.80917,6.67388 h -0.69767 l -0.72576,-1.7722 h -3.53481 l -0.75425,1.7722 h -0.65043 z m 0.2922,0.67866 -1.5553,3.65762 h 3.06365 z m 10.8127,3.44069 c 0,0.35826 -0.0408,0.70078 -0.1224,1.02753 -0.0818,0.32674 -0.21854,0.61584 -0.41013,0.86709 -0.19159,0.25143 -0.44308,0.45255 -0.75403,0.60341 -0.31121,0.15079 -0.69288,0.22618 -1.14543,0.22618 -0.45236,0 -0.83422,-0.0754 -1.14525,-0.22618 -0.31114,-0.15078 -0.56237,-0.35198 -0.75422,-0.60341 -0.19158,-0.25125 -0.32832,-0.54035 -0.40994,-0.86709 -0.0818,-0.32675 -0.12263,-0.66927 -0.12263,-1.02753 v -4.11935 h 0.62216 v 3.95902 c 0,0.23888 0.0215,0.49333 0.0661,0.76358 0.0439,0.27036 0.13027,0.52162 0.25913,0.75422 0.12884,0.23238 0.31117,0.42409 0.54687,0.5749 0.23572,0.15078 0.54825,0.22618 0.93781,0.22618 0.38973,0 0.70233,-0.0754 0.93798,-0.22618 0.23573,-0.15079 0.41784,-0.34247 0.54668,-0.5749 0.12883,-0.23262 0.2152,-0.48386 0.25932,-0.75422 0.0439,-0.27025 0.0659,-0.5247 0.0659,-0.76358 v -3.95902 H 168.14 Z m 5.1379,-3.55373 h -2.28113 v -0.56562 h 5.18461 v 0.56562 h -2.28129 v 6.10826 h -0.62219 z m 5.44923,2.77143 c 0,-0.50912 0.0849,-0.97721 0.25448,-1.40468 0.16963,-0.42731 0.40533,-0.79648 0.707,-1.1075 0.3017,-0.31114 0.66461,-0.55469 1.08868,-0.73055 0.42428,-0.17584 0.89079,-0.264 1.39983,-0.264 0.5091,0 0.97561,0.088 1.39989,0.264 0.42426,0.17584 0.7871,0.41941 1.08867,0.73055 0.30167,0.31102 0.53733,0.68019 0.70694,1.1075 0.16987,0.42747 0.25466,0.89556 0.25466,1.40468 0,0.50891 -0.0847,0.97864 -0.25466,1.40917 -0.16964,0.4305 -0.40527,0.80124 -0.70694,1.11227 -0.30157,0.31116 -0.66441,0.55311 -1.08867,0.72594 -0.42428,0.17274 -0.89079,0.25913 -1.39989,0.25913 -0.50904,0 -0.97555,-0.0864 -1.39983,-0.25913 -0.42407,-0.17273 -0.78698,-0.41478 -1.08868,-0.72594 -0.30167,-0.31103 -0.53739,-0.68177 -0.707,-1.11227 -0.16964,-0.43053 -0.25448,-0.90026 -0.25448,-1.40917 z m 0.62207,0 c 0,0.41478 0.0661,0.80113 0.19803,1.15937 0.13194,0.35823 0.32042,0.66921 0.5654,0.93313 0.24512,0.26393 0.542,0.47136 0.89098,0.62217 0.3487,0.15078 0.73988,0.22618 1.17344,0.22618 0.43361,0 0.82494,-0.0754 1.17371,-0.22618 0.34877,-0.15079 0.64559,-0.35824 0.89076,-0.62217 0.24494,-0.26392 0.43356,-0.5749 0.56562,-0.93313 0.13194,-0.35824 0.19803,-0.74459 0.19803,-1.15937 0,-0.41481 -0.0661,-0.80134 -0.19803,-1.15958 -0.13194,-0.35817 -0.32068,-0.66919 -0.56562,-0.93312 -0.24517,-0.26394 -0.54199,-0.47137 -0.89076,-0.62218 -0.34877,-0.15079 -0.7401,-0.22618 -1.17371,-0.22618 -0.43356,0 -0.82474,0.0754 -1.17344,0.22618 -0.34898,0.15078 -0.64586,0.35824 -0.89098,0.62218 -0.24498,0.26393 -0.43354,0.57495 -0.5654,0.93312 -0.13218,0.35824 -0.19803,0.74477 -0.19803,1.15958 z m 9.55892,-3.33705 h 0.93321 l 2.43218,5.59936 2.43194,-5.59936 h 0.88609 v 6.67388 h -0.62216 v -5.88208 h -0.0191 l -2.54506,5.88208 h -0.27346 l -2.58281,-5.88208 h -0.0191 v 5.88208 h -0.62217 z m 12.44356,0 h 0.64094 l 2.80917,6.67388 h -0.69768 l -0.72575,-1.7722 h -3.53482 l -0.75424,1.7722 h -0.65044 z m 0.29222,0.67866 -1.55537,3.65762 h 3.06364 z m 7.55109,-0.11309 h -2.28113 v -0.56559 h 5.18462 v 0.56559 h -2.28133 v 6.10829 h -0.62216 z m 5.88284,-0.56559 h 0.62219 v 6.67388 h -0.62219 z m 3.96926,3.33702 c 0,-0.5091 0.0847,-0.97718 0.25447,-1.40468 0.16964,-0.42729 0.40527,-0.79645 0.70694,-1.10747 0.30174,-0.31117 0.6646,-0.55469 1.08867,-0.73056 0.42428,-0.17584 0.89079,-0.26399 1.39989,-0.26399 0.50904,0 0.97555,0.088 1.39983,0.26399 0.42426,0.17584 0.78717,0.41939 1.08868,0.73056 0.30167,0.31102 0.53739,0.68018 0.707,1.10747 0.16988,0.4275 0.25465,0.89558 0.25465,1.40468 0,0.50893 -0.0849,0.97866 -0.25465,1.40917 -0.16963,0.43053 -0.40533,0.80127 -0.707,1.11229 -0.30151,0.31114 -0.66442,0.55312 -1.08868,0.72595 -0.42428,0.17274 -0.89079,0.25913 -1.39983,0.25913 -0.5091,0 -0.97561,-0.0864 -1.39989,-0.25913 -0.42407,-0.17274 -0.78693,-0.41481 -1.08867,-0.72595 -0.30167,-0.31102 -0.53733,-0.68176 -0.70694,-1.11229 -0.16963,-0.43051 -0.25447,-0.90024 -0.25447,-1.40917 z m 0.62199,0 c 0,0.41481 0.0661,0.80115 0.19803,1.15939 0.13194,0.35824 0.32047,0.66919 0.5654,0.93312 0.2452,0.26394 0.54207,0.47137 0.89098,0.62218 0.34877,0.15079 0.73989,0.22618 1.17352,0.22618 0.43353,0 0.82486,-0.0754 1.17363,-0.22618 0.34877,-0.15078 0.64567,-0.35824 0.89077,-0.62218 0.245,-0.26393 0.43356,-0.57488 0.56561,-0.93312 0.13194,-0.35824 0.19779,-0.74458 0.19779,-1.15939 0,-0.41478 -0.0661,-0.80132 -0.19779,-1.15956 -0.13217,-0.35816 -0.32061,-0.66918 -0.56561,-0.93313 -0.2451,-0.26393 -0.542,-0.47136 -0.89077,-0.62217 -0.34877,-0.15078 -0.7401,-0.22618 -1.17363,-0.22618 -0.43363,0 -0.82475,0.0754 -1.17352,0.22618 -0.34891,0.15079 -0.64578,0.35824 -0.89098,0.62217 -0.24493,0.26395 -0.43353,0.57497 -0.5654,0.93313 -0.13218,0.35824 -0.19803,0.74478 -0.19803,1.15956 z m 9.62504,-3.33702 h 0.80124 l 4.06269,5.84433 h 0.0191 v -5.84433 h 0.62198 v 6.67388 h -0.80123 l -4.06285,-5.84434 h -0.0191 v 5.84434 h -0.62216 z m 14.18741,0 h 0.62223 v 6.10826 h 3.11068 v 0.56562 h -3.73291 z m 6.66517,0 h 0.62219 v 6.67388 h -0.62219 z m 4.33684,0 h 0.93312 l 2.4322,5.59935 2.43199,-5.59935 h 0.88611 v 6.67388 h -0.62218 v -5.88211 h -0.0191 l -2.54506,5.88211 h -0.27339 l -2.58287,-5.88211 h -0.0191 v 5.88211 h -0.62217 z m 10.39801,0 h 0.62216 v 6.67388 h -0.62216 z m 5.88268,0.56559 h -2.28113 v -0.56559 h 5.18461 v 0.56559 h -2.28132 v 6.10829 h -0.62216 z m 5.88284,-0.56559 h 4.0816 v 0.56559 h -3.45944 v 2.37545 h 3.24262 v 0.56562 h -3.24262 v 2.6016 h 3.61033 v 0.56562 h -4.23249 z m 7.45697,0 h 2.06428 c 0.57812,0 1.06841,0.0706 1.47053,0.2121 0.40223,0.14125 0.73687,0.32188 1.00402,0.542 0.26695,0.21998 0.47763,0.46341 0.63144,0.73044 0.15413,0.26714 0.26722,0.52317 0.33951,0.76837 0.0723,0.24493 0.11763,0.46651 0.13648,0.66439 0.0191,0.19803 0.0284,0.33786 0.0284,0.4196 0,0.0816 -0.01,0.22141 -0.0284,0.41941 -0.0191,0.19803 -0.0642,0.41949 -0.13648,0.66459 -0.0723,0.245 -0.18538,0.50103 -0.33951,0.76818 -0.15388,0.26722 -0.36449,0.51069 -0.63144,0.73062 -0.26715,0.21998 -0.60179,0.40066 -1.00402,0.542 -0.40212,0.14148 -0.89241,0.21211 -1.47053,0.21211 h -2.06428 z m 0.62216,6.10826 h 1.28198 c 0.43981,0 0.85156,-0.0549 1.23488,-0.16487 0.38324,-0.10998 0.71628,-0.27804 0.99915,-0.50423 0.28275,-0.22618 0.5059,-0.51379 0.66926,-0.86249 0.16343,-0.34879 0.24513,-0.76195 0.24513,-1.23955 0,-0.47761 -0.0818,-0.89096 -0.24513,-1.23968 -0.16343,-0.34876 -0.38651,-0.63619 -0.66926,-0.86249 -0.28287,-0.22618 -0.61591,-0.39441 -0.99915,-0.50425 -0.38332,-0.10999 -0.79507,-0.16511 -1.23488,-0.16511 h -1.28198 z" style="fill:#868688;fill-rule:evenodd;stroke-width:0.63126165" id="path10" inkscape:connector-curvature="0" inkscape:export-xdpi="96" inkscape:export-ydpi="96" />
+                        </g>
+                    </svg>
+
+                    <div class="visible-xs toggle-sidebar-left" data-toggle-class="sidebar-left-opened" data-target="html" data-fire-event="sidebar-left-opened">
+                        <i class="fa fa-bars" aria-label="Toggle sidebar"></i>
+                    </div>
+
+                </div>*@
+            <div class="logo-container" style="float:left">
+                <a class="logo">
+                    @if (@Session["CustomerLogo"] == null)
+                    {
+                        <img src="~/Images/LogoTEAL.png" class="customerlogo" alt="Customer Logo" style="float:left;margin-top:8px;height:25px;margin-bottom:0px;" /> }
+                    else
+                    {
+                        <img src="~/Images/@Session["CustomerLogo"]" class="customerlogo" alt="Customer Logo" style="float:left;margin-top:0px;height:45px;margin-bottom:0px;" />}
+                </a>
+                <a>
+                    <div class="visible-xs toggle-sidebar-left" data-toggle-class="sidebar-left-opened" data-target="html" data-fire-event="sidebar-left-opened">
+                        <i class="fa fa-bars" aria-label="Toggle sidebar"></i>
+                    </div>
+                </a>
+            </div>
+
+            @*<div class="logo-container">
+
+                    <a class="logo" style="float:left;align-content: center;text-align:center;margin-top:0%">
+                        @if (Session["CustomerLogo"] != null)
+                        {
+                            <img src="~/Images/@Session["CustomerLogo"]" height="50" width="70" class="customerlogo" alt="Customer Logo" style="float:right;top:0%;width:auto;" />
+                        }
+                    </a>
+                    <a>
+                        <div class="visible-xs toggle-sidebar-left" data-toggle-class="sidebar-left-opened" data-target="html" data-fire-event="sidebar-left-opened">
+                            <i class="fa fa-bars" aria-label="Toggle sidebar"></i>
+                        </div>
+                    </a>
+                </div>*@
+
+            <!-- start: search & user box -->
+            <div class="header-right" style="float: right; align-content: center; text-align: center; margin-right:10px;">
+
+                <div id="userbox" class="userbox">
+
+                    <a href="#" data-toggle="dropdown">
+                        <div id="tooltip">
+                            <figure class="profile-picture">
+
+                                <img src="~/Images/avi.png" alt="Image" class="img-circle" />
+                            </figure>
+                            <div class="profile-info" data-lock-name="John Doe" data-lock-email="">
+                                <span class="name" style="font-weight: bold;">@Session["UserName"]</span>
+                                <span class="role">@*@Session["Role"]*@</span>
+                                <span class="tooltiptext" style="text-align:center">
+                                    <span class="role" id="Name" style="color: white"> <span>&nbsp</span></span>
+                                    <span class="role" id="UserRole" style="color: white"></span>
+                                    <span class="role" id="lastlogin" style="color:white"></span>
+                                    <span class="role" id="currentlogin" style="color: white"></span>
+                                </span>
+                            </div>
+                            <i class="fa custom-caret"></i>
+                        </div>
+                    </a>
+
+                    <div class="dropdown-menu" style="margin-top:10px;min-width:140px;">
+                        <ul class="list-unstyled">
+                            @if (ViewContext.Controller.IsSuperAdmin())
+                            {
+                                <li style="cursor: pointer;" onclick="Select_Customer();">
+                                    <a role="menuitem"><i class="fa fa-user"></i> Select Customer </a>
+                                </li>
+                            }
+                            <li>
+                                <a role="menuitem" tabindex="-1" href="@Url.Action("ChangePassword", "Main")"><i class="fa fa-key fa-2xs"></i> Change Password </a>
+                            </li>
+                            <li>
+                                <a role="menuitem" tabindex="-1" onclick="logoutConfirmation()" class="logout-button" style="cursor:pointer;"><i class="fa fa-power-off"></i> Logout</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="" style="float: right; align-content: center; text-align: center; padding-top: 7px;">
+                <div id="" class="userbox" style="align-content:center">
+                    @if (ViewContext.Controller.IsSuperAdmin())
+                    {
+                        <a id="licustomer" style="display:none;">
+                            <select id="CompanyCode" class="form-control" name="CompanyCode" onchange="Choose_Plant()">
+                                <option value="0">Select Customer</option>
+                            </select>
+                        </a>
+                    }
+                    <a id="liplant" style="display: none;">
+                        <select id="PlantCode" class="form-control" name="PlantCode" onchange="select_plant()">
+                        </select>
+                    </a>
+                    <a id="liline" style="display: none;">
+                        <select id="LineCode" class="form-control" name="LineCode" onchange="select_line()"></select>
+                    </a>
+                    @*<a href="https://teali4metricstestdashboard.azurewebsites.net" id="tvicon" style="display:none" target="_blank"><i class="fa fa-desktop" style="font-size: 1.8em; margin-top: 6px;"></i></a>*@
+                </div>
+            </div>
+            <!-- end: search & user box -->
+        </header>
+        <!-- end: header -->
+        <div class="inner-wrapper ">
+            <!-- start: sidebar -->
+            <aside id="sidebar-left" class="sidebar-left">
+                <div class="sidebar-header" style="color:white;">
+                    <div class="sidebar-title">
+                        @*<a href="@Url.Action("NewDash","Main")" style="text-decoration:none;">*@
+                        <span style="color:white">Home</span>
+                        @*</a>*@
+                    </div>
+
+                    <div class="sidebar-toggle hidden-xs" data-toggle-class="sidebar-left-collapsed" data-target="html" data-fire-event="sidebar-left-toggle">
+                        <i class="fa fa-bars" aria-label="Toggle sidebar"></i>
+                    </div>
+                </div>
+
+                <div class="nano has-scrollbar">
+                    <div class="nano-content">
+                        <nav id="menu" class="nav-main" role="navigation">
+                            <ul class="nav nav-main hide-nav">
+                                <li>
+                                    <a href="@Url.Action("MainDashboard", "MainDashboard")">
+                                        <i class="fa fa-home" aria-hidden="true"></i>
+                                        <span>Main Dashboard</span>
+                                    </a>
+                                </li>
+
+                                @*<li>
+                                        <a href="@Url.Action("cbm", "#")">
+                                            <i class="fa fa-building" aria-hidden="true"></i>
+                                            <span>CBM</span>
+                                        </a>
+                                    </li>*@
+                                <li id="hidecbm" style="display:none">
+                                    <a href="#" id="redirect-link">
+                                        <i class="fa fa-building" aria-hidden="true"></i>
+                                        <span>CBM</span>
+                                    </a>
+                                </li>
+
+                                @if (ViewContext.Controller.HasPermission("Production_Summary-View") ||
+                                ViewContext.Controller.HasPermission("Oee_Summary-View"))
+                                {
+                                    <li class="nav-parent @(ViewContext.RouteData.Values["Action"].ToString() == "Shiftwise_production_summary" ? "nav-expanded " : "")
+                                        @(ViewContext.RouteData.Values["Action"].ToString() == "Shiftwise_OEE_summary" ? "nav-expanded" : "")">
+                                        <a>
+                                            <i class="fa fa-desktop" aria-hidden="true"></i>
+                                            <span>Production</span>
+                                        </a>
+                                        <ul class="nav nav-children ">
+
+                                            <li class="nav-parent @(ViewContext.RouteData.Values["Action"].ToString() == "Shiftwise_production_summary" ? "nav-expanded " : "")
+                                                @(ViewContext.RouteData.Values["Action"].ToString() == "Shiftwise_OEE_summary" ? "nav-expanded " : "")">
+                                                <a>
+                                                    <span style="color:lightseagreen">Historic Data and Analytics</span>
+                                                </a>
+
+                                                <ul class="nav nav-children">
+                                                    @if (ViewContext.Controller.HasPermission("Production_Summary-View"))
+                                                    {
+                                                        <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Shiftwise_production_summary" ? "active_n " : "")">
+                                                            <a href="@Url.Action("Shiftwise_production_summary", "DataView")">
+                                                                <span>Shiftwise Production Summary</span>
+                                                            </a>
+                                                        </li>
+                                                    }
+
+                                                    @*Modified for OEE Standardisation 26-04-2025*@
+                                                    @if (ViewContext.Controller.HasPermission("Oee_Summary-View"))
+                                                    {
+                                                        <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Shiftwise_OEE_summary" ? "active_n " : "")">
+                                                            <a href="@Url.Action("Shiftwise_OEE_summary", "DataView")">
+                                                                <span>Shiftwise OEE summary</span>
+                                                            </a>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                }
+
+                                @if (ViewContext.Controller.HasPermission("Rejection_Pareto-View")
+                                    || ViewContext.Controller.HasPermission("heat_Map-View"))
+                                {
+                                    <li class="nav-parent @(ViewContext.RouteData.Values["Action"].ToString() == "QualityHistoric_Heatmap" ? "nav-expanded" : "")
+                                    @(ViewContext.RouteData.Values["Action"].ToString() == "QualityHistoricDashboard" ? "nav-expanded " : "")">
+                                        <a>
+                                            <i class="fa fa-check-square" aria-hidden="true"></i>
+                                            <span>Quality</span>
+                                        </a>
+                                        <ul class="nav nav-children ">
+                                            <li class="nav-parent @(ViewContext.RouteData.Values["Action"].ToString() == "QualityHistoricDashboard" ? "nav-expanded " : "")
+                                            @(ViewContext.RouteData.Values["Action"].ToString() == "QualityHistoric_Heatmap" ? "nav-expanded " : "")">
+                                                <a>
+
+                                                    <span style="color:lightseagreen">Historic Data and Analytics</span>
+                                                </a>
+                                                <ul class="nav nav-children">
+                                                    @if (ViewContext.Controller.HasPermission("Rejection_Pareto-View"))
+                                                    {
+                                                        <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "QualityHistoricDashboard" ? "active_n" : "")">
+                                                            <a href="@Url.Action("QualityHistoricDashboard", "Quality")">
+                                                                <span>Rejection Reason Pareto</span>
+                                                            </a>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                }
+
+                                @if (ViewContext.Controller.HasPermission("Toollife_Historic-View") ||
+                                    ViewContext.Controller.HasPermission("ToolLifeLive-View") ||
+                                    ViewContext.Controller.HasPermission("Toollife_Preventive-View") ||
+                                    ViewContext.Controller.HasPermission("ParetoAnalysisHistoric-View") ||
+                                    ViewContext.Controller.HasPermission("MTTR-View") ||
+                                    ViewContext.Controller.HasPermission("MTBF-View"))
+                                {
+                                    <li class="nav-parent @(ViewContext.RouteData.Values["Action"].ToString() == "ToolLifeLiveDashboard" ? "nav-expanded " : "")
+                                        @(ViewContext.RouteData.Values["Action"].ToString() == "NewMaintanenceDash" ? "nav-expanded " : "")
+                                        @(ViewContext.RouteData.Values["Action"].ToString() == "Paretoanalysis" ? "nav-expanded " : "")
+                                        @(ViewContext.RouteData.Values["Action"].ToString() == "MTTR" ? "nav-expanded " : "")
+                                        @(ViewContext.RouteData.Values["Action"].ToString() == "MTBF" ? "nav-expanded " : "")
+                                        @(ViewContext.RouteData.Values["Action"].ToString() == "ToolLifeHistoricDashboard" ? "nav-expanded " : "")">
+                                        <a>
+                                            <i class="fa fa-cogs" aria-hidden="true"></i>
+                                            <span>Maintenance</span>
+                                        </a>
+
+                                        <ul class="nav nav-children ">
+                                            <li class="nav-parent @(ViewContext.RouteData.Values["Action"].ToString() == "ToolLifeLiveDashboard" ? "nav-expanded " : "") )">
+                                                <a>
+                                                    <span style="color:lightseagreen">Critical Element Life</span>
+                                                </a>
+                                                <ul class="nav nav-children">
+                                                    @if (ViewContext.Controller.HasPermission("ToolLifeLive-View"))
+                                                    {
+                                                        <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "ToolLifeLiveDashboard" ? "active_n" : "")">
+                                                            <a href="@Url.Action("ToolLifeLiveDashboard", "ToolLife")">
+                                                                <span>Critical Element Monitoring</span>
+                                                            </a>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                        <ul class="nav nav-children ">
+                                            @if (ViewContext.Controller.HasPermission("Toollife_Historic-View") ||
+                                        ViewContext.Controller.HasPermission("Toollife_Preventive-View") ||
+                                        ViewContext.Controller.HasPermission("ParetoAnalysisHistoric-View") ||
+                                        ViewContext.Controller.HasPermission("MTTR-View") ||
+                                        ViewContext.Controller.HasPermission("MTBF-View"))
+                                            {
+                                                <li class="nav-parent @(ViewContext.RouteData.Values["Action"].ToString() == "ToolLifeHistoricDashboard" ? "nav-expanded " : "")
+                                            @(ViewContext.RouteData.Values["Action"].ToString() == "NewMaintanenceDash" ? "nav-expanded " : "")
+                                            @(ViewContext.RouteData.Values["Action"].ToString() == "Paretoanalysis" ? "nav-expanded " : "")
+                                            @(ViewContext.RouteData.Values["Action"].ToString() == "MTTR" ? "nav-expanded " : "")
+                                            @(ViewContext.RouteData.Values["Action"].ToString() == "MTBF" ? "nav-expanded " : "")">
+                                                    <a>
+                                                        <span style="color:lightseagreen">Historic Data and Analytics</span>
+                                                    </a>
+                                                    <ul class="nav nav-children">
+                                                        <li class="nav nav-parent @(ViewContext.RouteData.Values["Action"].ToString() == "ToolLifeHistoricDashboard" ? "nav-expanded " : "")
+                                                    @(ViewContext.RouteData.Values["Action"].ToString() == "NewMaintanenceDash" ? "nav-expanded " : "")">
+                                                            <a>
+                                                                <span>Tool Life Monitoring</span>
+                                                            </a>
+                                                            <ul class="nav nav-children" style="">
+                                                                @if (ViewContext.Controller.HasPermission("Toollife_Historic-View"))
+                                                                {
+                                                                    <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "ToolLifeHistoricDashboard" ? "active_n" : "")">
+                                                                        <a href="@Url.Action("ToolLifeHistoricDashboard", "ToolLife")">
+                                                                            <span>Historic View</span>
+                                                                        </a>
+                                                                    </li>
+                                                                }
+                                                                @if (ViewContext.Controller.HasPermission("Toollife_Preventive-View"))
+                                                                {
+                                                                    <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "NewMaintanenceDash" ? "active_n" : "")">
+                                                                        <a href="@Url.Action("NewMaintanenceDash", "ToolLife")">
+                                                                            <span>Preventive Maintenance</span>
+                                                                        </a>
+                                                                    </li>
+                                                                }
+                                                            </ul>
+                                                        </li>
+
+                                                        <li class="nav nav-parent @(ViewContext.RouteData.Values["Action"].ToString() == "Paretoanalysis" ? "nav-expanded " : "")
+                                                    @(ViewContext.RouteData.Values["Action"].ToString() == "MTTR" ? "nav-expanded " : "")
+                                                    @(ViewContext.RouteData.Values["Action"].ToString() == "MTBF" ? "nav-expanded " : "")">
+                                                            <a>
+                                                                <span>Alarm Analysis</span>
+                                                            </a>
+
+                                                            <ul class="nav nav-children" style="">
+                                                                @if (ViewContext.Controller.HasPermission("ParetoAnalysisHistoric-View"))
+                                                                {
+                                                                    <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Paretoanalysis" ? "active_n" : "")">
+                                                                        <a href="@Url.Action("Paretoanalysis", "Paretoanalysis")">
+                                                                            <span>Downtime Reason Pareto</span>
+                                                                        </a>
+                                                                    </li>
+                                                                }
+                                                                @if (ViewContext.Controller.HasPermission("MTTR-View"))
+                                                                {
+                                                                    <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "MTTR" ? "active_n" : "")">
+                                                                        <a href="@Url.Action("MTTR", "Paretoanalysis")">
+                                                                            <span>MTTR</span>
+                                                                        </a>
+                                                                    </li>
+                                                                }
+                                                                @if (ViewContext.Controller.HasPermission("MTBF-View"))
+                                                                {
+                                                                    <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "MTBF" ? "active_n" : "")">
+                                                                        <a href="@Url.Action("MTBF", "Paretoanalysis")">
+                                                                            <span>MTBF</span>
+                                                                        </a>
+                                                                    </li>
+                                                                }
+
+                                                            </ul>
+                                                        </li>
+                                                    </ul>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </li>
+                                }
+
+
+
+
+                                <!--alarm---------------------------------------->
+
+                                @if (ViewContext.Controller.HasPermission("AlarmSetting-View") ||
+                                    ViewContext.Controller.HasPermission("Alarmlive-View") ||
+                                    ViewContext.Controller.HasPermission("AlarmAnalysis-View"))
+                                {
+                                    <li class="nav-parent @(ViewContext.RouteData.Values["Action"].ToString() == "Alarm_data" ? "nav-expanded " : "")
+                                        @(ViewContext.RouteData.Values["Action"].ToString() == "Live_alarm" ? "nav-expanded " : "")
+                                        @(ViewContext.RouteData.Values["Action"].ToString() == "Historic_alarm" ? "nav-expanded " : "")">
+                                        <a>
+                                            <i class="fa fa-clock-o" aria-hidden="true"></i>
+                                            <span>Alarm Screen </span>
+                                        </a>
+                                        @*Standardisation*@ 
+
+                                        @*@if (ViewContext.Controller.HasPermission("AlarmSetting-View"))
+                                        {
+                                            <ul class="nav nav-children ">
+                                                <li class="nav-parent @(ViewContext.RouteData.Values["Action"].ToString() == "Alarm_data" ? "nav-expanded " : "") ">
+                                                    <a>
+                                                        <span style="color:lightseagreen">Settings</span>
+                                                    </a>
+
+                                                    <ul class="nav nav-children">
+                                                        <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Alarm_data" ? "active_n" : "")">
+                                                            <a href="@Url.Action("Alarm_data", "UserSettings")">
+                                                                <span>Alarms Settings</span>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </li>
+                                            </ul>
+                                        }*@
+                                      
+                                        @if (ViewContext.Controller.HasPermission("AlarmAnalysis-View"))
+                                        {
+                                            <ul class="nav nav-children ">
+                                                <li class="nav-parent @(ViewContext.RouteData.Values["Action"].ToString() == "Historic_alarm" ? "nav-expanded " : "") ">
+                                                    <a>
+                                                        <span style="color:lightseagreen">Alarm Historic</span>
+                                                    </a>
+                                                    <ul class="nav nav-children">
+                                                        <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Historic_alarm" ? "active_n" : "")">
+                                                            <a href="@Url.Action("Historic_alarm", "Live_Alarm")">
+                                                                <span>Alarm Historic</span>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </li>
+                                            </ul>
+                                        }
+                                    </li>
+                                }
+                                <!--alarm---------------------------------------->
+
+
+                                @if (ViewContext.Controller.HasPermission("Loss_Historic-View") ||
+                                    ViewContext.Controller.HasPermission("LossesSetting-View") ||
+                                    ViewContext.Controller.HasPermission("Loss_type-View") ||
+                                    ViewContext.Controller.HasPermission("Loss_category-View"))
+                                {
+                                    <li class="nav-parent @(ViewContext.RouteData.Values["Action"].ToString() == "Losses_data" ? "nav-expanded " : "")
+                                    @(ViewContext.RouteData.Values["Controller"].ToString() == "Losstype_data" ? "nav-expanded " : "")
+                                    @(ViewContext.RouteData.Values["Controller"].ToString() == "Losscategory_data" ? "nav-expanded " : "")">
+                                        <a>
+                                            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                                            <span>Losses </span>
+                                        </a>
+
+                                        @*Standardisation*@ 
+
+                                        @*@if (ViewContext.Controller.HasPermission("LossesSetting-View") ||
+                                        ViewContext.Controller.HasPermission("Loss_type-View") ||
+                                        ViewContext.Controller.HasPermission("Loss_category-View"))
+                                        {
+                                            <ul class="nav nav-children ">
+                                                <li class="nav-parent @(ViewContext.RouteData.Values["Action"].ToString() == "Losses_data" ? "nav-expanded " : "")
+                                                @(ViewContext.RouteData.Values["Action"].ToString() == "Losstype_data" ? "nav-expanded " : "")
+                                                @(ViewContext.RouteData.Values["Action"].ToString() == "Losscategory_data" ? "nav-expanded " : "")">
+                                                    <a>
+                                                        <span style="color:lightseagreen">Settings</span>
+                                                    </a>
+                                                    <ul class="nav nav-children">
+                                                        @if (ViewContext.Controller.HasPermission("LossesSetting-View"))
+                                                        {
+                                                            <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Losses_data" ? "active_n" : "")">
+                                                                <a href="@Url.Action("Losses_data", "UserSettings")">
+                                                                    <span>Loss Settings</span>
+                                                                </a>
+                                                            </li>
+                                                        }
+                                                        @if (ViewContext.Controller.HasPermission("Loss_type-View"))
+                                                        {
+                                                            <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Losstype_data" ? "active_n" : "")">
+                                                                <a href="@Url.Action("Losstype_data", "UserSettings")">
+                                                                    <span>Loss Type Settings</span>
+                                                                </a>
+                                                            </li>
+                                                        }
+                                                        @if (ViewContext.Controller.HasPermission("Loss_category-View"))
+                                                        {
+                                                            <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Losscategory_data" ? "active_n" : "")">
+                                                                <a href="@Url.Action("Losscategory_data", "UserSettings")">
+                                                                    <span>Loss Category Settings</span>
+                                                                </a>
+                                                            </li>
+                                                        }
+                                                    </ul>
+                                                </li>
+                                            </ul>
+                                        }*@
+
+                                        @if (ViewContext.Controller.HasPermission("Loss_Historic-View"))
+                                        {
+                                            <ul class="nav nav-children ">
+                                                <li class="nav-parent @(ViewContext.RouteData.Values["Action"].ToString() == "Loss_Historic" ? "nav-expanded " : "")">
+                                                    <a>
+                                                        <span style="color:lightseagreen">Historic </span>
+                                                    </a>
+
+                                                    <ul class="nav nav-children">
+                                                        <li class=" @(ViewContext.RouteData.Values["Action"].ToString() == "Loss_Historic" ? "active_n" : "") ">
+                                                            <a href="@Url.Action("Loss_Historic", "Losses")">
+                                                                <span> Losses - Historic</span>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </li>
+                                            </ul>
+                                        }
+                                    </li>
+                                }
+
+
+                                @if (ViewContext.Controller.HasPermission("CycleTimeSetting-View") ||
+                                    ViewContext.Controller.HasPermission("CycleTimeLive-View") ||
+                                    ViewContext.Controller.HasPermission("CycleTimeHistoric-View")
+                                    )
+                                {
+                                    <li class="nav-parent @(ViewContext.RouteData.Values["Action"].ToString() == "cycletime_settings" ? "nav-expanded " : "")
+                                    @(ViewContext.RouteData.Values["Action"].ToString() == "Cycletime_live" ? "nav-expanded " : "")
+                                    @(ViewContext.RouteData.Values["Action"].ToString() == "Cycletime_histogram" ? "nav-expanded " : "")">
+                                        <a>
+                                            <i class="fa fa-tachometer" aria-hidden="true"></i>
+                                            <span>Cycle Time </span>
+                                        </a>
+
+                                        @if (ViewContext.Controller.HasPermission("CycleTimeSetting-View"))
+                                        {
+                                            <ul class="nav-children">
+                                                <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "cycletime_settings" ? "active_n" : "")">
+                                                    <a href="@Url.Action("cycletime_settings", "UserSettings")">
+                                                        <span>Cycle Time Setting</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        }
+
+                                        @if (ViewContext.Controller.HasPermission("CycleTimeLive-View"))
+                                        {
+                                            <ul class="nav nav-children ">
+                                                <li class="nav-parent @(ViewContext.RouteData.Values["Action"].ToString() == "Cycletime_live" ? "nav-expanded " : "")">
+                                                    <a>
+                                                        <span style="color:lightseagreen">Live </span>
+                                                    </a>
+                                                    <ul class="nav nav-children">
+                                                        <li class=" @(ViewContext.RouteData.Values["Action"].ToString() == "Cycletime_live" ? "active_n" : "") ">
+                                                            <a href="@Url.Action("Cycletime_live", "Cycletime")">
+                                                                <span> Live</span>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </li>
+                                            </ul>
+                                        }
+
+                                        @if (ViewContext.Controller.HasPermission("CycleTimeHistoric-View"))
+                                        {
+                                            <ul class="nav nav-children ">
+                                                <li class="nav-parent @(ViewContext.RouteData.Values["Action"].ToString() == "Cycletime_histogram" ? "nav-expanded " : "")">
+                                                    <a>
+                                                        <span style="color:lightseagreen">Historic </span>
+                                                    </a>
+                                                    <ul class="nav nav-children">
+                                                        <li class=" @(ViewContext.RouteData.Values["Action"].ToString() == "Cycletime_histogram" ? "active_n" : "") ">
+                                                            <a href="@Url.Action("Cycletime_histogram", "Cycletime")">
+                                                                <span> Cycletime - Historic</span>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </li>
+                                            </ul>
+                                        }
+
+                                    </li>
+                                }
+
+
+                                <li class="nav nav-parent  @(ViewContext.RouteData.Values["Controller"].ToString() == "UserSettings" ? "nav-expanded " : "")">
+                                    <a>
+                                        <i class="fa fa-cog" aria-hidden="true"></i>
+                                        <span>Settings</span>
+                                    </a>
+
+                                    <ul class="nav nav-children">
+                                        @if (ViewContext.Controller.HasPermission("AreaSetting-View"))
+                                        {
+                                            <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Area_settings" ? "nav-active " : "")">
+                                                <a href="@Url.Action("Area_settings", "UserSettings")">
+                                                    @*<i class="fa fa-fax" aria-hidden="true"></i>*@
+                                                    <i class="fa fa-building-o" aria-hidden="true"></i>
+                                                    <span>Area Details</span>
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (ViewContext.Controller.HasPermission("AssetSetting-View"))
+                                        {
+                                            <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Assets_settings" ? "nav-active " : "")">
+                                                <a href="@Url.Action("Assets_settings", "UserSettings")">
+                                                    <i class="fa fa-ge" aria-hidden="true"></i>
+                                                    <span>Assets Details</span>
+                                                </a>
+                                            </li>
+                                        }
+
+                                        @if (ViewContext.Controller.HasPermission("CustomerDetails-View"))
+                                        {
+                                            <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Customer_setting" ? "nav-active " : "")">
+                                                <a href="@Url.Action("Customer_setting", "UserSettings")">
+                                                    <i class="fa fa-user" aria-hidden="true"></i>
+                                                    <span>Customer Details</span>
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (ViewContext.Controller.HasPermission("DepartmentSetting-View"))
+                                        {
+                                            <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Dept_settings" ? "nav-active " : "")">
+                                                <a href="@Url.Action("Dept_settings", "UserSettings")">
+                                                    <i class="fa fa-university" aria-hidden="true"></i>
+                                                    <span>Department Details</span>
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (ViewContext.Controller.HasPermission("LineRoleSetting-View"))
+                                        {
+                                            <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "EmployeeLinePermission" ? "nav-active " : "")">
+                                                <a href="@Url.Action("EmployeeLinePermission", "UserSettings")">
+                                                    <i class="fa fa-users" aria-hidden="true"></i>
+                                                    <span>Employee Line Role Settings</span>
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (ViewContext.Controller.HasPermission("EmployeeLinePermission-View"))
+                                        {
+                                            <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Line_settings" ? "nav-active " : "")">
+                                                <a href="@Url.Action("Line_settings", "UserSettings")">
+                                                    <i class="fa fa-arrows-h" aria-hidden="true"></i>
+                                                    <span>Employee-Line Permission</span>
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (ViewContext.Controller.HasPermission("GatewayDetails-View"))
+                                        {
+                                            <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Ewon_Details" ? "nav-active " : "")">
+                                                <a href="@Url.Action("Ewon_Details", "UserSettings")">
+                                                    <i class="fa fa-ge" aria-hidden="true"></i>
+                                                    <span>Gateway Details</span>
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (ViewContext.Controller.HasPermission("FunctionSetting-View"))
+                                        {
+                                            <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Function_details" ? "nav-active " : "")">
+                                                <a href="@Url.Action("Function_details", "UserSettings")">
+                                                    <i class="fa fa-fax" aria-hidden="true"></i>
+                                                    <span>Function Details</span>
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (ViewContext.Controller.HasPermission("HolidaySetting-View"))
+                                        {
+                                            <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "holiday_details" ? "nav-active " : "")">
+                                                <a href="@Url.Action("holiday_details", "UserSettings")">
+                                                    <i class="fa fa-calendar" aria-hidden="true"></i>
+                                                    <span>Holiday Settings</span>
+                                                </a>
+                                            </li>
+                                        }
+                                       
+                                        @if (ViewContext.Controller.HasPermission("PlantSetting-View"))
+                                        {
+                                            <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Plant_details" ? "nav-active " : "")">
+                                                <a href="@Url.Action("Plant_details", "UserSettings")">
+                                                    <i class="fa fa-building" aria-hidden="true"></i>
+                                                    <span>Plant Details</span>
+                                                </a>
+                                            </li>
+                                        }
+
+                                        @if (ViewContext.Controller.HasPermission("PortalURLDetails-View"))
+                                        {
+                                            <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "URL_settings" ? "nav-active " : "")">
+                                                <a href="@Url.Action("URL_settings", "UserSettings")">
+                                                    <i class="fa fa-external-link" aria-hidden="true"></i>
+                                                    <span>Portal URL Details</span>
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (ViewContext.Controller.HasPermission("ProductSetting-View"))
+                                        {
+                                            <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Product_details" ? "nav-active " : "")">
+                                                <a href="@Url.Action("Product_details", "UserSettings")">
+                                                    <i class="fa fa-bullseye" aria-hidden="true"></i>
+                                                    <span>Product Details</span>
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (ViewContext.Controller.HasPermission("ProductionPlan-View"))
+                                        {
+                                            <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Target_Production" ? "nav-active " : "")">
+                                                <a href="@Url.Action("Target_Production", "UserSettings")">
+                                                    <i class="fa fa-ge" aria-hidden="true"></i>
+                                                    <span>Production Plan</span>
+                                                </a>
+                                            </li>
+                                        }
+
+                                        @*Standardisation*@ 
+
+                                        @*@if (ViewContext.Controller.HasPermission("RejectionDataSetting-View"))
+                                        {
+                                            <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Rejection_data" ? "nav-active " : "")">
+                                                <a href="@Url.Action("Rejection_data", "UserSettings")">
+                                                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                                                    <span>Rejection Reasons</span>
+                                                </a>
+                                            </li>
+                                        }*@
+                                        @if (ViewContext.Controller.HasPermission("ReportMailSettings-View"))
+                                        {
+                                            <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Mail_settings" ? "nav-active " : "")">
+                                                <a href="@Url.Action("Mail_settings", "UserSettings")">
+                                                    <i class="fa fa-envelope" aria-hidden="true"></i>
+                                                    <span>Report Mail Settings</span>
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (ViewContext.Controller.HasPermission("PermissionSetting-View"))
+                                        {
+                                            <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Roles_settings" ? "nav-active " : "")">
+                                                <a href="@Url.Action("Roles_settings", "UserSettings")">
+                                                    <i class="fa fa-thumb-tack" aria-hidden="true"></i>
+                                                    <span>Role Settings</span>
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (ViewContext.Controller.HasPermission("ShiftSetting-View"))
+                                        {
+                                            <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Shift_settings" ? "nav-active " : "")">
+                                                <a href="@Url.Action("Shift_settings", "UserSettings")">
+                                                    <i class="glyphicon glyphicon-user"></i>
+
+                                                    <span>Shift Settings</span>
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (ViewContext.Controller.HasPermission("SkillSetting-View"))
+                                        {
+                                            <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Skill_settings" ? "nav-active " : "")">
+                                                <a href="@Url.Action("Skill_settings", "UserSettings")">
+                                                    <i class="fa fa-anchor" aria-hidden="true"></i>
+                                                    <span>Skill Data</span>
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (ViewContext.Controller.HasPermission("ToolListSetting-View"))
+                                        {
+                                            <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Tool_list" ? "nav-active " : "")">
+                                                <a href="@Url.Action("Tool_list", "UserSettings")">
+                                                    <i class="fa fa-gavel" aria-hidden="true"></i>
+                                                    <span>Tool List</span>
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (ViewContext.Controller.HasPermission("UserSetting-View"))
+                                        {
+                                            <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Users_settings" ? "nav-active " : "")">
+                                                <a href="@Url.Action("Users_settings", "UserSettings")">
+                                                    <i class="fa fa-user" aria-hidden="true"></i>
+                                                    <span>Users Settings</span>
+                                                </a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </li>
+
+                               
+
+                                <!----------- MIS Report ------>
+
+                                <li class="nav-parent @(ViewContext.RouteData.Values["Controller"].ToString() == "MisReport" ? "nav-expanded " : "")">
+                                    <a>
+                                        <i class="fa fa-bar-chart-o" aria-hidden="true"></i>
+                                        <span>MIS Report</span>
+                                    </a>
+
+                                    <ul class="nav nav-children">
+                                        <li class=" @(ViewContext.RouteData.Values["Action"].ToString() == "Misreportdetails" ? "nav-active " : "") ">
+                                            <a href="~/MisReport/Misreportdetails">
+
+                                                @*   @Url.Action("NewDash", "Main")*@
+
+                                                <span>MIS Report</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <!---------- MIS Report end--------->
+
+
+                                @if (ViewContext.Controller.HasPermission("Feedback-View"))
+                                {
+                                    <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Feedback" ? "active_n" : "")">
+                                        <a href="@Url.Action("Feedback", "Feedbac")">
+                                            <i class="fa fa-file-text" aria-hidden="true"></i>
+                                            <span>Feedback</span>
+                                        </a>
+                                    </li>
+                                }
+                                @if (ViewContext.Controller.HasPermission("UploadManualSetting-View"))
+                                {
+                                    <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "UploadManual" ? "active_n" : "")">
+                                        <a href="@Url.Action("UploadManual", "DataView")">
+                                            <i class="fa fa-upload"></i>
+                                            <span>Upload Manual</span>
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- end: sidebar -->
+
+            <section role="main" class="content-body" style="padding-top:1%;">
+                @RenderBody()
+            </section>
+        </div>
+
+    </section>
+    <div class="footer1">
+        <div class="page-header1">
+            <i class="fa fa-desktop myDIV" style="width: fit-content;"></i>
+            <div class="hide resolution-tooltip">Screen Resolution recommendation:1366*768.</div>
+            <button type="button" style="background-color:inherit;color:white;border-style:inherit;padding-bottom:5px;" class="btn btn-default">
+                <span class="updated_time_n" style="display:none;">
+                    Last update time:<span class="updated_time">N/A</span>
+                </span>
+            </button>
+            <button type="button" style="background-color:inherit;color:white;border-style:none ;" class="btn btn-default">
+                <span class="shift_n" style="display:none;">
+                    Shift:
+                    <span class="shift">N/A</span>
+                </span>
+            </button>
+
+            <button type="button" style="background-color:inherit;color:white;border-style:none;" class="btn btn-default">
+                <span class="Holiday">
+                </span>
+            </button>
+
+        </div>
+        <div class="logo-container">
+            <a class="logo" style="float: right; text-decoration: none;">
+                <span style="color:white">Powered By Titan Engineering &amp; Automation Limited. All rights reserved.</span>
+                <img src="../Images/LogoTEAL.png" style="height:25px;margin:8px;" alt="TEAL">
+            </a>
+        </div>
+    </div>
+
+    <!-- Vendor -->
+    <script src="~/assets1/vendor/jquery/jquery.js"></script>
+    <script src="~/assets1/vendor/jquery-browser-mobile/jquery.browser.mobile.js"></script>
+    <script src="~/assets1/vendor/bootstrap/js/bootstrap.js"></script>
+    <script src="~/assets1/vendor/nanoscroller/nanoscroller.js"></script>
+    <script src="~/assets1/vendor/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+    <script src="~/assets1/vendor/magnific-popup/magnific-popup.js"></script>
+    <script src="~/assets1/vendor/jquery-placeholder/jquery.placeholder.js"></script>
+    <script src="~/assets1/javascripts/paging.js"></script>
+    <!-- Specific Page Vendor -->
+    <script src="~/assets1/vendor/jquery-ui/js/jquery-ui-1.10.4.custom.js"></script>
+    <script src="~/assets1/vendor/jquery-ui-touch-punch/jquery.ui.touch-punch.js"></script>
+    <script src="~/assets1/vendor/jquery-appear/jquery.appear.js"></script>
+    <script src="~/assets1/vendor/bootstrap-multiselect/bootstrap-multiselect.js"></script>
+
+    <script src="~/assets1/vendor/jquery-sparkline/jquery.sparkline.js"></script>
+    <script src="~/assets1/vendor/raphael/raphael.js"></script>
+    <script src="~/assets1/vendor/morris/morris.js"></script>
+    <script src="~/assets1/vendor/gauge/gauge.js"></script>
+    <script src="~/assets1/vendor/snap-svg/snap.svg.js"></script>
+    <script src="~/assets1/vendor/liquid-meter/liquid.meter.js"></script>
+    <script src="~/assets1/vendor/jqvmap/jquery.vmap.js"></script>
+    <script src="~/assets1/vendor/jqvmap/data/jquery.vmap.sampledata.js"></script>
+    <script src="~/assets1/vendor/jqvmap/maps/jquery.vmap.world.js"></script>
+    <script src="~/assets1/vendor/jqvmap/maps/continents/jquery.vmap.africa.js"></script>
+    <script src="~/assets1/vendor/jqvmap/maps/continents/jquery.vmap.asia.js"></script>
+    <script src="~/assets1/vendor/jqvmap/maps/continents/jquery.vmap.australia.js"></script>
+    <script src="~/assets1/vendor/jqvmap/maps/continents/jquery.vmap.europe.js"></script>
+    <script src="~/assets1/vendor/jqvmap/maps/continents/jquery.vmap.north-america.js"></script>
+    <script src="~/assets1/vendor/jqvmap/maps/continents/jquery.vmap.south-america.js"></script>
+
+
+    <!-- Theme Base, Components and Settings -->
+    <script src="~/assets1/javascripts/theme.js"></script>
+
+    <!-- Theme Custom -->
+    <script src="~/assets1/javascripts/theme.custom.js"></script>
+
+    <!-- Theme Initialization Files -->
+    <script src="~/assets1/javascripts/theme.init.js"></script>
+
+
+    <!-- Examples -->
+    @*<script src="~/assets1/javascripts/dashboard/examples.dashboard.js"></script>*@
+    @* <script src="~/assets1/vendor/jquery-datatables/media/js/jquery.dataTables.js"></script>*@
+    @*<script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>*@
+    <script src="~/assets1/javascripts/jquery.datatables1.min.js"></script>
+    <script src="~/assets1/vendor/jquery-datatables/extras/TableTools/js/dataTables.tableTools.min.js"></script>
+    <script src="~/assets1/vendor/jquery-datatables-bs3/assets/js/datatables.js"></script>
+    <script src="~/assets1/javascripts/tables/examples.datatables.default.js"></script>
+    <script src="~/assets1/javascripts/tables/examples.datatables.row.with.details.js"></script>
+    <script src="~/assets1/javascripts/tables/examples.datatables.tabletools.js"></script>
+    <script src="~/assets1/vendor/jquery-datatables/pdfmake.min.js"></script>
+
+    <script src="~/assets1/vendor/jquery-datatables/dataTables.buttons.min.js"></script>
+    <script src="~/assets1/vendor/jquery-datatables/buttons.flash.min.js"></script>
+    <script src="~/assets1/vendor/jquery-datatables/jszip.min.js"></script>
+    <script src="~/assets1/vendor/jquery-datatables/pdfmake.min.js"></script>
+    <script src="~/assets1/vendor/jquery-datatables/vfs_fonts.js"></script>
+    <script src="~/assets1/vendor/jquery-datatables/buttons.html5.min.js"></script>
+    <script src="~/assets1/vendor/jquery-datatables/buttons.print.min.js"></script>
+    <link rel="stylesheet" href="~/assets1/buttons.dataTables.min.css" />
+
+    @*<script src="~/assets1/vendor/owl-carousel/owl.carousel.js"></script>*@
+
+
+    @*<script src="https://cdn.datatables.net/buttons/1.6.4/js/dataTables.buttons.min.js"></script>*@
+    @*<script src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.flash.min.js"></script>*@
+    @*<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>*@
+    @*<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>*@
+    @*<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>*@
+    @*<script src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.html5.min.js"></script>*@
+    @*<script src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.print.min.js"></script>*@
+
+    @*<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.4/css/buttons.dataTables.min.css" />*@
+
+    @RenderSection("scripts", required: false)
+
+    <script>
+        $(document).ready(function () {
+            var cbmurl = '@Session["CBMURL"]';
+            var parts = cbmurl.split(',');
+            var status = parts[0];
+            var url = parts[1];
+            if (status == 1) {
+                $('#hidecbm').css('display', 'block');
+            }
+            $('#redirect-link').on('click', function (event) {
+                //alert(cbmurl);
+                if (status == 0) {
+                    //window.open(cbmurl, '_blank');
+                }
+                if (status == 1) {
+                    //$('#hidecbm').css('display', 'block');
+                    window.open(url, '_blank');
+                }
+                if (status == 2) {
+                    window.location.href = url;
+                }
+
+                //if (cbmurl != '#') {
+
+                //    //window.open(cbmurl, '_blank');
+                //    window.location.href = cbmurl;
+                //}
+            });
+
+        });
+    </script>
+    <script>
+    $(function () {
+
+            var UserID = '@Session["UserID"]';
+
+            var Role = '@Session["Role"]';
+
+
+           $('#UserRole').text('User Role:' + Role);
+
+            var username = '@Session["UserName"]';
+
+            $('#Name').text('User Name:' + username);
+
+            var ll = '@Session["lastlogin"]';
+
+            $('#lastlogin').text('Last Login:' + ll);
+
+            var currentDatetime = '@Session["Currentlogin"]';
+            $('#currentlogin').text('Current Login:' + currentDatetime);
+
+
+            //alert(ll);
+            @*$('#lastlogin').text('Last Login:' + ll+ '(IST)');
+
+            var c1 = '@Session["Currentlogin"]';
+            $('#currentlogin').text('Current Login:' + c1 + '(IST)');*@
+
+            if (UserID == '' || UserID == null) {
+                  window.location = '@Url.Action("Login", "Main")';
+            }
+            $("body").on('click keypress', function () {
+                if (UserID == '' || UserID == null) {
+                    window.location = '@Url.Action("Login", "Main")';
+                }
+               // ResetThisSession();
+            });
+
+            $('.updated_time').text("N/A");
+                    //$('.shift').text("N/A");
+
+        });
+      var url1 = '@Url.Action("Login", "Main")';
+      var timeInSecondsAfterSessionOut = 3600; // change this to change session time out (in seconds).
+            var secondTick = 0;
+
+            function ResetThisSession() {
+                secondTick = 0;
+            }
+
+            //function StartThisSessionTimer() {
+            //secondTick++;
+            //var timeLeft = ((timeInSecondsAfterSessionOut - secondTick) / 60).toFixed(0); // in minutes
+            //timeLeft = timeInSecondsAfterSessionOut - secondTick; // override, we have 30 secs only
+
+            //    $("#spanTimeLeft").html(timeLeft);
+
+            //    if (secondTick > timeInSecondsAfterSessionOut)
+            //    {
+            //        clearTimeout(tick);
+            //        window.location = url1;
+            //        return;
+            //    }
+            //    tick = setTimeout("StartThisSessionTimer()", 1000);
+            //}
+        //StartThisSessionTimer();
+    </script>
+    <script type="text/javascript">
+
+        function Select_Customer() {
+
+            var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+            var session_customer = '@Session["CompanyCode"]';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+            $('#licustomer').show();
+
+             var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+            //$('#liplant').hide();
+            var myDatas = {
+                "Flag": "Get_Customer",
+                "CompanyCode" : ""
+            };
+            $.ajax({
+                type: "POST",
+                url:'../Main/GetMasterdata',
+
+                data: myDatas,
+
+                dataType: "json",
+                success: function (response1) {
+
+                    var s = '<option value="">Select Customer</option>';
+                    for (var i = 0; i < response1.data.length; i++) {
+                        if (response1.data[i].Code == session_customer) {
+                            s += '<option value="' + response1.data[i].Code + '" selected=selected>' + response1.data[i].Name + '</option>';
+                        }
+                        else {
+                            s += '<option value="' + response1.data[i].Code + '">' + response1.data[i].Name + '</option>';
+                        }
+                    }
+                    $("#CompanyCode").html(s);
+
+
+                },
+                error: function (response1) {
+
+                    swal({
+                     icon: "warning",
+                     title: "Session Timeout",
+                     button: true,
+                     closeModal: false
+                 })
+                 window.location = '@Url.Action("Login", "Main")';
+                }
+            })
+
+        }
+
+        function Choose_Plant() {
+
+            var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+            var Company = $('#CompanyCode').val();
+
+            var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+            $('#liplant').hide();
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Set_CompanyCode", "UserSettings")',
+                data: '{id: ' + JSON.stringify(Company) + '}',
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+
+                    @*if (window.location.pathname == '/FactoryKPI/FactoryKPIIndex') {
+                        window.location.reload();
+                    }
+                    else {
+                        window.location = '@Url.Action("FactoryKPIIndex", "FactoryKPI")';
+                    }*@
+
+                    window.location = '@Url.Action("MainDashboard", "MainDashboard")';
+
+                },
+                error: function (response) {
+
+                }
+            }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+
+
+
+            // $('#liplant').show();
+
+        }
+
+
+        function select_plant() {
+
+            var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+            var PlantCode = $('#PlantCode').val();
+
+            var session_line = '@Session["LineCode"]';
+
+            var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Set_PlantCode", "UserSettings")',
+                data: '{id: ' + JSON.stringify(PlantCode) + '}',
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    @*if (window.location.pathname == '/FactoryKPI/FactoryKPIIndex') {
+                        window.location.reload();
+                    }
+                    else {
+                        window.location = '@Url.Action("FactoryKPIIndex", "FactoryKPI")';
+                    }*@
+                    window.location = '@Url.Action("MainDashboard", "MainDashboard")';
+                },
+                error: function (response) {
+                }
+            }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+
+            $('#liplant').show();
+            $('#liline').hide();
+        }
+        //$('#LineCode').change(function () {
+        //    alert('linecode')
+
+        //});
+        function select_line() {
+
+
+            var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+            var LineCode = $('#LineCode').val();
+
+
+             var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Set_LineCode", "UserSettings")',
+                data: '{id: ' + JSON.stringify(LineCode) + '}',
+                 headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response)
+                {
+                    window.location.reload();
+                },
+                error: function (response) {
+                }
+            }).error(function (response) {
+                 swal({
+                     icon: "warning",
+                     title: "Session Timeout",
+                     button: true,
+                     closeModal: false
+                 })
+                 window.location = R_url;
+            });
+
+            $('#liline').show();
+
+
+        }
+
+
+    function bind_linedetails(plant) {
+        if (window.location.pathname == '/iotkpi/FactoryKPI/FactoryKPIIndex') {
+                $('#liline').hide();
+            }
+            else {
+                $('#liline').show();
+            }
+
+            var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+            var Role = '@Session["Role"]';
+            var Company = '@Session["CompanyCode"]';
+            //var PlantCode = '@Session["PlantCode"]';
+
+            var PlantCode = plant;
+
+
+            var IsSuperAdmin = @Session["IsSuperAdmin"];
+            var IsAdmin = @Session["IsAdmin"];
+            var LineCode = '@Session["LineCode"]';
+            var username = '@Session["UserName"]';
+
+            var myData1 = {};
+            if (username == 'admin') {
+                myData1 = {
+                    "Flag": "Get_Line_Permission_Admin",
+                    "CompanyCode": Company,
+                    "PlantCode": PlantCode,
+
+                };
+
+
+            }
+            else {
+                myData1 = {
+                    "Flag": "Get_Line_Permission",
+                    "CompanyCode": Company,
+                    "PlantCode": PlantCode,
+                    "LineCode": '@Session["UserName"]'
+                };
+            }
+
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/Values/GetSettingdatas_line',
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                data: myData1,
+
+                dataType: "json",
+                success: function (response) {
+                    console.log(response.data.Table);
+                    let a = new Array();
+
+                    var dict = new Object();
+                    for (var i = 0; i < response.data.Table.length; i++) {
+                        a.push(response.data.Table[i].AreaCode)
+                        dict[response.data.Table[i].AreaCode] = response.data.Table[i].area_name
+                    }
+                    let unique_areacode = a.filter((item, i, ar) => ar.indexOf(item) === i);
+
+
+                    var demo = document.getElementById("LineCode");
+
+
+                    var optsel = document.createElement('option')
+                    //Commented for Standardisation 05-05 - 2025
+                    optsel.setAttribute('label', "Select Line")
+                    optsel.setAttribute('value', '')
+                    demo.appendChild(optsel)
+                    for (var i = 0; i < unique_areacode.length; i++) {
+                        var optGroup = document.createElement('optgroup')
+                        optGroup.setAttribute('label', dict[response.data.Table[i].AreaCode])
+                        demo.appendChild(optGroup)
+                        for (var i1 = 0; i1 < response.data.Table.length; i1++) {
+                            if (response.data.Table[i1].AreaCode == unique_areacode[i]) {
+                                var temp = "\u00A0\u00A0" + response.data.Table[i1].Dept_Name
+
+                                if ($('#LineCode optgroup[label="' + temp + '"]').html() == undefined) {
+
+                                    var optgroup1 = document.createElement('optgroup')
+
+                                    optgroup1.setAttribute('label', "\u00A0\u00A0" + response.data.Table[i1].Dept_Name)
+                                    demo.appendChild(optgroup1)
+                                }
+
+
+
+
+                                for (var i2 = 0; i2 < response.data.Table.length; i2++) {
+                                    if (response.data.Table[i2].Dept_Code == response.data.Table[i1].Dept_Code) {
+
+
+                                        var temp1 = "\u00A0\u00A0\u00A0" + response.data.Table[i1].Line_Name
+                                        if ($('#LineCode option[label="' + temp1 + '"]').html() == undefined) {
+
+                                            var opt = document.createElement('option')
+                                            opt.setAttribute('label', "\u00A0\u00A0\u00A0" + response.data.Table[i1].Line_Name)
+                                            opt.setAttribute('value', response.data.Table[i1].Line_Code)
+                                        }
+
+
+                                        //opt.setAttribute('onchange',select_line())
+
+                                        if (response.data.Table[i1].Line_Code == LineCode) {
+                                            opt ? opt.setAttribute('selected', true) : null;
+                                        }
+                                        demo.appendChild(opt)
+
+                                    }
+
+                                }
+
+
+                            }
+
+                        }
+
+
+                    }
+
+
+
+                },
+                error: function (response) {
+                }
+            }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+
+
+            });
+
+        }
+
+        $(function () {
+            var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+            var Role = '@Session["Role"]';
+            var Company = '@Session["CompanyCode"]';
+            var PlantCode = '@Session["PlantCode"]';
+            var IsSuperAdmin = @Session["IsSuperAdmin"];
+            var IsAdmin = @Session["IsAdmin"];
+            var LineCode = '@Session["LineCode"]';
+            var username = '@Session["UserName"]';
+            $('#LineCode').val = '@Session["LineCode"]';
+
+            $('#LineCode option[value=LineCode]').attr("selected", true);
+             var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+            if (Company != '' && IsSuperAdmin == true)
+            {
+                 var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+                $('#licustomer').show();
+
+
+                var myDatas = {
+                    "Flag": "Get_Customer",
+                    "CompanyCode": ""
+                };
+                $.ajax({
+                    type: "POST",
+                    url: URL + 'api/Values/GetSettingdatas',
+                    headers: {
+                        Authorization: 'Bearer ' + user1
+                    },
+                    data: myDatas,
+
+                    dataType: "json",
+                    success: function (response1) {
+                        var s = '<option value="">Select Customer</option>';
+
+                        for (var i = 0; i < response1.data.length; i++) {
+                            if (response1.data[i].Code == Company) {
+                                s += '<option value="' + response1.data[i].Code + '" selected=selected>' + response1.data[i].Name + '</option>';
+                            }
+                            else {
+                                s += '<option value="' + response1.data[i].Code + '">' + response1.data[i].Name + '</option>';
+                            }
+                        }
+                        $("#CompanyCode").html(s);
+                    },
+                    error: function (response1) {
+
+                    }
+                }).error(function (response) {
+                 swal({
+                     icon: "warning",
+                     title: "Session Timeout",
+                     button: true,
+                     closeModal: false
+                 })
+                 window.location = R_url;
+             });
+            }
+
+            if (PlantCode != '' || Company != '') {
+                $('#liplant').show();
+                if ('@ViewContext.Controller.IsSuperAdmin()' == "True") {
+                    queryt = "Get_Plant"
+                }
+                else {
+                    queryt = "Get_Plant_Nonadmin"
+                }
+                var myData = {
+                    "Flag": queryt,
+                    "CompanyCode": Company,
+                    "Parameter": queryt,
+                    "LineCode": '@Session["UserName"]'
+                };
+                var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+                $.ajax({
+                    type: "POST",
+                    url: URL + 'api/Values/GetSettingdatas',
+                    headers: {
+                        Authorization: 'Bearer ' + user1
+                    },
+                    data: myData,
+
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.data.length == 1) {
+                            var s = '';
+                            for (var i = 0; i < response.data.length; i++) {
+                                s += '<option value="' + response.data[i].Code + '" selected=selected>' + response.data[i].Name + '</option>';
+                            }
+                            $("#PlantCode").html(s);
+
+
+                            var PCode = $('#PlantCode').val();
+
+                            var session_line = '@Session["LineCode"]';
+
+                            var R_url = '@Url.Action("Login", "Main")';
+                            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+
+                            $.ajax({
+                                type: "POST",
+                                url: '@Url.Action("Set_PlantCode", "UserSettings")',
+                                data: '{id: ' + JSON.stringify(PCode) + '}',
+                                headers: {
+                                    Authorization: 'Bearer ' + user1
+                                },
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                success: function (response) {
+
+                                    bind_linedetails(PCode);
+                                },
+                                error: function (response) {
+                                }
+                            });
+                      if (PlantCode != '' && Company != '') { return; } else {window.location = '@Url.Action("MainDashboard", "MainDashboard")';}
+
+                        }
+                        else {
+
+                            var s = '<option value="">Select Plant</option>';
+                            for (var i = 0; i < response.data.length; i++) {
+                                if (response.data[i].Code == PlantCode) {
+                                    s += '<option value="' + response.data[i].Code + '" selected=selected>' + response.data[i].Name + '</option>';
+                                }
+                                else {
+                                    s += '<option value="' + response.data[i].Code + '">' + response.data[i].Name + '</option>';
+                                }
+                            }
+
+                            $("#PlantCode").html(s);
+                        }
+                    },
+                    error: function (response) {
+                    }
+                }).error(function (response) {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                });
+            }
+
+
+
+            if (PlantCode != '' ) {
+                bind_linedetails(PlantCode);
+
+
+            }
+
+        });
+
+
+        $(function () {
+
+
+            var Company = '@Session["CompanyCode"]';
+            var PlantCode = '@Session["PlantCode"]';
+            var LineCode = '@Session["LineCode"]';
+            if (Company != '' && PlantCode != '' && LineCode != '') {
+                //$("#tvicon").show();
+                $("#apps").show();
+
+            }
+
+
+        });
+    </script>
+    <script>
+
+        $(document).ready(function () {
+            $('.dropdown-toggle').dropdown()
+        });
+    </script>
+    <script>
+         function Show_holiday() {
+
+            var line_code = '@Session["LineCode"]';
+
+
+              var myData = {
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]',
+                "LineCode": '@Session["LineCode"]',
+                };
+
+            if (line_code != null && line_code.length != 0) {
+
+                var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+                var URL2 = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+                var R_url = '@Url.Action("Login", "Main")';
+                var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("Show_holiday", "UserSettings")',
+                    data: '{}',
+                    headers: {
+                        Authorization: 'Bearer ' + user1
+                    },
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response)
+                    {
+
+                        $(".Holiday").html(response);
+
+
+                        //$.ajax({
+                        //    type: 'Post',
+                        //    url: URL2 + 'api/Toollife/current_shift',
+                        //    data: myData,
+                        //    headers: {
+                        //        Authorization: 'Bearer ' + user1
+                        //    },
+
+                        //    dataType: 'json'
+                        //}).success(function (response) {
+
+                        //    $('.shift').text(response.data.Table[0].ShiftName);
+
+
+                        //});
+
+                    },
+                    error: function (response) {
+                    }
+                }).error(function (response) {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                });
+
+
+            }
+            setTimeout(Show_holiday, 60000);
+        }
+
+        Show_holiday();
+
+
+
+         function logoutConfirmation() {
+            var response = confirm("Are you sure you want to logout?");
+            if (response == true) {
+
+                       $.ajax({
+                                  type: "POST",
+                                  url: '@Url.Action("Logout", "Main")',
+                           success: function (response) {
+
+
+
+
+                               window.location.href = '@Url.Content("~/")';
+
+                           },
+                           error: function (response) {
+
+                              }
+
+                              });
+
+            } else {
+
+            }
+        }
+
+
+
+     @*//session timeout
+
+        function checkSession() {
+        var css = document.createElement("style");
+        css.innerHTML = ".swal-title { color: red; }";
+        document.head.appendChild(css);
+        // Show session time out swal alert
+        swal({
+            title: "Session timed out",
+            text: "Your session has timed out. Please login again.",
+            type: "warning",
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "Ok"
+        }).then(function () {
+            window.location.href = '@Url.Action("Login", "Main")';
+        });
+
+
+
+    }
+
+    // Call checkSession() every 30 minutes
+        //setInterval(checkSession, 30 * 60 * 1000);
+
+        setInterval(checkSession, 30 * 1000);*@
+
+
+
+
+
+    </script>
+
+
+</body>
+</html>

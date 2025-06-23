@@ -1,0 +1,21 @@
+﻿:root {
+    --bg-color-1: #FFFFFF;
+    --bargraph-tooltip-bg: rgba(88, 88, 88,1);
+    --bargraph-tooltip-text: #FFFFFF;
+    --bargraph-tooltip-font: sans-serif;
+    --bargraph-bar-fill-1: #4C88CD;
+    --bargraph-bar-fill-2: #F44336;
+    --bargraph-bar-fill-3: #4CAF50;
+    --bargraph-bar-fill-4: #F3E03A;
+    --bargraph-bar-fill-5: #BBBBBB;
+    --linegraph-line-1: #505650;
+    --linegraph-circle-1: #323532;
+    --modal-title: #000000;
+    --table-th-bg: teal;
+    --table-td-bg: #f9f9f9;
+    --table-td-border: #dddddd;
+    --progress-bar-path: #2BAAB1;
+    --progress-bar-bg: #ddd;
+    --progress-bar-label: #aaa;
+    --box-shadow-1: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+}

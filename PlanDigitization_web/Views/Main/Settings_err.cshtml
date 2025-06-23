@@ -1,0 +1,74 @@
+﻿
+@{
+    ViewBag.Title = "Settings_err";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="page-header">
+    <h2> Error</h2>
+</header>
+<h2>Request Failed</h2>
+<p>Unable to process the request </p>
+<script src="~/assets1/datepicker_normal/datepicker_normal_jquery.min.js"></script>
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+<script type="text/javascript">
+    $(function () {
+         var msg = '@TempData["notice"]';
+        var CompanyCode = '@Session["CompanyCode"]';
+        var PlantCode = '@Session["PlantCode"]';
+        var LineCode = '@Session["LineCode"]';
+        if (CompanyCode == "" && PlantCode == "" && LineCode=="")
+        {
+            swal({
+                icon: "error",
+                title: "Please Select Customer, Plant and Line...!",
+                button: true,
+                timer: 4500
+            })
+            return;
+        }
+        else if (CompanyCode == "")
+        {
+            swal({
+                icon: "error",
+                title: "Please Select Customer...!",
+                button: true,
+                timer: 4500
+            })
+            return;
+        }
+        else if (PlantCode == "")
+        {
+            swal({
+                icon: "error",
+                title: "Please Select Plant...!",
+                button: true,
+                timer: 4500
+                })
+            return;
+        }
+        else if (LineCode == "")
+        {
+            swal({
+                icon: "error",
+                title: "Please Select Line...!",
+                button: true,
+                timer: 4500
+                })
+            return;
+        }
+        else if (msg == "Select png or jpg or jpeg")
+            {
+            swal({
+                icon: "error",
+                title: "Customer details failed to add due to unspecified file type.\n Please upload only images.",
+                button: true,
+                timer: 4500
+                })
+            return;
+        }
+    });
+</script>
+
+

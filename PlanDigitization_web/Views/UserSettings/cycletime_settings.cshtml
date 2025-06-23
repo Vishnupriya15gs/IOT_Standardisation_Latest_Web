@@ -1,0 +1,1099 @@
+﻿@model IEnumerable<PlanDigitization_web.Models.Cycletime_setting>
+@{
+    ViewBag.Title = "cycletime_settings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<header class="page-header">
+    <h2> Cycle Time </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("MainDashboard","MainDashboard")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li><span>Settings</span></li>
+            <li><span>Cycle Time</span></li>
+        </ol>
+    </div>
+</header>
+
+
+<div class="row">
+    <div class="col-md-12">
+        <section class="panel">
+            <header class="panel-heading">
+                <div class="panel-actions">
+                </div>
+                <h2 class="panel-title">Cycle Time Settings </h2>
+            </header>
+            <div class="panel-body">
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label"> Machine <span class="required">*</span></label>
+                    <div class="col-sm-2" style="right: 100px;">
+                        <select id="Machine" class="form-control" onchange="get_variant();">
+                            <option value="0">Select</option>
+                        </select>
+                    </div>
+                    <label class="col-sm-2 control-label" style="right: 68px;"> Variant <span class="required">*</span></label>
+                    <div class="col-sm-2" style="right: 180px;">
+                        <select id="Variant" class="form-control">
+                            <option value="0">Select</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-2" style="text-align: center; right: 110px;">
+                        <button type="button" id="search_cycle" class="btn btn-primary">Search</button>
+                        <button type="button" class="btn btn-danger Reset" style="margin-left: 10px;">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+<!--Add Cycle Time Details-->
+<div class="row" id="divnew" style="display:none;">
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Insert_Update_CycleTime","UserSettings")" method="post">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Add New Cycle Time </h2>
+                    <input type="hidden" name="QueryType" value="Insert" />
+                    <input type="hidden" id="c_variant" name="Variant" value="" />
+                    <input type="hidden" name="Machine" value="" class="Mc_id" />
+
+                </header>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Movement Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="" name="Movement" class="form-control space" placeholder="Movement" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Type <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select name="Type" class="form-control" required>
+                                <option value="">Select</option>
+                                <option value="Auto">Auto</option>
+                                <option value="Manual">Manual</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Select if applicable for all variants <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="checkbox" name="if_applicable" value="Y" />
+                        </div>
+
+                        <label class="col-sm-2 control-label"> Cycle Time (in secs) <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="Cycle_time" onkeypress="return isNumberKey(event)" class="form-control space" required />
+                        </div>
+                    </div>
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+
+<!-- Cycle Time Details-->
+<div class="row" id="divdetails">
+    <div class="col-md-12">
+        <section class="panel">
+            <header class="panel-heading" style="background-color:teal;color:white;">
+
+                <div class="panel-actions" id="btn_new" style="display:none;">
+                    <button class="btn btn-primary" id="add"><i class="fa fa-plus" aria-hidden="true"> Add New Movement </i></button>
+                </div>
+
+                @*<button class="btn btn-primary" onclick="exportTableToExcel()"><i class="fa fa-download" aria-hidden="true"> Download </i></button>*@
+
+                <h2 class="panel-title" style="color:white;">List of CycleTime Data </h2>
+            </header>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="panel-body">
+                        <table class="table table-bordered table-striped mb-none" id="datatable_default">
+                            <thead style="background-color:teal;color:white;">
+                                <tr>
+                                    <th>S.no</th>
+                                    <th>Movement</th>
+                                    <th>Type</th>
+                                    <th id="applicable" style="display:block;">If applicable for all variant </th>
+                                    <th>Cycle time (in secs)</th>
+                                    <th style="text-align:center;width:150px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="details">
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td>
+                                        <button type="button" id="show_total" data-toggle="modal" data-target="#total_model" class="btn btn-primary">Show Total</button>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+<div class="modal fade" id="total_model" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="width:50%;margin-left: 350px;z-index: 999;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="margin-top:150px;">
+            <div class="modal-header" style="padding: 30px 50px !important;border-bottom: 0 !important;">
+                <h5 class="modal-title" id="exampleModalLabel">Cycle Time :</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="float: right;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <section class="panel">
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <label class="col-sm-6 control-label"> <strong>Auto Cycle Time : </strong> <span id="auto_cycle"> </span> secs </label>
+                                    <div class="col-sm-2">
+
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-6 control-label"> <strong>Manual Cycle Time : </strong> <span id="manual_cycle"> </span> secs </label>
+                                    <div class="col-sm-2">
+
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-6 control-label"> <strong>Total Cycle Time : </strong> <span id="total_cycle"> </span> secs </label>
+                                    <div class="col-sm-2">
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--Edit Cycle Time Details-->
+<div class="row" id="divedit" style="display:none;">
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Insert_Update_CycleTime","UserSettings")" method="post">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Update Cycle Time</h2>
+                    <input type="hidden" name="QueryType" id="eQueryType" />
+                    <input type="hidden" name="ID" id="eID" />
+
+                    <input type="hidden" id="ce_variant" name="Variant" value="" />
+                    <input type="hidden" name="Machine" class="eMachine" />
+
+
+                    @*<input type="hidden" name="Variant" class="Variant" />*@
+                </header>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Movement Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="eMovement" name="Movement" class="form-control space" readonly placeholder="Movement" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Type <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select name="Type" id="eType" class="form-control" readonly>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div id="div_applicable">
+                            <label class="col-sm-2 control-label"> Select if applicable for all variants <span class="required">*</span></label>
+                            <div class="col-sm-4">
+                                <input type="checkbox" name="if_applicable" value="Y" checked />
+                            </div>
+                        </div>
+                        <label class="col-sm-2 control-label"> Cycle Time (in secs) <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="Cycle_time" onkeypress="return isNumberKey(event)" id="eCycle_time" class="form-control space" required />
+                        </div>
+                    </div>
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+
+@if (@TempData["message"] != null)
+{
+    <script type="text/javascript">
+    $(function () {
+        var msg = '@TempData["message"]';
+        if (msg == "Inserted") {
+            swal({
+                icon: "success",
+                title: "Details Added Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Updated") {
+            swal({
+                icon: "success",
+                title: "Details Updated Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Already") {
+            swal({
+                icon: "error",
+                title: "Details Already Added",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "No Variant") {
+            swal({
+                icon: "error",
+                title: "Variants are Not Available...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else {
+            swal({
+                icon: "error",
+                title: "Failed to Add",
+                button: true,
+                timer: 4500
+            })
+        }
+    });
+    </script>
+}
+@if (@TempData["UMessage"] != null)
+{
+    <script type="text/javascript">
+        $(function () {
+            var msg = '@TempData["UMessage"]';
+            swal({
+                icon: "success",
+                title: msg,
+                button: true,
+                timer: 4500
+                })
+        });
+    </script>
+}
+
+@if (@TempData["error_msg"] != null)
+{
+    <script type="text/javascript">
+        $(function () {
+            var msg = '@TempData["error_msg"]';
+            swal({
+                icon: "error",
+                title: msg,
+                button: true,
+                timer: 4500
+                })
+        });
+    </script>
+}
+
+<script type="text/javascript">
+    $("#add").click(function () {
+        $("#divnew").show();
+        $("#divdetails").hide();
+        $("#divedit").hide();
+        var variant = $("#Variant").val();
+        $("#c_variant").val(variant);
+    });
+
+    $(".cancel").click(function () {
+        $("#divnew").hide();
+        $("#divdetails").show();
+        $("#divedit").hide();
+    });
+
+    $(".Reset").click(function () {
+        $("#Machine").val('0');
+        $("#Variant").val('0');
+        $("#div_totalcycle").hide();
+    });
+</script>
+
+<script type="text/javascript">
+
+    $(document).on("keydown", ".space", function (evt) {
+
+        var caretPos = $(this)[0].selectionStart
+        if (evt.keyCode == 32 && caretPos == 0) {
+            return false;
+        }
+    });
+    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+    $("body").on("click", "#other_edit", function () {
+        var row = $(this).closest("tr");
+        var CID = row.find(".CID").val();
+        var Variant = $("#Variant").val();
+        var Movement = row.find(".Movement").val();
+        var Type = row.find(".Type").val();
+
+        var Machine = $("#Machine").val();
+
+        $("#eQueryType").val("Insert_others");
+
+        $("#divedit").show();
+        $("#divnew").hide();
+        $("#divdetails").hide();
+
+        if (Variant == 'All') {
+            $('#eID').val('0');
+            $('#div_applicable').show();
+        }
+        else {
+            $('#eID').val(response.data.Table[0].ID);
+            $('#div_applicable').hide();
+        }
+
+        $('#eMovement').val(Movement);
+        $('#eCycle_time').val('0');
+
+        $('.eMachine').val(Machine);
+
+        var s = '<option value="">Please Select</option>';
+        if (Type == "Auto") {
+            s += '<option value="Auto" selected=selected>Auto</option>';
+            s += '<option value="Manual">Manual</option>';
+        }
+        else {
+            s += '<option value="Auto">Auto</option>';
+            s += '<option value="Manual" selected=selected>Manual</option>';
+        }
+
+        $("#eType").html(s);
+
+    });
+
+
+    $("body").on("click", "#edit", function () {
+        var row = $(this).closest("tr");
+        //var variant = $("#ce_variant").val();
+        //$("#c_variant").val(variant);
+        var CID = row.find(".CID").val();
+        var Variant = $("#Variant").val();
+        var Machine = $("#Machine").val();
+        var Movement = row.find(".Movement").val();
+        var Type = row.find(".Type").val();
+
+        $('.eMachine').val(Machine);
+
+        if (Variant == 'All') {
+            var myData = {
+                "QueryType": "Edit_cycle_time",
+                "Parameter": Movement,
+                "Parameter1": Type,
+                "Parameter2": 'All',
+                "Parameter3": Machine,
+                "Parameter4": '@Session["CompanyCode"]',
+                "Parameter5": '@Session["PlantCode"]',
+                "Parameter6": '@Session["LineCode"]',
+                "CompanyCode": '@Session["CompanyCode"]',
+                    "PlantCode": '@Session["PlantCode"]',
+                    "LineCode": '@Session["LineCode"]'
+            };
+        }
+        else {
+            var myData = {
+                "QueryType": "Edit_cycle_time",
+                "Parameter": CID,
+                "CompanyCode": '@Session["CompanyCode"]',
+                    "PlantCode": '@Session["PlantCode"]',
+                    "LineCode": '@Session["LineCode"]'
+            };
+        }
+
+        $("#eQueryType").val("Update");
+
+        $("#divedit").show();
+        $("#divnew").hide();
+        $("#divdetails").hide();
+
+        var R_url = '@Url.Action("Login", "Main")';
+        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+        $.ajax({
+            type: "POST",
+            url: URL + 'api/Values/User_settings_details',
+            data: myData,
+            headers: {
+                Authorization: 'Bearer ' + user1
+            },
+            dataType: "json",
+            beforeSend: function () {
+                $('.loading').show();
+            },
+            complete: function () {
+                $('.loading').hide();
+            },
+            success: function (response)
+            {
+                if (Variant == 'All') {
+                    $('#eID').val('0');
+                    $('#div_applicable').show();
+                }
+                else {
+                    $('#eID').val(response.data.Table[0].ID);
+                    $('#div_applicable').hide();
+                }
+
+                $('#eMovement').val(response.data.Table[0].Movement);
+                $('#eCycle_time').val(response.data.Table[0].Cycle_time);
+
+                var s = '<option value="">Please Select</option>';
+                if (response.data.Table[0].Type == "Auto") {
+                    s += '<option value="Auto" selected=selected>Auto</option>';
+                    s += '<option value="Manual">Manual</option>';
+                }
+                else {
+                    s += '<option value="Auto">Auto</option>';
+                    s += '<option value="Manual" selected=selected>Manual</option>';
+                }
+
+                $("#eType").html(s);
+
+
+            }
+            , error: function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Token is not valid",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+            }
+        });
+    });
+
+    $("body").on("click", "#delete", function () {
+        if (confirm("Do you want to Delete this...?")) {
+            var row = $(this).closest("tr");
+            var CID = row.find(".CID").val();
+            var Movement = row.find(".Movement").val();
+            var Type = row.find(".Type").val();
+            var Variant = $("#Variant").val();
+            var Machine = $("#Machine").val();
+
+            if (Variant == 'All') {
+                var myData = {
+                    "QueryType": "Delete_allcycletime",
+                    "Parameter": Movement,
+                    "Parameter1": Type,
+                    "Parameter2": 'All',
+                    "Parameter3": Machine,
+                    "Parameter4": '@Session["CompanyCode"]',
+                    "Parameter5": '@Session["PlantCode"]',
+                    "Parameter6": '@Session["LineCode"]',
+                     "CompanyCode": '@Session["CompanyCode"]',
+                    "PlantCode": '@Session["PlantCode"]',
+                    "LineCode": '@Session["LineCode"]'
+                };
+            }
+            else {
+                var myData = {
+                    "QueryType": "Delete_cycletime",
+                    "Parameter": CID,
+                    "CompanyCode": '@Session["CompanyCode"]',
+                    "PlantCode": '@Session["PlantCode"]',
+                    "LineCode": '@Session["LineCode"]'
+                };
+            }
+
+            var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/Values/delete_User_settings_details',
+                data: myData,
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+                    swal({
+                        icon: "success",
+                        title: "Details Deleted Successfully...!",
+                        button: true,
+                        timer: 4500
+                    })
+                    window.location = '@Url.Action("cycletime_settings", "UserSettings")';
+                }
+            }).error(function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Token is not valid",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+            });
+        }
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('.updated_time').text("N/A");
+        $('.shift').text("N/A");
+
+        if ($.fn.DataTable.isDataTable('#datatable-default')) {
+            $('#datatable-default').DataTable().destroy();
+        }
+        $('#datatable-default').DataTable({
+
+            "responsive": true,
+            "autoWidth": false,
+            scrollY: true,
+            scrollX: true,
+            scroller: true
+        });
+
+    });
+</script>
+
+<script type="text/javascript">
+    $(function ()
+    {
+        var R_url = '@Url.Action("Login", "Main")';
+        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+        var data = {
+            "QueryType": "Get_machine",
+            "Parameter": '@Session["CompanyCode"]',
+            "Parameter1": '@Session["PlantCode"]',
+            "Parameter2": '@Session["LineCode"]',
+            "CompanyCode": '@Session["CompanyCode"]',
+                    "PlantCode": '@Session["PlantCode"]',
+                    "LineCode": '@Session["LineCode"]'
+        };
+
+        $.ajax({
+            type: "POST",
+            data: data,
+            headers: {
+                Authorization: 'Bearer ' + user1
+            },
+            url: URL + "api/Values/User_settings_details",
+            dataType: "json",
+
+            success: function (response) {
+                var s = '<option value="0">Select Machine</option>';
+                for (var i = 0; i < response.data.Table.length; i++) {
+                    s += '<option value="' + response.data.Table[i].AssetID + '">' + response.data.Table[i].AssetID + "-" + response.data.Table[i].AssetDescription + '</option>';
+                }
+                $("#Machine").html(s);
+            }
+        })
+    });
+
+    function get_variant() {
+        var Machine = $("#Machine").val();
+        var R_url = '@Url.Action("Login", "Main")';
+        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+        var data = {
+            "QueryType": "Get_Variants",
+            "Parameter": Machine,
+            "Parameter1": '@Session["CompanyCode"]',
+            "Parameter2": '@Session["PlantCode"]',
+            "Parameter4":  '@Session["LineCode"]',
+            "CompanyCode": '@Session["CompanyCode"]',
+                    "PlantCode": '@Session["PlantCode"]',
+                    "LineCode": '@Session["LineCode"]'
+        };
+
+        $.ajax({
+            type: "POST",
+            data: data,
+            headers: {
+                Authorization: 'Bearer ' + user1
+            },
+            url: URL + "api/Values/User_settings_details",
+            dataType: "json",
+
+            success: function (response) {
+                var s = '<option value="0">Select Variant</option>';
+                s += '<option value="All">All Variant</option>';
+                for (var i = 0; i < response.data.Table.length; i++) {
+                    s += '<option value="' + response.data.Table[i].Variant_Code + '">' + response.data.Table[i].VariantName + '</option>';
+                }
+                $("#Variant").html(s);
+            }
+        })
+    }
+
+    document.getElementById("show_total").addEventListener("click", function () {
+        $("#div_totalcycle").show();
+    });
+
+
+    function bind_rows(auto, manual)
+    {
+        if(auto == "1") {
+            var newRow = $("<tr class='div_auto'>");
+            var cols = '';
+
+            cols += "<td> 1 </td> ";
+            cols += "<td>Others <input type='hidden' name='Movement' value='Others' class='Movement' /> </td>";
+            cols += "<td> Auto <input type='hidden' name='Type' value='Auto' class='Type' /> </td> ";
+
+            cols += "<td class='applicable'> <input type='checkbox' name='if_applicable' checked disabled /></td>";
+            cols += "<td> 0 </td> ";
+
+            var ss = "<button class='btn btn-primary' style='margin-top: 10px' id='other_edit'><i class='fa fa-pencil-square-o' aria-hidden='true'></i></button>   ";
+
+            cols += "<td style='text-align:center;'> " + ss + "</td >";
+
+            cols += "</tr>";
+            newRow.append(cols);
+            $(".details").append(newRow);
+        }
+
+        if(manual == "1") {
+            var newRow1 = $("<tr class='div_manual'>");
+            var cols1 = '';
+
+            cols1 += "<td> 2 </td> ";
+            cols1 += "<td>Others <input type='hidden' name='Movement' value='Others' class='Movement' /> </td>";
+            cols1 += "<td> Manual <input type='hidden' name='Type' value='Manual' class='Type' /> </td> ";
+
+            cols1 += "<td class='applicable'> <input type='checkbox' name='if_applicable' checked disabled /></td>";
+            cols1 += "<td> 0 </td> ";
+
+            var ss = "<button class='btn btn-primary' style='margin-top: 10px' id='other_edit'><i class='fa fa-pencil-square-o' aria-hidden='true'></i></button>   ";
+
+            cols1 += "<td style='text-align:center;'> " + ss + "</td >";
+
+            cols1 += "</tr>";
+            newRow1.append(cols1);
+            $(".details").append(newRow1);
+        }
+
+    }
+
+
+    document.getElementById("search_cycle").addEventListener("click", function ()
+    {
+        var R_url = '@Url.Action("Login", "Main")';
+        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+        var Variant = $("#Variant").val();
+
+        var Machine = $("#Machine").val();
+
+        if (Machine == "0") {
+            swal({
+                icon: "error",
+                title: "Please Select Machine...!",
+                button: true,
+                timer: 4500
+            })
+            return;
+        }
+
+        if (Variant == "0") {
+            swal({
+                icon: "error",
+                title: "Please Select Variant...!",
+                button: true,
+                timer: 4500
+            })
+            return;
+        }
+
+
+        $('.Mc_id').val($("#Machine").val());
+
+        //if (Variant == "All")
+        //{
+            $("#btn_new").show();
+           // $(".Variant").val('All');
+        /*}*/
+        //else
+        //{
+        //    $("#btn_new").hide();
+        //   // $(".Variant").val(Variant);
+
+        //}
+
+        var myData = {
+            "QueryType": "Get_cycle_time",
+            "Parameter2": Variant,
+            "Parameter1": '@Session["CompanyCode"]',
+            "Parameter": '@Session["PlantCode"]',
+            "Parameter3": Machine,
+            "Parameter6": '@Session["LineCode"]',
+            "CompanyCode": '@Session["CompanyCode"]',
+                    "PlantCode": '@Session["PlantCode"]',
+                    "LineCode": '@Session["LineCode"]'
+        };
+
+        $.ajax({
+            type: "POST",
+            url: URL + 'api/Values/User_settings_details',
+            data: myData,
+            headers: {
+                Authorization: 'Bearer ' + user1
+            },
+            dataType: "json",
+            beforeSend: function () {
+                $('.loading').show();
+            },
+            complete: function () {
+                $('.loading').hide();
+            },
+            success: function (response) {
+
+
+                var rowsCnt = document.getElementById("datatable_default").getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
+                if (rowsCnt > 0) {
+                    for (var i = 0; i < rowsCnt; i++) {
+                        document.getElementById("datatable_default").deleteRow(1);
+                    }
+                }
+
+                if (Variant != "All") {
+
+                    var auto_cycle = 0;
+                    var manual_cycle = 0;
+                    var total_cycle = 0;
+
+                    if (response.data.Table.length == 0) {
+                        $(".div_manual").show();
+                        $(".div_auto").show();
+                        bind_rows("1","1");
+                    }
+                    else {
+                        $(".div_manual").hide();
+                        $(".div_auto").hide();
+                        bind_rows("0","0");
+                    }
+
+                    var auto_count = 0;
+                    var manual_count = 0;
+                    var load_count = 0;
+
+                    for (var i = 0; i < response.data.Table.length; i++)
+                    {
+                        load_count = i;
+
+                        if (load_count == 0) {
+                            bind_rows("1", "2");
+                            bind_rows("2", "1");
+                        }
+                        //if (response.data.Table[i].Movement == 'Others' && response.data.Table[i].Type == "Auto") {
+                        //    $(".div_auto").hide();
+                        //    bind_rows("0", "2");
+                        //}
+                        //else {
+                        //    if (response.data.Table[i].Type != "Manual") {
+                        //        $(".div_auto").show();
+                        //        bind_rows("1", "0");
+                        //    }
+
+                        //}
+
+                        //if (response.data.Table[i].Movement == 'Others' && response.data.Table[i].Type == "Manual") {
+                        //    $(".div_manual").hide();
+                        //    bind_rows("0", "2");
+                        //}
+                        //else {
+                        //    if (response.data.Table[i].Type != "Auto") {
+                        //        $(".div_manual").show();
+                        //        bind_rows("2", "1");
+                        //    }
+                        //}
+
+
+
+                        if (response.data.Table[i].Movement == 'Others' && response.data.Table[i].Type == "Auto") {
+                            $(".div_auto").hide();
+                            bind_rows("0", "2");
+                            auto_count = 1;
+                        }
+
+                        else if (response.data.Table[i].Movement == 'Others' && response.data.Table[i].Type == "Manual") {
+                            $(".div_manual").hide();
+                            bind_rows("0", "2");
+                            manual_count = 1;
+                        }
+
+
+                        if (auto_count == 1 && load_count == 0) {
+                            $(".div_auto").hide();
+                        }
+                        if (manual_count == 1 && load_count == 0) {
+                            $(".div_manual").hide();
+                        }
+
+                        var rowsCnt1 = document.getElementById("datatable_default").getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
+
+                        var j = rowsCnt1 + 1;
+
+                        var newRow = $("<tr>");
+                        var cols = '';
+
+                        cols += "<td> " + j + "</td> ";
+                        cols += "<td> <input type='hidden' class='Movement' value='" + response.data.Table[i].Movement + "' /> " + response.data.Table[i].Movement + "</td> ";
+                        cols += "<td> <input type='hidden' class='CID' value='" + response.data.Table[i].ID + "' /> <input type='hidden' class='Type' value='" + response.data.Table[i].Type + "' /> " + response.data.Table[i].Type + "</td> ";
+
+                        if (response.data.Table[i].Type == "Auto") {
+                            auto_cycle += parseInt(response.data.Table[i].Cycle_time);
+                        }
+                        else if (response.data.Table[i].Type == "Manual") {
+                            manual_cycle += parseInt(response.data.Table[i].Cycle_time);
+                        }
+
+                        total_cycle = (parseInt(auto_cycle) + parseInt(manual_cycle));
+
+                        var s = '';
+
+                        $("#applicable").hide();
+                        $(".applicable").hide();
+
+
+                        cols += "<td> <input type='hidden' class='Cycle_time' value='" + response.data.Table[i].Cycle_time + "' /> " + response.data.Table[i].Cycle_time + "</td> ";
+
+                        var ss = '';
+
+                        if ((response.data.Table[i].Movement == 'Others' && response.data.Table[i].Type == "Auto") || (response.data.Table[i].Movement == 'Others' && response.data.Table[i].Type == "Manual")) {
+                            ss += "<button class='btn btn-primary' style='margin-top: 10px' id='edit'><i class='fa fa-pencil-square-o' aria-hidden='true'></i></button>   ";
+                        }
+                        else {
+                            ss += "<button class='btn btn-primary' style='margin-top: 10px' id='edit'><i class='fa fa-pencil-square-o' aria-hidden='true'></i></button> <button class='btn btn-danger' style = 'margin-top: 10px' id = 'delete' > <i class='fa fa-trash-o' aria-hidden='true'></i></button > ";
+                        }
+
+                        cols += "<td style='text-align:center;'> " + ss + "</td >";
+
+                        cols += "</tr>";
+                        newRow.append(cols);
+                        $(".details").append(newRow);
+                        j++;
+                    }
+
+                    $('#auto_cycle').html(auto_cycle);
+                    $('#manual_cycle').html(manual_cycle);
+                    $('#total_cycle').html(total_cycle);
+                }
+                else
+                {
+
+
+
+                    var auto_cycle = 0;
+                    var manual_cycle = 0;
+                    var total_cycle = 0;
+
+
+                    if (response.data.Table.length == 0)
+                    {
+                        $(".div_manual").show();
+                        $(".div_auto").show();
+                        bind_rows("1", "1");
+                    }
+                    else {
+                        $(".div_manual").hide();
+                        $(".div_auto").hide();
+                        bind_rows("0", "0");
+                    }
+
+                    var auto_count = 0;
+                    var manual_count = 0;
+                    var load_count = 0;
+
+                    for (var i = 0; i < response.data.Table.length; i++) {
+                        load_count = i;
+
+                        if (load_count == 0) {
+                            bind_rows("1", "2");
+                            bind_rows("2", "1");
+                        }
+
+                        if (response.data.Table[i].Movement == 'Others' && response.data.Table[i].Type == "Auto") {
+                            $(".div_auto").hide();
+                            bind_rows("0", "2");
+                            auto_count = 1;
+                        }
+
+                        else if (response.data.Table[i].Movement == 'Others' && response.data.Table[i].Type == "Manual") {
+                            $(".div_manual").hide();
+                            bind_rows("0", "2");
+                            manual_count = 1;
+                        }
+
+
+                        if (auto_count == 1) {
+                            $(".div_auto").hide();
+                        }
+                        if (manual_count == 1) {
+                            $(".div_manual").hide();
+                        }
+
+                        var rowsCnt1 = document.getElementById("datatable_default").getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
+
+                        var j = rowsCnt1 + 1;
+
+                        var newRow = $("<tr>");
+                        var cols = '';
+
+                        cols += "<td> " + j + "</td> ";
+                        cols += "<td> <input type='hidden' class='Movement' value='" + response.data.Table[i].Movement + "' /> " + response.data.Table[i].Movement + "</td> ";
+                        cols += "<td> <input type='hidden' class='Type' value='" + response.data.Table[i].Type + "' /> " + response.data.Table[i].Type + "</td> ";
+
+                        if (response.data.Table[i].Type == "Auto") {
+                            auto_cycle += parseInt(response.data.Table[i].Cycle_time);
+                        }
+                        else if (response.data.Table[i].Type == "Manual") {
+                            manual_cycle += parseInt(response.data.Table[i].Cycle_time);
+                        }
+
+                        total_cycle = (parseInt(auto_cycle) + parseInt(manual_cycle));
+
+
+                        var s = '';
+
+                        s += "<input type='checkbox' name='if_applicable' class='if_applicable' checked disabled />";
+                        $("#applicable").show();
+                        $(".applicable").show();
+
+                        cols += "<td>  " + s + "</td >";
+
+                        cols += "<td> <input type='hidden' class='Cycle_time' value='" + response.data.Table[i].Cycle_time + "' /> " + response.data.Table[i].Cycle_time + "</td> ";
+
+                        var ss = '';
+
+                        if ((response.data.Table[i].Movement == 'Others' && response.data.Table[i].Type == "Auto") || (response.data.Table[i].Movement == 'Others' && response.data.Table[i].Type == "Manual")) {
+                            ss += "<button class='btn btn-primary' style='margin-top: 10px' id='edit'><i class='fa fa-pencil-square-o' aria-hidden='true'></i></button>   ";
+                        }
+                        else {
+                            ss += "<button class='btn btn-primary' style='margin-top: 10px' id='edit'><i class='fa fa-pencil-square-o' aria-hidden='true'></i></button> <button class='btn btn-danger' style = 'margin-top: 10px' id = 'delete' > <i class='fa fa-trash-o' aria-hidden='true'></i></button > ";
+                        }
+
+                        cols += "<td style='text-align:center;'> " + ss + "</td >";
+
+                        cols += "</tr>";
+                        newRow.append(cols);
+                        $(".details").append(newRow);
+                        j++;
+                    }
+
+                    $('#auto_cycle').html(auto_cycle);
+                    $('#manual_cycle').html(manual_cycle);
+                    $('#total_cycle').html(total_cycle);
+                }
+
+
+            },
+            error: function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Token is not valid",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: "Something went wrong",
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+            }
+        });
+
+    });
+
+</script>
+
+
+
+

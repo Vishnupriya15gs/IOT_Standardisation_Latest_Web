@@ -1,0 +1,2676 @@
+﻿
+@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(5, 2fr);
+        grid-auto-rows: auto;
+        grid-gap: 6px;
+    }
+
+    .Machinehover {
+        /*display: inline-block;*/
+        visibility: hidden;
+        position: absolute;
+        background-color: #E5E5F0;
+        color: black;
+        left: 20%;
+        top: 10px;
+        font-size: 14px;
+        z-index: 99;
+    }
+
+    .box:hover ~ .Machinehover {
+        visibility: visible
+    }
+
+    #colors {
+        filter: invert(1);
+    }
+
+    /*.half-donut .label {
+      font-size: 3rem;
+    }*/
+
+    .itemgrid {
+        display: grid;
+        grid-template-columns: repeat(5, 2fr);
+        grid-auto-rows: auto;
+        grid-gap: 10px;
+        text-align: center;
+    }
+
+    .box {
+        width: auto;
+        height: auto;
+    }
+
+    .red {
+        background: red;
+    }
+
+    .yellow {
+        background: yellow;
+    }
+
+    .grey {
+        background: grey;
+    }
+
+    .green {
+        background: green;
+    }
+
+    .blue {
+        background: blue;
+    }
+
+    .lightgray {
+        background: #D3D3D3;
+    }
+
+    .flex-container {
+        float: left;
+        /*display: flex;
+        flex-wrap: nowrap;
+        overflow: auto;
+        overflow-x: scroll;
+        overflow-y: hidden;*/
+    }
+
+
+    div.image {
+        align-content: center;
+        width: auto; /*width of your image*/
+        height: 180px; /*height of your image*/
+        background-image: url('../../assets1/map.png');
+        background-repeat: no-repeat;
+        margin: 0; /* If you want no margin */
+        padding: 0; /*if your want to padding */
+    }
+
+    text.label {
+        font-weight: 600 !important;
+    }
+</style>
+<header class="page-header">
+    <h2><span id="plantcode"></span></h2>
+
+    <div class="row col-sm-2 col-md-2 col-lg-2" style="margin-left: 500px; max-width: 21%;  margin-top:12px">
+        <div class='row col-sm-12 col-md-12 col-lg-12' style="float:right;">
+
+            <div class="row quicklink ">
+
+            </div>
+        </div>
+    </div>
+
+</header>
+
+
+
+
+@if (((HttpContext.Current.Session["CompanyCode"] != null) && (HttpContext.Current.Session["LineCode"] != null) && (HttpContext.Current.Session["LineCode"] != "") && (HttpContext.Current.Session["PlantCode"] != "") && (HttpContext.Current.Session["PlantCode"] != null)))
+{
+    <header class='panel-heading' style="border-style:solid;border-width:thin;border-color:black;text-align:center;background-color:teal;color:white;">
+        <div class="col-12" style="align-content:center;padding-bottom:1%;">
+            <div class="col-sm-4 col-md-4 col-lg-4" style="float:left;text-align:center;margin-left:-30px">
+                <label style="font-weight:bold;text-align:center;font-size:medium;font-weight:lighter;font-size-adjust:inherit;">
+                    <span id="line_heading" style="float: left; font-weight: bold; text-align: center; font-size: medium; font-weight: lighter; font-size-adjust: inherit"></span>
+                </label>
+            </div>
+            <div class="col-sm-3 col-md-3 col-lg-3" style="float: left; text-align: center;">
+                @*<span id="linetype" style="float: right; padding-right: 2%;"></span>*@
+                <label style="font-weight:bold;text-align:center;font-size:medium;font-weight:lighter;font-size-adjust:inherit;">
+                    LINE:@Session["LineCode"]
+                    <span class=" itemname" id="line"></span>
+                </label>
+            </div>
+            <div class="col-sm-3 col-md-3 col-lg-3" style="float: left; text-align: center;">
+                <label style="font-weight:bold;text-align:center;font-size:medium;font-weight:lighter;font-size-adjust:inherit;">
+                    EOL:
+                    <span class=" itemname" id="linenamee"></span>
+                </label>
+            </div>
+        </div>
+    </header>
+    <div class='col-md-12 col-xl-12' style="background-color:#DBE3E6;border-style:solid;border-width:thin;border-color:black;">
+
+        <div class='' style="margin-top:-20px">
+
+
+            <div class="mainbody">
+
+                <br />
+
+
+                <div>
+                    <div class="col-sm-2">
+                        <select class="form-control Machine" name="Machine" id="Machine" title="Select" required></select>
+                    </div>
+
+
+                    <div>
+
+
+                        <button type="button" class="btn btn-primary" id="btngetquality" @*onclick="Quality_details()"*@>View</button>
+
+
+                    </div>
+
+                </div>
+
+
+                <div class="row col-sm-3 col-md-3 col-lg-3">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <div>
+
+                            <div class='col-sm-6 col-md-6 col-lg-6' style='align-content:center;padding-left:2%;'>
+                                <button type="button" class="mb-xs mt-xs mr-xs btn btn-sm btn-default" style="width:100%;float:left;background-color:#002929;color:white;">
+                                    <span id="" style="float:left;font-weight:bold;">From : </span> <span id="fromdate" style="float:left;font-weight:bold;"></span>
+                                </button>
+                            </div>
+
+                            <div class='col-sm-6 col-md-6 col-lg-6' style='align-content:center;padding-left:2%;'>
+                                <button type="button" class="mb-xs mt-xs mr-xs btn btn-sm btn-default" style="width:100%;float:left;background-color:#002929;color:white;">
+                                    <span id="" style="float:left;font-weight:bold;">To : </span> <span id="todate" style="float:left;font-weight:bold;"></span>
+                                </button>
+                            </div>
+
+
+                            <div class='col-sm-6 col-md-6 col-lg-6' style='align-content:center;padding-left:2%;'>
+                                <button type="button" class="mb-xs mt-xs mr-xs btn btn-sm btn-default" style="width:100%;float:left;background-color:#002929;color:white;">
+                                    <span id="" style="float:left;font-weight:bold;">Batch No : </span> <span id="batch" style="float:left;font-weight:bold;"></span>
+                                </button>
+                            </div>
+
+                            <div class='col-sm-6 col-md-6 col-lg-6' style='align-content:center;padding-left:2%;'>
+                                <button type="button" class="mb-xs mt-xs mr-xs btn btn-sm btn-default" style="width:100%;float:left;background-color:#002929;color:white;">
+                                    <span id="" style="float:left;font-weight:bold;">Shift : </span> <span id="shift_id" style="float:left;font-weight:bold;"></span>
+                                </button>
+                            </div>
+
+                            <div class='col-sm-4 col-md-4 col-lg-4' style='align-content:center;'>
+                                <button type="button" class="mb-xs mt-xs mr-xs btn btn-sm btn-default" style="width:100%;float:left;background-color:#23D803;color:white;">
+                                    <span id="" style="float:left;font-weight:bold;display:inline"><i class="fa fa-check-circle" aria-hidden="true"></i> &nbsp;  </span> <span id="ok_parts" style="float:left;font-weight:bold;display:inline"></span>
+                                </button>
+                            </div>
+                            <div class='col-sm-4 col-md-4 col-lg-4' style='align-content:center;'>
+                                <button type="button" class="mb-xs mt-xs mr-xs btn btn-sm btn-default" style="width:100%;float:left;background-color:#0012AB;color:white;">
+                                    <span id="" style="float:left;font-weight:bold;"><i class="fa fa-wrench" aria-hidden="true"></i> </span> <span id="rework_parts" style="float:left;font-weight:bold;"></span>
+                                </button>
+                            </div>
+                            <div class='col-sm-4 col-md-4 col-lg-4' style='align-content:center;'>
+                                <button type="button" class="mb-xs mt-xs mr-xs btn btn-sm btn-default" style="width:100%;float:left;background-color:#CD0413;color:white;">
+                                    <span id="" style="float:left;font-weight:bold;"><i class="fa fa-times-circle" aria-hidden="true"></i> </span> <span id="notok_parts" style="float:left;font-weight:bold;"></span>
+                                </button>
+                            </div>
+                            <div class='col-sm-12 col-md-12 col-lg-12' style='align-content:center;padding-left:2%;'>
+                                <button type="button" class="mb-xs mt-xs mr-xs btn btn-sm btn-default" style="width:100%;float:left;background-color:#CD1C04;color:white;">
+                                    <span id="" style="float:left;font-weight:bold;" class="fa fa-bullseye"> </span> Target Qty :  <span id="target_qty" style="float:left;font-weight:bold;padding-left:10px"></span>
+                                </button>
+                            </div>
+                            <div class='col-sm-12 col-md-12 col-lg-12' style='align-content:center;padding-left:2%;'>
+                                <button type="button" class="mb-xs mt-xs mr-xs btn btn-sm btn-default" style="width:100%;float:left;background-color:#002929;color:white;">
+                                    <span id="" style="float:left;font-weight:bold;" class='glyphicon glyphicon-user'> </span> Operator Name : &nbsp;&nbsp; <span id="operator_name" style="float:left;font-weight:bold;padding-left:10px"></span>
+                                </button>
+                            </div>
+                            <div class='col-sm-12 col-md-12 col-lg-12' style='align-content:center;padding-left:2%;'>
+                                <button type="button" class="mb-xs mt-xs mr-xs btn btn-sm btn-default" style="width:100%;float:left;background-color:#002929;color:white;">
+                                    <span id="" style="float:left;font-weight:bold;"> </span> Reason : <span id="reason" style="float:left;font-weight:bold;"></span>
+                                </button>
+                            </div>
+
+                            <div class='col-sm-12 col-md-12 col-lg-12' style='align-content:center;padding-left:2%;'>
+                                <button type="button" class="mb-xs mt-xs mr-xs btn btn-sm btn-default" style="width:100%;float:left;background-color:#002929;color:white;">
+                                    <span id="mins_ago" style="text-align:center;font-weight:bold;"></span> Mins ago
+                                </button>
+                            </div>
+
+                            <div class='col-sm-12 col-md-12 col-lg-12' style='align-content:center;padding-left:2%;'>
+                                <button type="button" class="mb-xs mt-xs mr-xs btn btn-sm btn-default" style="width:100%;float:left;background-color:#002929;color:white;">
+                                    Times : <span id="tot_times" style="text-align:center;font-weight:bold;"> </span>  Components : <span id="components" style="text-align:center;font-weight:bold;"></span>
+                                </button>
+                            </div>
+
+                            <div class='col-sm-12 col-md-12 col-lg-12' style='align-content:center;padding-left:2%;'>
+                                <button type="button" class="mb-xs mt-xs mr-xs btn btn-sm btn-default" style="width:100%;float:left;background-color:#002929;color:white;">
+                                    <span id="" style="text-align:center;font-weight:bold;"> Continuous Rejection :  </span> <span id="continuous_rejection" style="text-align:center;font-weight:bold;"></span>
+                                </button>
+                            </div>
+
+
+                            <div class='col-sm-12 col-md-12 col-lg-12' style='align-content:center;padding-left:2%;'>
+                                <button type="button" class="mb-xs mt-xs mr-xs btn btn-sm btn-default" style="width:100%;float:left;background-color:#002929;color:white;">
+                                    <span id="" style="text-align:center;font-weight:bold;"> No of Stoppage :  </span> <span id="no_of_stoppage" style="text-align:center;font-weight:bold;"></span>
+                                </button>
+                            </div>
+
+                            <div class='col-sm-12 col-md-12 col-lg-12' style='align-content:center;padding-left:2%;'>
+                                <button type="button" class="mb-xs mt-xs mr-xs btn btn-sm btn-default" style="width:100%;float:left;background-color:#002929;color:white;" onclick="get_16big_loss_data();">
+                                    <span id="" style="text-align:center;font-weight:bold;"> More</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-9 col-md-9 col-lg-9" style="margin-top:-30px">
+                    <div class='col-sm-12 col-md-12 col-lg-12'>
+                        <div class='col-sm-12 col-md-12 col-lg-12'>
+                            <div class='col-sm-10 col-md-10 col-lg-10' style="text-align:center;padding-top:2%;">
+                                <header style='border-style:solid;border-width:thin;border-color:black;text-align:center;background-color:teal;color:white;margin-left:-12px;max-width:109%'>
+                                    <span style="float:left;margin-left:30px"> Variant Details</span>
+                                    <span style="margin-left:20px" id="batch1"></span>
+                                </header>
+                                <br />
+                                <div class="row" style="display:flex">
+
+                                    <div class="col-sm-6 col-md-6 col-lg-6">
+                                        <button type="button" class="mb-xs mt-xs mr-xs btn btn-sm btn-default" style="width:100%;float:left;background-color:#002929;color:white;">
+                                            Variant:<br /><div class='col-sm-2 col-md-2 col-lg-2' style='align-content:center;background-color:#0012AB'>
+                                                <span id="" style="float:left;font-weight:bold;display:inline"><i class="fa fa-cube" aria-hidden="true"></i> </span> <span id="" style="float:left;font-weight:bold;display:inline"></span>
+                                            </div><span id="variant" style="float:left;font-weight:bold;font-size:large;margin-left:15px"></span>
+
+                                        </button>
+
+                                    </div>
+
+                                    <div class="col-sm-4 col-md-4 col-lg-4">
+                                        <button type="button" class="mb-xs mt-xs mr-xs btn btn-sm btn-default" style="width:100%;float:left;background-color:#002929;color:white;">
+                                            Total Accepted Parts:<br />
+                                            <div class='col-sm-2 col-md-2 col-lg-2' style='align-content:center;background-color:lightgreen'>
+                                                <span id="" style="float:left;font-weight:bold;display:inline"><i class="fa fa-check-circle" aria-hidden="true"></i> </span> <span id="" style="float:left;font-weight:bold;display:inline"></span>
+                                            </div>
+                                            <span id="totalok" style="float:left;font-weight:bold;font-size:large;margin-left:20px"></span>
+                                        </button>
+
+                                    </div>
+                                    <div class="col-sm-4 col-md-4 col-lg-4">
+                                        <button type="button" class="mb-xs mt-xs mr-xs btn btn-sm btn-default" style="width:100%;float:left;background-color:#002929;color:white;">
+                                            Total Rejected Parts:<br />
+                                            <div class='col-sm-2 col-md-2 col-lg-2' style='align-content:center;background-color:red'>
+                                                <span id="" style="float:left;font-weight:bold;display:inline"><i class="fa fa-times-circle" aria-hidden="true"></i> </span> <span id="" style="float:left;font-weight:bold;display:inline"></span>
+                                            </div>
+                                            <span id="totalnok" style="float:left;font-weight:bold;font-size:large;margin-left:20px"></span>
+                                        </button>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <div class='col-sm-2 col-md-2 col-lg-2' style="text-align:center;">
+
+                                <button type="button" style="width:130px;margin-bottom:10px;" class="btn btn-danger" onclick="get_alarm_data();">Recent Alarm</button>
+
+                                <button type="button" style="width:130px;margin-bottom:10px;" class="btn btn-warning" onclick="get_loss_data();">Recent Loss</button>
+
+                                <button type="button" style="width:130px;" class="btn btn-info" onclick="get_hourlytracker_data();">Hourly Tracker</button>
+                            </div>
+
+                            <div>
+                                <div class=' col-sm-1 col-md-1 col-lg-1' style="text-align:center;padding-top:2%;margin-left:60px;margin-top:40px">
+                                    @*<header style='border-style:solid;border-width:thin;border-color:black;text-align:center;background-color:teal;color:white;'>*@
+
+                                    <div id="tooltip11">
+                                        <span class="glyphicon glyphicon-info-sign gi-8x" style="color:black">
+
+                                        </span>
+                                        <table class="tooltiptext">
+                                            <thead>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td><input type="button" class="small" style="border-style: solid; border-width: thin; border-color: black; height: 9px; width: 8px; background-color: #009900;" /></td>
+                                                    <td style="float:left;">100%-81%</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><input type="button" class="small" style="border-style: solid; border-width: thin; border-color: black; height: 9px; width: 8px; background-color: #d95f02;" /></td>
+                                                    <td style="float:left;">80%-61%</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><input type="button" class="small" style="border-style: solid; border-width: thin; border-color: black; height: 9px; width: 8px; background-color: #000099;" /></td>
+                                                    <td style="float:left;">60%-41%</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><input type="button" class="small" style="border-style: solid; border-width: thin; border-color: black; height: 9px; width: 8px; background-color: #FF0000;" /></td>
+                                                    <td style="float:left;">0%-40%</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><input type="button" class="small" style="border-style: solid; border-width: thin; border-color: black; height: 9px; width: 8px; background-color: #ad1337;" /></td>
+                                                    <td style="float:left;"> > than 100%</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    @*</header>*@
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class='col-sm-12 col-md-12 col-lg-12' style="margin-top:-30px">
+
+                            <div style="padding:0%;margin-left:-70px;margin-right:-100px;">
+                                <div class='col-sm-3 col-md-3 col-lg-3' style='align-content:center;padding-left:2%;'>
+
+                                    <svg class="chart" id="chartid" style="align-content:center;"></svg>
+
+
+                                </div>
+                                <div class='col-sm-3 col-md-3 col-lg-3' style='align-content:center;padding-left:2%;'>
+
+                                    <svg class="chart1" id="chartid1" style="align-content:center;"></svg>
+
+
+                                </div>
+                                <div class='col-sm-3 col-md-3 col-lg-3' id="chart2_toop" style='align-content:center;padding-left:2%;'>
+
+                                    <svg class="chart2" id="chartid2" style="align-content:center;"></svg>
+
+
+                                </div>
+                                <div class='col-sm-3 col-md-3 col-lg-3' style='align-content:center;padding-left:2%;'>
+
+                                    <svg class="chart3" id="chartid3" style="align-content:center;"></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class=' col-sm-2 col-md-2 col-lg-2' style="text-align:center;padding-top:2%;">
+                    <header style='border-style:solid;border-width:thin;border-color:black;text-align:center;background-color:teal;color:white;'>
+                        Machines
+                        <div id="tooltip1">
+                            <span class="glyphicon glyphicon-info-sign gi-8x">
+
+                            </span>
+                            <table class="tooltiptext">
+                                <thead>
+
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><input type="button" class="small" style="border-style: solid; border-width: thin; border-color: black; height: 9px; width: 8px; background-color: red; margin-left: 3px" /></td>
+                                        <td style="float:left;margin-left:3px">M/c under Error</td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="button" class="small" style="border-style: solid; border-width: thin; border-color: black; height: 9px; width: 8px; background-color: green; margin-left: 3px" /></td>
+                                        <td style="float: left; margin-left: 3px">M/c Running</td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="button" class="small" style="border-style: solid; border-width: thin; border-color: black; height: 9px; width: 8px; background-color: yellow; margin-left: 3px" /></td>
+                                        <td style="float: left; margin-left: 3px">M/c is Idle/Loss</td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="button" class="small" style="border-style: solid; border-width: thin; border-color: black; height: 9px; width: 8px; background-color: grey; margin-left: 3px" /></td>
+                                        <td style="float: left; margin-left: 3px">Planned Break</td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="button" class="small" style="border-style: solid; border-width: thin; border-color: black; height: 9px; width: 8px; background-color: blue; margin-left: 3px" /></td>
+                                        <td style="float: left; margin-left: 3px">PLC disconnect with Gateway</td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </header>
+
+
+                    <br />
+
+
+                    <div class="col-sm-12 col-md-12 col-lg-12" style='padding-top:1%;padding-bottom:1%;border-style:solid;border-width:thin;border-color:black;align-content:center'>
+
+                        <div class='grid machinecount'>
+
+                        </div>
+
+
+                    </div>
+                </div>
+                <div>
+                    <div class='col-sm-7 col-md-7 col-lg-7' style="padding-top:2%;align-content:center;max-width:59%;margin-left:20px">
+                        <header style='border-style:solid;border-width:thin;border-color:black;text-align:center;background-color:teal;color:white;'>
+                            Utilization
+                        </header>
+                        <div class='row col-sm-12 col-md-12 col-lg-12' style='align-content:center;'>
+
+                            <svg class="time1" id="time1" style="align-content:center;text-align:center;justify-content:center;margin-left:-204px;width:167%;margin-top:-23px"></svg>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+
+
+        <div style="margin-left:-58px">
+            <div class="mainbodyemty emptydata">
+
+            </div>
+        </div>
+    </div>
+
+    <div id="myModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" onclick="close_modal();">&times;</span>
+                <h4>Alarm List</h4>
+            </div>
+            <div class="modal-body" id="machine_status">
+                <div>
+                    <table class="table table-bordered table-striped mb-none" id="datatable-default">
+                        <thead style="background-color:teal;color:white;">
+                            <tr>
+                                <th class="centercls"> S.No </th>
+                                <th>Machine</th>
+                                <th>Alarm ID </th>
+                                <th>Alarm Description</th>
+                                <th>Total Duration (Minutes)</th>
+                                <th>Occurence</th>
+                                <th>Last Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody class="Historic_details">
+                            <span class="alarm_error" style="color:red;font-size:13px;font-weight:bold;"></span>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="myModal1" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" onclick="close_modal();">&times;</span>
+                <h2>Machine Loss List</h2>
+            </div>
+            <div class="modal-body" id="machine_status">
+                <div>
+                    <table class="table table-bordered table-striped mb-none" id="datatable_loss_splitup">
+                        <thead style="background-color:teal;color:white;">
+                            <tr>
+                                <th> S.No </th>
+                                <th> Duration Start </th>
+                                <th> Duration End </th>
+                                <th>Duration</th>
+                                <th> Loss Name</th>
+                                <th> Loss Type </th>
+                                <th>Loss Category</th>
+                                <th>Actual Data</th>
+                            </tr>
+                        </thead>
+                        <tbody class="daily_splitup_details">
+                            <span class="loss_error" style="color:red;font-size:13px;font-weight:bold;"></span>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="myModal2" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" onclick="close_modal();">&times;</span>
+                <h2>Hourly Tracker Details</h2>
+            </div>
+            <div class="modal-body" id="machine_status">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped mb-none" id="datatable_hourly">
+                        <thead style="background-color:teal;color:white;">
+                            <tr>
+                                <th> S.No </th>
+                                <th> Shift </th>
+                                <th> Variant </th>
+                                <th> Batch </th>
+                                <th> Start </th>
+                                <th> End </th>
+                                <th> OK Parts </th>
+                                <th> NOK Parts</th>
+                                <th> Stoppage </th>
+                                <th> Cumulative </th>
+                                <th> Total Time (Mins)</th>
+                                <th> Hour </th>
+                                <th> Uptime (Mins)</th>
+                                <th> Downtime (Mins)</th>
+                                <th> Loss Time (Mins)</th>
+                                <th> Breaktime (Mins)</th>
+                                <th> Target Part </th>
+                                <th> Target Cumulative </th>
+                                <th> Availability (%)</th>
+                                <th> Performance (%)</th>
+                                <th> Quality (%)</th>
+                                <th> OEE (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="datatable_hourly_details">
+                            <span class="hourly_error" style="color:red;font-size:13px;font-weight:bold;"></span>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="myModal3" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" onclick="close_modal();">&times;</span>
+                <h4>16 Big Loss Live</h4>
+            </div>
+            <div class="modal-body" id="machine_status">
+                <section class="panel">
+                    <header class="panel-heading" style="background-color:teal;color:white;">
+                        <div class="panel-actions">
+                        </div>
+                        <h2 class="panel-title" style="color:white;"> Live </h2>
+                    </header>
+                    <div>
+                        <div class='col-sm-3 col-md-3 col-lg-3' style='align-content:center;padding-left:2%;'>
+                            <button type="button" class="mb-xs mt-xs mr-xs btn btn-sm btn-default" style="width:100%;float:left;background-color:#002929;color:white;">
+                                <span id="" style="float:left;font-weight:bold;"> Total UpTime : </span> <span id="tot_uptime" style="float:left;font-weight:bold;"></span>
+                            </button>
+                        </div>
+                        <div class='col-sm-3 col-md-3 col-lg-3' style='align-content:center;padding-left:2%;'>
+                            <button type="button" class="mb-xs mt-xs mr-xs btn btn-sm btn-default" style="width:100%;float:left;background-color:#002929;color:white;">
+                                <span id="" style="float:left;font-weight:bold;"> Total DownTime : </span> <span id="tot_downtime" style="float:left;font-weight:bold;"></span>
+                            </button>
+                        </div>
+                        <div class='col-sm-3 col-md-3 col-lg-3' style='align-content:center;padding-left:2%;'>
+                            <button type="button" class="mb-xs mt-xs mr-xs btn btn-sm btn-default" style="width:100%;float:left;background-color:#002929;color:white;">
+                                <span id="" style="float:left;font-weight:bold;">Total LossTime : </span> <span id="tot_losstime" style="float:left;font-weight:bold;"></span>
+                            </button>
+                        </div>
+                        <div class='col-sm-3 col-md-3 col-lg-3' style='align-content:center;padding-left:2%;'>
+                            <button type="button" class="mb-xs mt-xs mr-xs btn btn-sm btn-default" style="width:100%;float:left;background-color:#002929;color:white;">
+                                <span id="" style="float:left;font-weight:bold;">Total BreakTime : </span> <span id="tot_breaktime" style="float:left;font-weight:bold;"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <table class="table table-bordered table-striped mb-none" id="" data-swf-path="assets1/vendor/jquery-datatables/extras/TableTools/swf/copy_csv_xls_pdf.swf">
+                                <thead style="background-color:teal;color:white;">
+                                    <tr>
+                                        <th>  </th>
+                                        <th> Last Reason </th>
+                                        <th> Last Occurence</th>
+                                        <th>Duration</th>
+                                        <th>Total Duration</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="details">
+                                    <tr>
+                                        <td>Auto Running</td>
+                                        <td>-</td>
+                                        <td> <span id="auto_last_occ" style="float:left;font-weight:bold;"></span> </td>
+                                        <td><span id="auto_dur" style="float:left;font-weight:bold;"></span></td>
+                                        <td><span id="auto_tot_dur" style="float:left;font-weight:bold;"></span></td>
+
+
+
+                                    </tr>
+                                    <tr>
+                                        <td>Stoppage</td>
+                                        <td><span id="stoppage_last_reason" style="float:left;font-weight:bold;"></span></td>
+                                        <td> <span id="stoppage_last_occ" style="float:left;font-weight:bold;"></span></td>
+                                        <td><span id="stoppage_last_duration" style="float:left;font-weight:bold;"></span></td>
+
+                                        <td><span id="stoppage_tot_duration" style="float:left;font-weight:bold;"></span></td>
+
+
+
+                                    </tr>
+                                    <tr>
+                                        <td>Loss</td>
+                                        <td><span id="loss_last_reason" style="float:left;font-weight:bold;"></span></td>
+                                        <td><span id="loss_last_occ" style="float:left;font-weight:bold;"></span></td>
+                                        <td><span id="loss_last_duration" style="float:left;font-weight:bold;"></span></td>
+                                        <td><span id="loss_tot_duration" style="float:left;font-weight:bold;"></span></td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>Break</td>
+                                        <td><span id="break_last_reason" style="float:left;font-weight:bold;"></span></td>
+                                        <td><span id="break_last_occ" style="float:left;font-weight:bold;"></span></td>
+                                        <td><span id="break_last_duration" style="float:left;font-weight:bold;"></span></td>
+
+                                        <td><span id="break_tot_duration" style="float:left;font-weight:bold;"></span></td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    @*<script src="~/Scripts/d3.v4.js"></script>
+        <script src="~/Scripts/d3-scale-chromatic.js"></script>*@
+    @*<script src="https://d3js.org/d3.v4.js"></script>
+        <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>*@
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/assets1/javascripts/swal.js"></script>
+    <script src="~/assets1/javascripts/swal_alert.js"></script>
+
+    <script>
+
+
+
+        var linename = ''
+        var shift_prev = '';
+        var linenameS = '';
+        var performanceS = '';
+        var tokS = '';
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+
+        $(document).ready(function () {
+            $(function () {
+                var CompanyCode = '@Session["CompanyCode"]';
+                var PlantCode = '@Session["PlantCode"]';
+                var LineCode = '@Session["LineCode"]';
+                if (CompanyCode == "" && PlantCode == "" && LineCode == "") {
+                    swal({
+                        icon: "error",
+                        title: "Please Select Customer, Plant and Line...!",
+                        button: true,
+                        timer: 4500
+                    })
+                    return;
+                }
+                else
+                    if (CompanyCode == "") {
+                        swal({
+                            icon: "error",
+                            title: "Please Select Customer...!",
+                            button: true,
+                            timer: 4500
+                        })
+                        return;
+                    }
+                    else
+                        if (PlantCode == "") {
+                            swal({
+                                icon: "error",
+                                title: "Please Select Plant...!",
+                                button: true,
+                                timer: 4500
+                            })
+                            return;
+                        }
+                if (LineCode == "") {
+                    swal({
+                        icon: "error",
+                        title: "Please Select Line...!",
+                        button: true,
+                        timer: 4500
+                    })
+                    return;
+                }
+                else {
+                    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+                    var R_url = '@Url.Action("Login", "Main")';
+                    var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+
+                    var myData = {
+                        "Flag": "Subsystem",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+                        "LineCode": '@Session["LineCode"]',
+                    };
+                    var R_url = '@Url.Action("Login", "Main")';
+                    var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+                    var Gd_url = '@Url.Action("GetSettingdatas1", "Main")';
+
+
+
+
+                    $.ajax({
+                        type: "POST",
+                        url: Gd_url,
+                        data: myData,
+                        dataType: "json",
+                        success: function (response) {
+                            var s = '<option value="">Select Machine</option>';
+                            for (var i = 0; i < response.data.length; i++) {
+                                s += '<option value="' + response.data[i].Code + '"selected>' + response.data[i].Name + '</option>';
+                            }
+                            $("#Machine").html(s);
+                        },
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+                            }
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                    });
+
+                    var Data1 = {
+                        "Flag": "Subsystem",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+                        "LineCode": '@Session["LineCode"]',
+
+                    };
+                    $.ajax({
+                        type: "POST",
+                        url: URL + 'api/Quality/GetShiftId',
+                        data: Data1,
+                        headers: {
+                            Authorization: 'Bearer ' + user1
+                        },
+                        dataType: "json",
+                        success: function (response) {
+
+                            $.ajax({
+                                type: "POST",
+                                url: '@Url.Action("Set_ShiftID", "UserSettings")',
+                                data: '{Id: ' + JSON.stringify(response.data) + '}',
+
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                success: function (response) {
+                                },
+                                error: function (response) {
+
+                                }
+                            });
+                        },
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+                            }
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                    });
+                }
+            });
+
+            getData();
+
+        });
+
+        function getData() {
+            var list = [];
+            var list1 = [];
+            var myData = {
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]',
+                "Line_Code": '@Session["LineCode"]',
+            };
+            var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+
+            $.ajax({
+                type: 'POST',
+                url: URL + 'api/OEE/New_GetLineOEE',
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                data: myData,
+                dataType: 'json'
+            }).success(function (response) {
+
+
+                $(".prev").hide();
+
+                var t = "Welcome to Plant-Digitization Portal";
+
+                $('#tex').text(t);
+
+
+                var t0 = "Dashboard";
+                //$('#plantcode').val(t0);
+                $('#plantcode').text(t0);
+
+
+                for (i = 0; i < response.data.length; i++) {
+                    list.push(response.data[i].Line_Code);
+                    list1.push(response.data[i].line_name);
+                }
+                linename = list[0];
+                linefullname = list1[0];
+                getlineitems();
+            }).error(function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+            });
+
+        }
+
+
+        function getlineitems() {
+            var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+            var myData = {
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]',
+                "Line_Code": '@Session["LineCode"]',
+            };
+            $.ajax({
+                type: 'POST',
+                url: URL + 'api/OEE/GetDashboardOEEData',
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                data: myData,
+                dataType: 'json'
+            }).success(function (response) {
+                $("#linenamee").html('');
+                $('.machinecount').html('');
+                $('.chart').html('');
+                $('.chart1').html('');
+                $('.chart2').html('');
+                $('.chart3').html('');
+                $('.time1').html('');
+                $('#totalok').html('');
+                $('#totalnok').html('');
+                $('#variant').html('');
+                $("#details1").empty();
+                $("#linenamee").text(linefullname + '_' + linename);
+
+                if (response.data.length != 0) {
+
+                    $(".mainbody").show();
+
+                    $(".mainbodyempty").hide();
+
+                    $(".emptydata").html('');
+                    var count = response.data[0].MachineCount;
+                    document.getElementById('line_heading').textContent = 'NO OF STATION:' + count + '';
+                    document.getElementById('batch1').textContent = 'Batch_code:' + response.data[0].Batch_code + '';
+                    /* $("#batch").text(response.data[i].Batch_code);*/
+                    $('.updated_time').text(response.data[0].last_updatedate);
+                    $('.shift').text(response.data[0].shift_id);
+
+
+
+                    $('.updated_time').text(new Date().toLocaleString());
+                    $('.shift').text(response.data[0].shift_id);
+
+                    $('.shift_n').show();
+                    $('.updated_time_n').show();
+
+                    var final_oee = 0;
+                    var final_Availability = 0;
+                    var final_Performance = 0;
+                    var final_Quality = 0;
+                    var final_uptime = 0;
+                    var final_downtime = 0;
+                    var final_breaktime = 0;
+                    var final_losstime = 0;
+                    var Idealcycletime = 0;
+                    var Reworkparts = 0;
+                    var Reason;
+                    var stoppage = 0;
+                    var Loss;
+                    var Lastcycletime;
+
+                    for (var i = 0; i < response.data.length; i++) {
+                        if (response.data[i].MachineIndex == 1) {
+                            final_oee = response.data[i].OEE;
+
+                            document.getElementById('variant').textContent = response.data[i].variant_name;
+                            //$('#variant').text(response.data[i].variant_name);
+                            final_Availability = response.data[i].Availability;
+                            final_Performance = response.data[i].Performance;
+                            final_Quality = response.data[i].Quality;
+                            final_uptime = response.data[i].uptime;
+                            final_downtime = response.data[i].downtime;
+                            final_breaktime = response.data[i].breaktime;
+                            final_losstime = response.data[i].losstime;
+                            Idealcycletime = response.data[i].Ideal_cycletime;
+                            Reworkparts = response.data[i].totalnok;
+                            Reason = response.data[i].Reason;
+                            stoppage = response.data[i].Stoppage;
+                            Loss = response.data[i].Duration;
+                            Lastcycletime = response.data[i].Lastcycletime;
+
+                        }
+                    }
+
+                    for (var i = 0; i < 1; i++) {
+                        //document.getElementById('totalok').textContent = /*'Total Accepted Parts: ' +*/ response.data[i].totalok;
+                        //document.getElementById('totalnok').textContent = /*'Total Rejected Parts : '+*/response.data[i].totalnok;
+                        document.getElementById('totalok').textContent = /*'Total Accepted Parts: ' +*/ response.data[response.data.length - 1].totalok;
+                        document.getElementById('totalnok').textContent = /*'Total Rejected Parts : '+*/response.data[response.data.length - 1].totalnok;
+
+
+                        $('.quicklink').html(
+
+                            "<div class='' style='text-align:center;width:100%;align-content:center;padding-bottom:2%;display:flex'>" +
+                            "<div class='' style='text-align:center;width:100%;align-content:center;'>" +
+                            "<a href='../Quality/QualityLiveDashboard?" + linename + "'' style='text-decoration:none' data-bs-toggle='tooltip' title='Production'><button type='button' class='' style='width:100%;background-color:#002929;'><i class='fa fa-bar-chart-o fa-lg' aria-hidden='true' style='color:white'></i></br></button></a>" +
+                            "</div>" +
+                            "<div class='' style='text-align:center;width:100%;align-content:center;'>" +
+                            "<a href='../FirstPassYield/HourlyTrackerLive?" + linename + "' style='text-decoration:none' data-bs-toggle='tooltip' title='Hourly Tracker'><button type='button' class='' style='width:100%;background-color:#002929;'><i class='fa fa-clock-o fa-lg' aria-hidden='true' style='color:white'></i></br></button></a>" +
+                            "</div>" +
+                            "<div class='' style='text-align:center;width:100%;align-content:center;'>" +
+                            "<a href='../ToolLife/ToolLifeLiveDashboard?" + linename + "' style='text-decoration:none' data-bs-toggle='tooltip' title='Preventive Maintenance'><button type='button' class='' style='width:100%;background-color:#002929;'><i class='fa  fa-th-list fa-lg' aria-hidden='true' style='color:white'></i></br></button></a>" +
+                            "</div>" +
+                            "</div>" +
+                            "</div > ");
+                        chec(final_oee, 100 - final_oee, final_Availability, final_Performance, final_Quality);
+                        chec1(final_Availability, 100 - final_Availability, final_uptime, final_downtime, final_losstime, final_breaktime, stoppage);
+                        chec2(final_Performance, 100 - final_Performance, Idealcycletime, Loss, Lastcycletime);
+                        chec3(final_Quality, 100 - final_Quality, Reworkparts, Reason);
+                        time11(final_uptime, final_downtime, final_losstime, final_breaktime);
+
+
+
+                        for (var j = 0; j < response.data[0].MachineCount; j++) {
+
+                            var color = '';
+                            if (response.data[j].MachineStatus == "0") {
+                                color = 'red';
+                            }
+                            if (response.data[j].MachineStatus == '1') {
+                                color = 'green';
+                            }
+                            if (response.data[j].MachineStatus == '2') {
+                                color = 'yellow';
+                            }
+                            if (response.data[j].MachineStatus == '3') {
+                                color = 'yellow';
+                            }
+                            if (response.data[j].MachineStatus == '4') {
+                                color = 'grey';
+                            }
+                            if (response.data[j].MachineStatus == '5') {
+                                color = 'blue';
+                            }
+
+                            $('.machinecount').append("<div id='M" + response.data[j].MachineCode + "' class='box " + color + "'  title='" + response.data[j].MachineCode + "' style='border-style:solid;border-width:thin;border-color:black'><p></p> </div>");
+
+                            //$('.machinecount').append("<div id='popupM" + response.data[j].MachineCode + "' style='display:none;margin-top:5px'>" + response.data[j].MachineCode + "</div>");
+
+                        }
+
+                        var newRow = $("<tr>");
+                        var cols = '';
+                        cols += "<td style='text-align:center;'> <table border='1' style='border-collapse:collapse;width:100%;background-color:#1bb7cb;color:black;'><tr><td>A</td><td>P</td><td>Q</td></tr><tr><td> " + response.data[i].Availability + "</td><td> " + response.data[i].Performance + "</td><td> " + response.data[i].Quality + "</td></tr></table></td>";
+                        cols += "</tr>"
+
+                        newRow.append(cols);
+
+                        $("#details1").append(newRow);
+                    }
+                }
+
+
+                //$("#M" + response.data[j].MachineCode + "").hover(function (event) {
+                //    var divid = "#popup" + $(this).attr("id")
+                //    $(divid).css({ top: event.clientY, left: event.clientX }).show();
+                //}, function () {
+                //    var divid = "#popup" + $(this).attr("id")
+                //    $(divid).hide();
+                //});
+                else {
+                    $(".mainbody").hide();
+
+                    $(".mainbodyempty").show();
+
+                    $(".emptydata").html('');
+
+                    document.getElementById('line_heading').textContent = '';
+
+                    /*  document.getElementById('linetype').textContent = '';*/
+
+                    var cols = '';
+                    cols += "<div class='col-md-12 col-xl-12' style='font-weight:bold;font-size:15px;color:red;align-content:center;text-align:center;'> No Data Available...!</div>";
+                    $(".emptydata").html(cols);
+                }
+            }).error(function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+            });
+            setTimeout(getlineitems, 60000);
+        }
+
+        function myfun(id) {
+            alert(id);
+            var divid = "#popup" + id;
+           $(divid).css({ top: event.clientY, left: event.clientX }).show();
+        }
+
+    </script>
+
+    <script>
+
+        function chec(aa, bb, Avail, per, quality) {
+            // Data
+            var value = aa / 100
+
+            if (value >= 1) {
+                value = 1;
+            }
+
+            var text = Math.round(value * 100) + '%'
+            var data = [value, 1 - value]
+
+            // Settings
+            var width = $('#chartid').width()
+            var height = $('#chartid').height()
+            var anglesRange = 0.5 * Math.PI
+            var radis = Math.min(width, 2 * height) / 2
+            var thickness = 30
+
+            var color = '';
+
+            if (aa >= 81 && aa <= 100) {
+                color = '#009900';
+            }
+            else if (aa >= 61 && aa <= 80) {
+                color = '#d95f02';
+            }
+            else if (aa >= 41 && aa <= 60) {
+                color = '#000099';
+            }
+            else if (aa >= 0 && aa <= 40) {
+                color = '#FF0000';
+            }
+            else {
+                color = '#ad1337';
+            }
+            var colors = [color, "#F5F5F5"]
+
+            var pies = d3.pie()
+                .value(d => d)
+                .sort(null)
+                .startAngle(anglesRange * -1)
+                .endAngle(anglesRange)
+
+            var arc = d3.arc()
+                .outerRadius(radis)
+                .innerRadius(radis - thickness)
+
+            var translation = (x, y) => `translate(${x}, ${y})`
+            var tooltip = d3.select("#chartid")
+                .append("div")
+                .style("opacity", 0)
+                .attr("class", "tooltip")
+                .style("background-color", "tranparent")
+                .style("border", "solid")
+                .style("border-width", "2px")
+                .style("border-radius", "5px")
+                .style("padding", "5px")
+
+            tooltip = d3.select("body").append("div").style("width", "140px").style("height", "80px").style("background", "#F0FFF0")
+                .style("opacity", "1").style("position", "absolute").style("visibility", "hidden").style("padding", "5px");
+
+            toolval = tooltip.append("div");
+            // Feel free to change or delete any of the code you see in this editor!
+            var svg = d3.select(".chart").append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .attr("class", "half-donut")
+                .append("g")
+                .attr("transform", translation(width / 2, height))
+                .on("mouseout", function () {
+                    d3.select(this).style("stroke", "none");
+                    tooltip.style("visibility", "hidden");
+                    /* tooltip.transition().style("opacity", 0);*/
+
+                })
+                .on("mouseenter", function (d) {
+                    tooltip.style("visibility", "visible")
+                        .style("top", (d3.event.pageY - 10) + "px").style("left", (d3.event.pageX + 10) + "px");
+                    /* tooltip.select("div").transition().duration(100)*/
+                    var text = 'Availabilty: ' + Avail + "%" + '<br/> Performance: ' + per + "%" + '<br/> Quality: ' + quality + "%" + '';
+                    tooltip.select("div").html(text)
+                    tooltip.transition().style("opacity", 0).duration(3000).delay(3000);
+
+
+                });
+            svg.selectAll("path")
+                .data(pies(data))
+                .enter()
+                .append("path")
+                .attr("fill", (d, i) => colors[i])
+                .attr("d", arc)
+
+            svg.append("text")
+                .attr("text-anchor", "middle")
+                //.attr('font-size', '-3rem')
+                .attr('y', 15)
+                .attr("dy", "-3rem")
+                .text(d => text)
+
+
+            svg.append("text")
+                .text("OEE")
+                .attr('font-size', '-3rem')
+                .attr('font-weight', '600')
+                .attr('y', 5)
+                .attr("dy", "-0.5rem")
+                .attr("class", "label")
+                .attr("text-anchor", "middle")
+
+
+        }
+
+        function chec1(aa, bb, up, down, loss, breaktime, stoppage) {
+            // Data
+            var value = aa / 100
+            if (value >= 1) {
+                value = 1;
+            }
+
+            var text = Math.round(value * 100) + '%'
+            var data = [value, 1 - value]
+
+            // Settings
+            var width = $('#chartid1').width()
+            var height = $('#chartid1').height()
+            var anglesRange = 0.5 * Math.PI
+            var radis = Math.min(width, 2 * height) / 2
+            var thickness = 30
+            var color = '';
+
+            if (aa >= 81 && aa <= 100) {
+                color = '#009900';
+            }
+            else if (aa >= 61 && aa <= 80) {
+                color = '#d95f02';
+            }
+            else if (aa >= 41 && aa <= 60) {
+                color = '#000099';
+            }
+            else if (aa >= 0 && aa <= 40) {
+                color = '#FF0000';
+            }
+            else {
+                color = '#ad1337';
+            }
+            var colors = [color, "#F5F5F5"]
+            var tooltip = d3.select("#chartid1")
+                .append("div")
+                .style("opacity", 0)
+                .attr("class", "tooltip")
+                .style("background-color", "tranparent")
+                .style("border", "solid")
+                .style("border-width", "2px")
+                .style("border-radius", "5px")
+                .style("padding", "5px")
+
+            tooltip = d3.select("body").append("div").style("width", "130px").style("height", "120px").style("background", "#F0FFF0")
+                .style("opacity", "1").style("position", "absolute").style("visibility", "hidden");
+
+            toolval = tooltip.append("div");
+
+            var pies = d3.pie()
+                .value(d => d)
+                .sort(null)
+                .startAngle(anglesRange * -1)
+                .endAngle(anglesRange)
+            var arc = d3.arc()
+                .outerRadius(radis)
+                .innerRadius(radis - thickness)
+            var translation = (x, y) => `translate(${x}, ${y})`
+
+            var svg = d3.select(".chart1").append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .attr("class", "half-donut")
+                .append("g")
+                .attr("transform", translation(width / 2, height))
+                .on("mouseout", function () {
+                    d3.select(this).style("stroke", "none");
+                    tooltip.style("visibility", "hidden");
+
+                    /* tooltip.transition().style("opacity", 0).duration(0).delay(0);*/
+                })
+                .on("mouseover", function (d) {
+                    tooltip.style("visibility", "visible")
+                        .style("top", (d3.event.pageY - 10) + "px").style("left", (d3.event.pageX + 10) + "px");
+
+                    var text = 'uptime: ' + up + " mins" + '<br/> downtime: ' + down + " mins" + '<br/> losstime: ' + loss + " mins" + '<br/> breaktime: ' + breaktime + " mins" + '<br/> Stoppage: ' + stoppage + " mins" + '';
+                    tooltip.select("div").html(text)
+                    tooltip.transition().style("opacity", 0).duration(3000).delay(3000);
+
+                });
+            svg.selectAll("path")
+                .data(pies(data))
+                .enter()
+                .append("path")
+                .attr("fill", (d, i) => colors[i])
+                .attr("d", arc)
+
+            svg.append("text")
+                .attr("text-anchor", "middle")
+                //.attr('font-size', '-3rem')
+                .attr('y', 15)
+                .attr("dy", "-3rem")
+                .text(d => text)
+
+            svg.append("text")
+                .text("Availability")
+                .attr('y', 5)
+                .attr("dy", "-0.5rem")
+                .attr("class", "label")
+                .attr("text-anchor", "middle")
+
+        }
+
+        function chec2(aa, bb, cc, Loss, ct) {
+            // Data
+            /*  d3.select(".chart2").style("visibility", "visible")*/
+            var value = aa / 100
+
+            if (value >= 1) {
+                value = 1;
+            }
+
+            var text = Math.round(value * 100) + '%'
+            var data = [value, 1 - value]
+
+            // Settings
+            var width = $('#chartid2').width()
+            var height = $('#chartid2').height()
+            var anglesRange = 0.5 * Math.PI
+            var radis = Math.min(width, 2 * height) / 2
+            var thickness = 30
+            // Utility
+            //     var colors = d3.scale.category10();
+            // Create dummy data
+
+            var color = '';
+
+            if (aa >= 81 && aa <= 100) {
+                color = '#009900';
+            }
+            else if (aa >= 61 && aa <= 80) {
+                color = '#d95f02';
+            }
+            else if (aa >= 41 && aa <= 60) {
+                color = '#000099';
+            }
+            else if (aa >= 0 && aa <= 40) {
+                color = '#FF0000';
+            }
+            else {
+                color = '#ad1337';
+            }
+            var colors = [color, "#F5F5F5"]
+
+            var pies = d3.pie()
+                .value(d => d)
+                .sort(null)
+                .startAngle(anglesRange * -1)
+                .endAngle(anglesRange)
+
+            var arc = d3.arc()
+                .outerRadius(radis)
+                .innerRadius(radis - thickness)
+
+            var translation = (x, y) => `translate(${x}, ${y})`
+
+            var tooltip = d3.select(".chart2")
+                .append("div")
+                .style("opacity", 0)
+                .attr("class", "tooltip")
+                .style("background-color", "tranparent")
+                .style("border", "solid")
+                .style("border-width", "2px")
+                .style("border-radius", "5px")
+                .style("padding", "5px")
+                .attr("id", "myTooltip")
+
+
+            tooltip = d3.select("body").append("div").style("width", "200px").style("height", "100px").style("background", "#F0FFF0")
+                .style("opacity", "1").style("position", "absolute").style("visibility", "hidden").style("padding", "5px").style("id", "divper");
+
+            toolval = tooltip.append("div");
+
+
+            // Feel free to change or delete any of the code you see in this editor!
+            var svg = d3.select(".chart2").append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .attr("class", "half-donut")
+                .append("g")
+                .attr("transform", translation(width / 2, height))
+
+                .on("mouseout", function () {
+                    d3.select(this).style("stroke", "none");
+                    tooltip.style("visibility", "hidden");
+
+                    /* tooltip.transition().style("opacity", 0).duration(100).delay(100);*/
+                })
+                .on("mouseover", function (d) {
+                    tooltip.style("visibility", "visible")
+                        .style("top", (d3.event.pageY - 10) + "px").style("left", (d3.event.pageX + 10) + "px");
+
+                    /* var text = "Idealcycletime:" + cc;*/
+                    var text = 'Idealcycletime: ' + cc + "-mins" + '<br/> Loss Duration: ' + Loss + " -mins" + ' <br/>Last Cycletime: ' + ct + "-mins" + '';
+                    tooltip.select("div").html(text)
+                    tooltip.transition().style("opacity", 0).duration(3000).delay(3000);
+
+
+                });
+
+
+            svg.selectAll("path")
+                .data(pies(data))
+                .enter()
+                .append("path")
+                .attr("fill", (d, i) => colors[i])
+                .attr("d", arc)
+
+            svg.append("text")
+                .attr("text-anchor", "middle")
+                //.attr('font-size', '-3rem')
+                .attr('y', 15)
+                .attr("dy", "-3rem")
+                .text(d => text)
+
+
+            svg.append("text")
+                .text("Performance")
+                .attr('y', 5)
+                .attr("dy", "-0.5rem")
+                .attr("class", "label")
+                .attr("text-anchor", "middle")
+
+
+        }
+
+        function chec3(aa, bb, cc, reason) {
+            // Data
+            var value = aa / 100
+
+            if (value >= 1) {
+                value = 1;
+            }
+
+            var text = Math.round(value * 100) + '%'
+            var data = [value, 1 - value]
+
+            // Settings
+            var width = $('#chartid3').width()
+            var height = $('#chartid3').height()
+            var anglesRange = 0.5 * Math.PI
+            var radis = Math.min(width, 2 * height) / 2
+            var thickness = 30
+            // Utility
+            //     var colors = d3.scale.category10();
+            // Create dummy data
+
+            var color = '';
+
+            if (aa >= 81 && aa <= 100) {
+                color = '#009900';
+            }
+            else if (aa >= 61 && aa <= 80) {
+                color = '#d95f02';
+            }
+            else if (aa >= 41 && aa <= 60) {
+                color = '#000099';
+            }
+            else if (aa >= 0 && aa <= 40) {
+                color = '#FF0000';
+            }
+            else {
+                color = '#ad1337';
+            }
+            var colors = [color, "#F5F5F5"]
+
+
+            var pies = d3.pie()
+                .value(d => d)
+                .sort(null)
+                .startAngle(anglesRange * -1)
+                .endAngle(anglesRange)
+
+            var arc = d3.arc()
+                .outerRadius(radis)
+                .innerRadius(radis - thickness)
+
+            var translation = (x, y) => `translate(${x}, ${y})`
+            var tooltip = d3.select("#chartid3")
+                .append("div")
+                .style("opacity", 0)
+                .attr("class", "tooltip")
+                .style("background-color", "tranparent")
+                .style("border", "solid")
+                .style("border-width", "2px")
+                .style("border-radius", "5px")
+                .style("padding", "5px")
+
+            tooltip = d3.select("body").append("div").style("width", "140px").style("height", "80px").style("background", "#F0FFF0")
+                .style("opacity", "1").style("position", "absolute").style("visibility", "hidden").style("padding", "5px");
+            toolval = tooltip.append("div");
+            // Feel free to change or delete any of the code you see in this editor!
+            var svg = d3.select(".chart3").append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .attr("class", "half-donut")
+                .append("g")
+                .attr("transform", translation(width / 2, height))
+                .on("mouseout", function () {
+                    d3.select(this).style("stroke", "none");
+                    tooltip.style("visibility", "hidden");
+                })
+
+                .on("mousemove", function (d) {
+                    tooltip.style("visibility", "visible")
+                        .style("top", (d3.event.pageY - 10) + "px").style("left", (d3.event.pageX + 10) + "px");
+                    /*var text = "NOK Parts:" + cc;*/
+                    var text = 'NOK Parts: ' + cc + '<br/> Rejection reason:' + reason + '';
+                    tooltip.select("div").html(text)
+                    tooltip.transition().style("opacity", 0).duration(3000).delay(3000);
+                });
+
+            svg.selectAll("path")
+                .data(pies(data))
+                .enter()
+                .append("path")
+                .attr("fill", (d, i) => colors[i])
+                .attr("d", arc)
+
+            svg.append("text")
+                .attr("text-anchor", "middle")
+                //.attr('font-size', '-3rem')
+                .attr('y', 15)
+                .attr("dy", "-3rem")
+                .text(d => text)
+
+
+            svg.append("text")
+                .text("Quality")
+                .attr('y', 5)
+                .attr("dy", "-0.5rem")
+                .attr("class", "label")
+                .attr("text-anchor", "middle")
+            //.attr('font-size', '-4em')
+        }
+
+    </script>
+    <script>
+        function time11(aa, bb, cc, dd) {
+            var width = $('#time1').width()
+            var height = $('#time1').height() - 10
+            var anglesRange = 0.5 * Math.PI
+            var radius = Math.min(width, 2 * height) / 3
+            var thickness = 30
+            var labelr = radius + 30; // radius for label anchor
+            //array of colors for the pie (in the same order as the dataset)
+
+            var color11 = '';
+            var totaltime = 0;
+            totaltime = aa + bb + cc + dd;
+
+            if (aa == 0 && bb == 0 && cc == 0 && dd == 0) {
+                data = [{ label: 'No Production', value: 1 }];
+                color11 = ["darkgrey"];
+            }
+            else if (aa == 0 && bb == 0 && cc == 0) {
+                data = [{ label: 'BreakTime', value: dd }];
+                color11 = ["blue"];
+            }
+            else if (aa == 0 && bb == 0 && dd == 0) {
+                data = [{ label: 'LossTime', value: cc }];
+                color11 = ["#f0640f"];
+            }
+            else if (aa == 0 && cc == 0 && dd == 0) {
+                data = [{ label: 'DownTime', value: bb }];
+                color11 = ["red"];
+            }
+            else if (bb == 0 && cc == 0 && dd == 0) {
+                data = [{ label: 'UpTime', value: aa }];
+                color11 = ["green"];
+            }
+            else if (aa == 0 && bb == 0) {
+                data = [{ label: 'LossTime', value: cc }, { label: 'BreakTime', value: dd }, { label: 'dummy', value: 3 }];
+                color11 = ["#f0640f", "blue", "white"];
+            }
+            else if (aa == 0 && cc == 0) {
+                data = [{ label: 'DownTime', value: bb }, { label: 'BreakTime', value: dd }, { label: 'dummy', value: 3 }];
+                color11 = ["red", "blue", "white"];
+            }
+            else if (aa == 0 && dd == 0) {
+                data = [{ label: 'DownTime', value: bb }, { label: 'LossTime', value: cc }, { label: 'dummy', value: 3 }];
+                color11 = ["red", "#f0640f", "white"];
+            }
+            else if (bb == 0 && cc == 0) {
+                data = [{ label: 'UpTime', value: aa }, { label: 'BreakTime', value: dd }, { label: 'dummy', value: 3 }];
+                color11 = ["green", "blue", "white"];
+            }
+            else if (bb == 0 && dd == 0) {
+                data = [{ label: 'UpTime', value: aa }, { label: 'LossTime', value: cc }, { label: 'dummy', value: 3 }];
+                color11 = ["green", "#f0640f", "white"];
+            }
+            else if (cc == 0 && dd == 0) {
+                data = [{ label: 'UpTime', value: aa }, { label: 'DownTime', value: bb }, { label: 'dummy', value: 3 }];
+                color11 = ["green", "red", "white"];
+            }
+            else if (aa == 0) {
+                data = [{ label: 'DownTime', value: bb }, { label: 'LossTime', value: cc }, { label: 'BreakTime', value: dd }, { label: 'dummy', value: 3 }];
+                color11 = ["red", "#f0640f", "blue", "white"];
+            }
+            else if (bb == 0) {
+                data = [{ label: 'UpTime', value: aa }, { label: 'LossTime', value: cc }, { label: 'BreakTime', value: dd }, { label: 'dummy', value: 3 }];
+                color11 = ["green", "#f0640f", "blue", "white"];
+            }
+            else if (cc == 0) {
+                data = [{ label: 'UpTime', value: aa }, { label: 'DownTime', value: bb }, { label: 'BreakTime', value: dd }, { label: 'dummy', value: 3 }];
+                color11 = ["green", "red", "blue", "white"];
+            }
+            else if (dd == 0) {
+                data = [{ label: 'UpTime', value: aa }, { label: 'DownTime', value: bb }, { label: 'LossTime', value: cc }, { label: 'dummy', value: 3 }];
+                color11 = ["green", "red", "#f0640f", "white"];
+            }
+            else {
+                data = [{ label: 'UpTime', value: aa }, { label: 'DownTime', value: bb }, { label: 'LossTime', value: cc }, { label: 'BreakTime', value: dd }, { label: 'dummy', value: 3 }];
+                color11 = ["green", "red", "#f0640f", "blue", "white"];
+            }
+
+            var color = d3.scaleOrdinal()
+                .range(color11);
+            var tooltip = d3.select("#time1")
+                .append("div")
+                .style("opacity", 0)
+                .attr("class", "tooltip")
+                .style("background-color", "tranparent")
+                .style("border", "solid")
+                .style("border-width", "2px")
+                .style("border-radius", "5px")
+                .style("padding", "5px")
+            /* .attr("id", "myTooltip")*/
+
+
+            tooltip = d3.select("body").append("div").style("width", "150px").style("height", "80px").style("background", "#F0FFF0")
+                .style("opacity", "1").style("position", "absolute").style("visibility", "hidden").style("padding", "5px").style("id", "divper");
+
+            toolval = tooltip.append("div");
+            var vis = d3.select("#time1")
+                .append("svg") //create the SVG element inside the <body>
+                .data([data]) //associate our data with the document
+                .attr("width", width) //set the width and height of our visualization (these will be attributes of the <svg> tag
+                .attr("height", height)
+                .append("svg:g") //make a group to hold our pie chart
+                .attr('transform', 'translate(' + (width / 2) + ',' + (height) + ')'); //move the center of the pie chart from 0, 0 to radius, radius
+
+
+
+            var arc = d3.arc() //this will create <path> elements for us using arc data
+                .innerRadius(radius - thickness)
+                //  								.outerRadius(radius);
+                .outerRadius(radius) // full height semi pie
+            //.innerRadius(0);
+
+
+            var pie = d3.pie() //this will create arc data for us given a list of values
+                //.startAngle(-90 * (Math.PI / 180))
+                //.endAngle(90 * (Math.PI / 180))
+                .startAngle(anglesRange * -1)
+                .endAngle(anglesRange)
+                .padAngle(.02) // some space between slices
+                .sort(null) //No! we don't want to order it by size
+                .value(function (d) {
+                    return d.value;
+                }); //we must tell it out to access the value of each element in our data array
+
+            var arcs = vis.selectAll("g.slice") //this selects all <g> elements with class slice (there aren't any yet)
+                .data(pie) //associate the generated pie data (an array of arcs, each having startAngle, endAngle and value properties)
+                .enter() //this will create <g> elements for every "extra" data element that should be associated with a selection. The result is creating a <g> for every object in the data array
+                .append("svg:g") //create a group to hold each slice (we will have a <path> and a <text> element associated with each slice)
+                .attr("class", "slice"); //allow us to style things in the slices (like text)
+
+            arcs.append("svg:path")
+                .attr("fill", function (d, i) {
+                    return color(i);
+                }) //set the color for each slice to be chosen from the color function defined above
+                .attr("d", arc)
+            //this creates the actual SVG path using the associated data (pie) with the arc drawing function
+
+
+            var color_hash = data;
+
+            var svg = d3.select("#time1")
+
+            var w = 440;
+            var h = 300;
+            var legend = svg.append("g")
+                .attr("class", "legend")
+                .attr("x", w - 70)
+                .attr("y", 25)
+                .attr("height", 100)
+                .attr("width", 100)
+
+
+            legend.selectAll('g').data(data)
+                .enter()
+                .append('g')
+                .each(function (d, i) {
+                    var g = d3.select(this);
+                    if (color_hash[i].label != 'dummy') {
+                        g.append("rect")
+                            .attr("x", w - 150)
+                            .attr("y", (i + 2) * 25)
+                            .attr("width", 12)
+                            .attr("height", 10)
+                            .style("margin-top", "130px")
+                            .style("fill", color(i));
+
+                        g.append("text")
+                            .attr("x", w - 135)
+                            .attr("y", (i + 2) * 25 + 8)
+                            .attr("height", 40)
+                            .attr("width", 300)
+                            .style("fill", "black")
+                            .style("margin-top", "130px")
+                            .text(color_hash[i].label + " - " + color_hash[i].value + " mins" + "-" + ((color_hash[i].value / totaltime) * 100).toFixed(1) + "%");
+                    }
+
+                });
+        }
+    </script>
+
+
+    <script>
+        $(document).on("click", "#btngetquality", function () {
+            var machine = $("#Machine").val();
+
+            if (machine == '') {
+                swal({
+                    icon: "error",
+                    title: "Please Select Machine details",
+                    button: false,
+                    timer: 4500
+                })
+            }
+            //var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Set_MachineCode", "UserSettings")',
+                data: '{id: ' + JSON.stringify(machine) + '}',
+                //headers: {
+                //    Authorization: 'Bearer ' + user1
+                //},
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+                    get_Quality_data();
+                },
+                error: function (response) {
+
+                }
+            });
+        });
+
+
+        var linename = ''
+        var shift_prev = '';
+        var linenameS = '';
+        var performanceS = '';
+        var tokS = '';
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+        var ApiURL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+        function get_Quality_data() {
+            var ApiURL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+            var Machine1;
+            var machine = $("#Machine").val();
+
+            var session_machine = '@Session["Machine_code"]';
+            var shiftid = '@Session["ShiftID"]';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetMachShift","UserSettings")',
+                dataType: "json",
+
+                success: function (response) {
+                    var R_url = '@Url.Action("Login", "Main")';
+                    var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+                    var Machine = response.machine_code;
+                    var myData = {
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+                        "Line_Code": '@Session["LineCode"]',
+                        "Machinecode": response.machine_code
+
+                    };
+                    $.ajax({
+                        type: 'POST',
+                        url: URL + 'api/OEE/GetDashboardOEEData_Machinewise',
+                        headers: {
+                            Authorization: 'Bearer ' + user1
+                        },
+                        data: myData,
+                        dataType: 'json'
+                    }).success(function (response) {
+                        $("#linenamee").html('');
+                        $('.machinecount').html('');
+                        $('.chart').html('');
+                        $('.chart1').html('');
+                        $('.chart2').html('');
+                        $('.chart3').html('');
+                        $('.time1').html('');
+                        $('#totalok').html('');
+                        $('#totalnok').html('');
+                        $('#variant').html('');
+                        $("#details1").empty();
+                        $("#linenamee").text(linefullname + '_' + linename);
+
+                        if (response.data.length != 0) {
+
+                            $(".mainbody").show();
+
+                            $(".mainbodyempty").hide();
+
+                            $(".emptydata").html('');
+                            var count = response.data[0].MachineCount;
+                            document.getElementById('line_heading').textContent = 'NO OF STATION:' + count + '';
+                            document.getElementById('batch1').textContent = 'Batch_code:' + response.data[0].Batch_code + '';
+                            /* $("#batch").text(response.data[i].Batch_code);*/
+                            $('.updated_time').text(response.data[0].last_updatedate);
+                            $('.shift').text(response.data[0].shift_id);
+
+                            //$('.updated_time_n').show();
+                            //$('.shift_n').show();
+
+                            $('.updated_time').text(new Date().toLocaleString());
+                            $('.shift').text(response.data[0].shift_id);
+
+                            $('.shift_n').show();
+                            $('.updated_time_n').show();
+
+                            var final_oee = 0;
+                            var final_Availability = 0;
+                            var final_Performance = 0;
+                            var final_Quality = 0;
+                            var final_uptime = 0;
+                            var final_downtime = 0;
+                            var final_breaktime = 0;
+                            var final_losstime = 0;
+                            var Idealcycletime = 0;
+                            var Reworkparts = 0;
+                            var Reason;
+                            var stoppage;
+                            var Loss;
+                            var Lastcycletime;
+                            for (var i = 0; i < response.data.length; i++) {
+                                if (response.data[i].MachineIndex == 1) {
+                                    final_oee = response.data[i].OEE;
+
+                                    document.getElementById('variant').textContent = response.data[i].variant_name;
+                                    //$('#variant').text(response.data[i].variant_name);
+                                    final_Availability = response.data[i].Availability;
+                                    final_Performance = response.data[i].Performance;
+                                    final_Quality = response.data[i].Quality;
+                                    final_uptime = response.data[i].uptime;
+                                    final_downtime = response.data[i].downtime;
+                                    final_breaktime = response.data[i].breaktime;
+                                    final_losstime = response.data[i].losstime;
+                                    Idealcycletime = response.data[i].Ideal_cycletime;
+                                    Reworkparts = response.data[i].Reworkparts;
+                                    Reason = response.data[i].Reason;
+                                    stoppage = response.data[i].Stoppage;
+                                    Loss = response.data[i].Duration;
+                                    Lastcycletime = response.data[i].Lastcycletime;
+                                }
+                            }
+                            for (var i = 0; i < 1; i++) {
+                                document.getElementById('totalok').textContent = /*'Total Accepted Parts: ' +*/ response.data[i].totalok;
+                                document.getElementById('totalnok').textContent = /*'Total Rejected Parts : '+*/response.data[i].totalnok;
+
+
+                                $('.quicklink').html(
+
+                                    "<div class='' style='text-align:center;width:100%;align-content:center;padding-bottom:2%;display:flex'>" +
+                                    "<div class='' style='text-align:center;width:100%;align-content:center;'>" +
+                                    "<a href='../Quality/QualityLiveDashboard?" + linename + "'' style='text-decoration:none' data-bs-toggle='tooltip' title='Production'><button type='button' class='' style='width:100%;background-color:#002929;'><i class='fa fa-bar-chart-o fa-lg' aria-hidden='true' style='color:white'></i></br></button></a>" +
+                                    "</div>" +
+                                    "<div class='' style='text-align:center;width:100%;align-content:center;'>" +
+                                    "<a href='../FirstPassYield/HourlyTrackerLive?" + linename + "' style='text-decoration:none' data-bs-toggle='tooltip' title='Hourly Tracker'><button type='button' class='' style='width:100%;background-color:#002929;'><i class='fa fa-clock-o fa-lg' aria-hidden='true' style='color:white'></i></br></button></a>" +
+                                    "</div>" +
+                                    "<div class='' style='text-align:center;width:100%;align-content:center;'>" +
+                                    "<a href='../ToolLife/ToolLifeLiveDashboard?" + linename + "' style='text-decoration:none' data-bs-toggle='tooltip' title='Preventive Maintenance'><button type='button' class='' style='width:100%;background-color:#002929;'><i class='fa  fa-th-list fa-lg' aria-hidden='true' style='color:white'></i></br></button></a>" +
+                                    "</div>" +
+                                    "</div>" +
+                                    "</div > ");
+                                chec(final_oee, 100 - final_oee, final_Availability, final_Performance, final_Quality);
+                                chec1(final_Availability, 100 - final_Availability, final_uptime, final_downtime, final_losstime, final_breaktime, stoppage);
+                                chec2(final_Performance, 100 - final_Performance, Idealcycletime,Loss);
+                                chec3(final_Quality, 100 - final_Quality, Reworkparts,Reason);
+                                time11(final_uptime, final_downtime, final_losstime,final_breaktime);
+
+                                for (var j = 0; j < response.data[0].MachineCount; j++) {
+
+                                    var color = '';
+                                    if (response.data[j].MachineStatus == "0") {
+                                        color = 'red';
+                                    }
+                                    if (response.data[j].MachineStatus == '1') {
+                                        color = 'green';
+                                    }
+                                    if (response.data[j].MachineStatus == '2') {
+                                        color = 'yellow';
+                                    }
+                                    if (response.data[j].MachineStatus == '3') {
+                                        color = 'yellow';
+                                    }
+                                    if (response.data[j].MachineStatus == '4') {
+                                        color = 'grey';
+                                    }
+                                    if (response.data[j].MachineStatus == '5') {
+                                        color = 'blue';
+                                    }
+
+                                    $('.machinecount').append("<div class='box " + color + "' title='" + response.data[j].MachineCode + "' style='border-style:solid;border-width:thin;border-color:black'><p></p> </div>");
+                                }
+
+                                var newRow = $("<tr>");
+                                var cols = '';
+                                cols += "<td style='text-align:center;'> <table border='1' style='border-collapse:collapse;width:100%;background-color:#1bb7cb;color:black;'><tr><td>A</td><td>P</td><td>Q</td></tr><tr><td> " + response.data[i].Availability + "</td><td> " + response.data[i].Performance + "</td><td> " + response.data[i].Quality + "</td></tr></table></td>";
+                                cols += "</tr>"
+
+                                newRow.append(cols);
+
+                                $("#details1").append(newRow);
+                            }
+                        }
+                        else {
+                            $(".mainbody").hide();
+
+                            $(".mainbodyempty").show();
+
+                            $(".emptydata").html('');
+
+                            document.getElementById('line_heading').textContent = '';
+
+                            /*  document.getElementById('linetype').textContent = '';*/
+
+                            var cols = '';
+                            cols += "<div class='col-md-12 col-xl-12' style='font-weight:bold;font-size:15px;color:red;align-content:center;text-align:center;'> No Data Available...!</div>";
+                            $(".emptydata").html(cols);
+                        }
+                    }).error(function (response) {
+                        if (response.status == "401") {
+                            swal({
+                                icon: "warning",
+                                title: "Session Timeout",
+                                button: true,
+                                closeModal: false
+                            })
+                            window.location = R_url;
+                        }
+                        else {
+                            swal({
+                                icon: "warning",
+                                title: response.responseText,
+                                button: true,
+                                closeModal: false
+                            })
+
+                        }
+                    });
+
+                    var datas = {
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+                        "linecode": '@Session["LineCode"]',
+                        "Machinecode": response.machine_code,
+                        "Shift": response.shiftid,
+                    };
+
+
+                    $.ajax({
+                        type: "POST",
+                        url: ApiURL + 'api/Quality/GetQuality_details',
+
+                        headers: {
+                            Authorization: 'Bearer ' + user1
+                        },
+                        data: datas,
+                        dataType: "json",
+
+                        success: function (response) {
+
+                            if (response.status != "Error") {
+
+                                if (response.data[0].reason == null) {
+                                    $("#ok_parts").html(response.data[0].ok_parts);
+                                    $("#rework_parts").html(response.data[0].rework_parts);
+                                    $("#notok_parts").html(response.data[0].not_parts);
+                                    $("#operator_name").html(response.data[0].operator_name);
+                                    $("#fromdate").html(response.data[0].stime);
+                                    $("#todate").html(response.data[0].ctime);
+                                    $("#target_qty").html(response.data[0].target_qty);
+                                    $("#shift_id").html(response.data[0].shift_id);
+                                    $("#batch").html(response.data[0].batch);
+                                    document.getElementById('reason').innerText = "No Rejection";
+                                    document.getElementById('mins_ago').innerText = "0";
+                                    document.getElementById('tot_times').innerTextinnerHTML = "0 / ";
+                                    document.getElementById('components').innerText = "0";
+                                    document.getElementById('continuous_rejection').innerText = "0";
+
+                                    document.getElementById('no_of_stoppage').innerText = "0";
+
+                                }
+                                else {
+                                    $("#ok_parts").html(response.data[1].ok_parts);
+                                    $("#rework_parts").html(response.data[1].rework_parts);
+                                    $("#notok_parts").html(response.data[1].not_parts);
+                                    $("#operator_name").html(response.data[1].operator_name);
+                                    $("#fromdate").html(response.data[1].stime);
+                                    $("#todate").html(response.data[1].ctime);
+
+
+                                    $("#target_qty").html(response.data[1].target_qty);
+                                    $("#shift_id").html(response.data[1].shift_id);
+
+                                    $("#batch").html(response.data[1].batch);
+                                    $("#reason").html(response.data[0].reason);
+                                    $("#mins_ago").html(response.data[0].mins_ago);
+                                    $("#components").html(" " + response.data[0].components + " ");
+                                    $("#tot_times").html(response.data[0].no_of_times + " / ");
+                                    $("#continuous_rejection").html(response.data[0].continuous_rejection);
+
+                                    $("#no_of_stoppage").html(response.data[1].no_of_stoppage);
+                                }
+                                //$("#rejection_time").v    al(response.data[0].mins_ago);
+
+
+                            }
+
+                            else {
+
+                                swal({
+                                    icon: "error",
+                                    title: "No Data Available",
+                                    button: false,
+                                    timer: 4500
+                                })
+                            }
+                        },
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+                            }
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                    });
+                },
+                error: function (response) {
+
+                }
+
+            });
+
+        }
+
+        $(document).ready(function () {
+            $('[data-bs-toggle="tooltip"]').tooltip();
+        });
+
+        function get_alarm_data()
+        {
+            $("#myModal").modal('show');
+
+            var date = new Date();
+            var current_date = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+
+            var Fdate = current_date;
+            var Tdate = current_date;
+
+
+            if (Fdate != "" && Tdate != "") {
+
+                var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+                var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+                var myData = {
+
+                    "QueryType": "Historic",
+                    "CompanyCode": '@Session["CompanyCode"]',
+                    "PlantCode": '@Session["PlantCode"]',
+                    "Line_Code": '@Session["LineCode"]',
+                    "Parameter4": current_date,
+                    "Parameter5": current_date,
+
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: URL + 'api/Live_Alarm/Get_Historic_Alarm_data',
+                    data: myData,
+                    headers: {
+                        Authorization: 'Bearer ' + user1
+                    },
+                    dataType: "json",
+                    beforeSend: function () {
+                        $('.loading').show();
+                    },
+                    complete: function () {
+                        $('.loading').hide();
+                    },
+                    success: function (response) {
+                        if (response.status != "Error") {
+                            var j = 1;
+
+                            var rowsCnt = document.getElementById("datatable-default").getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
+                            if (rowsCnt > 0) {
+                                for (var i = 0; i < rowsCnt; i++) {
+                                    document.getElementById("datatable-default").deleteRow(1);
+                                }
+                            }
+                            if ($.fn.DataTable.isDataTable('#datatable-default')) {
+                                $('#datatable-default').DataTable().clear();
+                            }
+
+                            if ($.fn.DataTable.isDataTable('#datatable-default')) {
+                                $('#datatable-default').DataTable().destroy();
+                            }
+                            $(".alarm_error").empty();
+
+                            for (var i = 0; i < response.data.Table.length; i++) {
+
+
+                                var newRow = $("<tr>");
+                                var cols = '';
+                                cols += "<td> " + j + "</td> ";
+                                cols += "<td> " + response.data.Table[i].Machine_Code + "</td> ";
+                                cols += "<td> " + response.data.Table[i].Alarm_ID + "</td> ";
+                                cols += "<td> " + response.data.Table[i].Alarm_Description + "</td> ";
+                                cols += "<td> " + response.data.Table[i].tot_duration + "</td> ";
+                                cols += "<td> " + response.data.Table[i].no_of_times + "</td> ";
+                                cols += "<td> " + response.data.Table[i].last_time + "</td> ";
+                                cols += "</tr>";
+                                newRow.append(cols);
+                                $(".Historic_details").append(newRow);
+                                j++;
+                            }
+
+                            $('#datatable-default').DataTable({
+                                "responsive": true,
+                                "autoWidth": false,
+                            });
+                        }
+
+                        else {
+
+                            $(".alarm_error").text(response.msg);
+
+                        }
+                    },
+                    error: function (response) {
+                        if (response.status == "401") {
+                            swal({
+                                icon: "warning",
+                                title: "Session Expired",
+                                button: true,
+                                closeModal: false
+                            })
+                            window.location = R_url;
+                        }
+                        else {
+                            swal({
+                                icon: "warning",
+                                title: response.responseText,
+                                button: true,
+                                closeModal: false
+                            })
+
+                        }
+                    }
+                });
+
+
+            }
+            else {
+
+                swal({
+                    icon: "warning",
+                    title: "Please Select Date",
+                    button: true,
+                    closeModal: false
+                })
+
+
+
+            }
+        }
+
+        function get_loss_data()
+        {
+            $("#myModal1").modal('show');
+
+            var date = new Date();
+            var current_date = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+
+            var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+            var myData = {
+                "QueryType": 'Get_default_loss',
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]',
+                "Line_Code": '@Session["LineCode"]',
+                "date": current_date,
+                "Machine_Code": 'M1'
+            };
+
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/Losses/Get_Loss_Occurence_chart',
+                data: myData,
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+
+                    var rowsCnt = document.getElementById("datatable_loss_splitup").getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
+                    if (rowsCnt > 0) {
+                        for (var i = 0; i < rowsCnt; i++) {
+                            document.getElementById("datatable_loss_splitup").deleteRow(1);
+                        }
+                    }
+                    if ($.fn.DataTable.isDataTable('#datatable_loss_splitup')) {
+                        $('#datatable_loss_splitup').DataTable().clear();
+                    }
+
+                    if ($.fn.DataTable.isDataTable('#datatable_loss_splitup')) {
+                        $('#datatable_loss_splitup').DataTable().destroy();
+                    }
+
+                    if (response.status != "Error") {
+                        if (response.data.Table.length != 0) {
+                            var j = 1;
+                            $(".loss_error").empty();
+                            for (var i = 0; i < response.data.Table.length; i++) {
+
+                                actualtemp = response.data.Table[i].Actual_Data
+                                var newRow = $("<tr>");
+                                var cols = '';
+                                cols += "<td> " + j + "</td> ";
+                                cols += "<td> " + response.data.Table[i].Start + "</td> ";
+                                cols += "<td> " + response.data.Table[i].End + "</td> ";
+                                cols += "<td> " + response.data.Table[i].duration + "</td> ";
+                                cols += "<td> " + response.data.Table[i].Loss_Description + "</td> ";
+                                cols += "<td> " + response.data.Table[i].Loss_Type + "</td> ";
+                                cols += "<td> " + response.data.Table[i].Loss_Category + "</td> ";
+                                cols += "<td> " + actualtemp + "</td> ";
+                               //cols += "<td> <a class='Edit'><span class='fa fa-pencil-square-o' onclick='return update_loss(" + response.data.Table[i].ID + ");' data-toggle='modal' data-target='#exampleModal'></span></a>  </td> ";
+                               // cols += "</tr>";
+                                newRow.append(cols);
+                                $(".daily_splitup_details").append(newRow);
+                                j++;
+                            }
+                            $('#datatable_loss_splitup').DataTable({
+                                "responsive": true,
+                                "autoWidth": false,
+                            });
+                        }
+                    }
+                    else {
+                        $(".loss_error").text(response.msg);
+                    }
+                },
+                error: function (response) {
+
+                }
+            });
+        }
+
+        function get_hourlytracker_data() {
+            $("#myModal2").modal('show');
+
+            var date = new Date();
+            var current_date = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+
+
+            var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+            var myData = {
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]',
+                "Line_Code": '@Session["LineCode"]',
+                "Date": current_date,
+                "Machine": 'M1',
+                "LineCode": '@Session["LineCode"]',
+            };
+
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/UserSettings/Get_hourly_tracker_data',
+                data: myData,
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+                    if (response.status != "Error") {
+                        var j = 1;
+
+                        var rowsCnt = document.getElementById("datatable_hourly").getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
+                        if (rowsCnt > 0) {
+                            for (var i = 0; i < rowsCnt; i++) {
+                                document.getElementById("datatable_hourly").deleteRow(1);
+                            }
+                        }
+                        if ($.fn.DataTable.isDataTable('#datatable_hourly')) {
+                            $('#datatable_hourly').DataTable().clear();
+                        }
+
+                        if ($.fn.DataTable.isDataTable('#datatable_hourly')) {
+                            $('#datatable_hourly').DataTable().destroy();
+                        }
+
+                        $(".hourly_error").empty();
+                        for (var i = 0; i < response.data.Table.length; i++) {
+
+
+                            var newRow = $("<tr>");
+                            var cols = '';
+                            cols += "<td> " + j + "</td> ";
+                            cols += "<td> " + response.data.Table[i].Shift + "</td> ";
+                            cols += "<td> " + response.data.Table[i].Variant + "</td> ";
+                            cols += "<td> " + response.data.Table[i].Batch + "</td> ";
+                            cols += "<td> " + response.data.Table[i].start + "</td> ";
+                            cols += "<td> " + response.data.Table[i].end + "</td> ";
+                            cols += "<td> " + response.data.Table[i].okparts + "</td> ";
+                            cols += "<td> " + response.data.Table[i].nokparts + "</td> ";
+
+                            cols += "<td> " + response.data.Table[i].stoppage + "</td> ";
+                            cols += "<td> " + response.data.Table[i].cumulative + "</td> ";
+                            cols += "<td> " + response.data.Table[i].tot_time + "</td> ";
+                            cols += "<td> " + response.data.Table[i].Hour + "</td> ";
+                            cols += "<td> " + response.data.Table[i].uptime + "</td> ";
+                            cols += "<td> " + response.data.Table[i].downtime + "</td> ";
+                            cols += "<td> " + response.data.Table[i].breaktime + "</td> ";
+                            cols += "<td> " + response.data.Table[i].losstime + "</td> ";
+                            cols += "<td> " + response.data.Table[i].Target_part + "</td> ";
+                            cols += "<td> " + response.data.Table[i].Target_cumulative + "</td> ";
+                            cols += "<td> " + response.data.Table[i].Availability + "</td> ";
+                            cols += "<td> " + response.data.Table[i].Performance + "</td> ";
+                            cols += "<td> " + response.data.Table[i].Quality + "</td> ";
+                            cols += "<td> " + response.data.Table[i].OEE + "</td> ";
+
+                            cols += "</tr>";
+                            newRow.append(cols);
+                            $(".datatable_hourly_details").append(newRow);
+                            j++;
+                        }
+
+                        $('#datatable_hourly').DataTable({
+                            "responsive": true,
+                            "autoWidth": false,
+                        });
+                    }
+
+                    else {
+
+                        $(".hourly_error").text(response.msg);
+
+                    }
+                },
+                error: function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Expired",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+                    }
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                }
+            });
+        }
+
+        function get_16big_loss_data()
+    {
+        $("#myModal3").modal('show');
+
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+        var live_URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+        var Machine = $("#Machine").val();
+
+        if (Machine == "") {
+            swal({
+                icon: "error",
+                title: "Please Select Machine...!",
+                button: true,
+                timer: 4500
+            })
+            $("#myModal3").modal('hide');
+            return;
+        }
+
+        var myData = {
+            "CompanyCode": '@Session["CompanyCode"]',
+            "PlantCode": '@Session["PlantCode"]',
+            "Line": '@Session["LineCode"]',
+            "Machine": Machine,
+        };
+        $.ajax({
+            type: "POST",
+            url: live_URL + 'api/Losses/Get_Loss_live_details',
+            data: myData,
+            headers: {
+                Authorization: 'Bearer ' + user1
+            },
+            dataType: "json",
+            beforeSend: function () {
+                $('.loading').show();
+            },
+            complete: function () {
+                $('.loading').hide();
+            },
+            success: function (response) {
+                if (response.data.Table.length != 0) {
+
+                    $("#tot_uptime").html(response.data.Table[0].up_time);
+                    $("#tot_downtime").html(response.data.Table[0].down_time);
+                    $("#tot_losstime").html(response.data.Table[0].loss_time);
+                    $("#tot_breaktime").html(response.data.Table[0].break_time);
+
+                    $("#stoppage_last_reason").html(response.data.Table[0].Alarm_desc);
+                    $("#loss_last_reason").html(response.data.Table[0].Loss_desc);
+                    $("#auto_last_occ").html(response.data.Table[0].Auto_last_occ);
+
+                    $("#stoppage_last_occ").html(response.data.Table[0].Stoppage_last_occ);
+                    $("#loss_last_occ").html(response.data.Table[0].Loss_last_occ);
+
+                    $("#auto_dur").html(response.data.Table[0].Auto_duration);
+                    $("#stoppage_last_duration").html(response.data.Table[0].stoppage_duration);
+                    $("#loss_last_duration").html(response.data.Table[0].Loss_duration);
+                    $("#break_last_duration").html(response.data.Table[0]['Break Duration']);
+
+                    $("#auto_tot_dur").html(response.data.Table[0].up_time);
+                    $("#stoppage_tot_duration").html(response.data.Table[0].down_time);
+                    $("#loss_tot_duration").html(response.data.Table[0].loss_time);
+                    $("#break_tot_duration").html(response.data.Table[0].break_time);
+
+                    $("#break_last_reason").html(response.data.Table[0].break_reason);
+                    $("#break_last_occ").html(response.data.Table[0].break_lastocc);
+
+
+
+
+                }
+            },
+            error: function (response) {
+
+            }
+        });
+
+    }
+
+        function close_modal() {
+            $("#myModal").modal('hide');
+            $("#myModal1").modal('hide');
+            $("#myModal2").modal('hide');
+            $("#myModal3").modal('hide');
+        }
+
+    </script>
+
+    <script>
+        $('#mytoggle').change(function () {
+            if (this.checked) {
+                @*window.location = '@Url.Action("Toggleadmin","Main")'*@
+               var Url = '@Url.Action("Toggleadmin", "Main")';
+                $.ajax({
+                    type: "POST",
+                    url: Url,
+                    data: {},
+                    dataType: "json",
+                    success: function (response) {
+                        window.location = '@Url.Action("NewDash","Main")';
+                    },
+                });
+
+            }
+            else {
+                  window.location = '@Url.Action("Toggleadminuncheck","Main")'
+            }
+
+
+        });
+    </script>
+
+    <style>
+        #tooltip11 {
+            position: fixed;
+            display: inline-block;
+            border-bottom: 1px dotted black;
+        }
+
+            #tooltip11 .tooltiptext {
+                visibility: hidden;
+                width: 180px;
+                background-color: #555;
+                color: #fff;
+                text-align: center;
+                border-radius: 6px;
+                padding: 5px 0;
+                position: absolute;
+                z-index: 5;
+                /*bottom: 1%;*/
+                top: 1%;
+                left: 50%;
+                margin-left: -60px;
+                opacity: 0;
+                transition: opacity 0.3s;
+            }
+
+                #tooltip11 .tooltiptext::after {
+                    content: "";
+                    position: absolute;
+                    top: 100%;
+                    left: 50%;
+                    margin-left: -5px;
+                    border-width: 5px;
+                    border-style: solid;
+                    border-color: #555 transparent transparent transparent;
+                }
+
+            #tooltip11:hover .tooltiptext {
+                visibility: visible;
+                opacity: 1;
+            }
+
+
+        /* Machines tool tip */
+        #tooltip1 {
+            position: fixed;
+            display: inline-block;
+            border-bottom: 1px dotted black;
+        }
+
+            #tooltip1 .tooltiptext {
+                visibility: visible;
+                width: 210px;
+                background-color: #555;
+                color: #fff;
+                text-align: center;
+                border-radius: 6px;
+                padding: 5px 0;
+                position: absolute;
+                z-index: 5;
+                /*bottom: 1%;*/
+                top: 1%;
+                left: 50%;
+                margin-left: -60px;
+                opacity: 0;
+                transition: opacity 0.3s;
+            }
+
+                #tooltip1 .tooltiptext::after {
+                    content: "";
+                    position: absolute;
+                    top: 100%;
+                    left: 50%;
+                    margin-left: -5px;
+                    border-width: 5px;
+                    border-style: solid;
+                    border-color: #555 transparent transparent transparent;
+                }
+
+            #tooltip1:hover .tooltiptext {
+                visibility: visible;
+                opacity: 1;
+            }
+    </style>
+}
+@if ((HttpContext.Current.Session["CompanyCode"] == null) || (HttpContext.Current.Session["CompanyCode"].ToString().Length == 0))
+{
+    <div>
+        <br /><br />
+        <label style="font-weight:bolder;text-align:center">Select Company</label><br />
+        <b>NOTE:Choose "Select Customer" from Profile Dropdown on Top-Right corner</b>
+    </div>
+}
+@if ((HttpContext.Current.Session["PlantCode"] == null) || (HttpContext.Current.Session["PlantCode"].ToString().Length == 0))
+{
+    <div>
+        <br /><br />
+        <label style="font-weight:bolder;text-align:center">Select Plant</label>
+    </div>
+}
+@if ((HttpContext.Current.Session["LineCode"] == null) || (HttpContext.Current.Session["LineCode"].ToString().Length == 0))
+{
+    <div>
+        <br /><br />
+        <label style="font-weight:bolder;text-align:center">Select Line</label>
+    </div>
+}
+
+

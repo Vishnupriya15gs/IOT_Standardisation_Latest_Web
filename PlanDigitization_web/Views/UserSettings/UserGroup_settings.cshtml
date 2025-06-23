@@ -1,0 +1,778 @@
+﻿<!--To display Tab title as UserGroup_settings -->
+<!--To include layout to page-->
+@model IEnumerable<PlanDigitization_web.Models.UserGroups>
+@{
+    ViewBag.Title = "UserGroup_settings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!--Header in left side and home button for NewDash page -->
+<header class="page-header">
+    <h2> User Group Settings </h2>
+    <!--Home button and path display as /Settings/User Groups in right side-->
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("MainDashboard","MainDashboard")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li><span>Settings</span></li>
+            <li><span>User Groups</span></li>
+        </ol>
+    </div>
+</header>
+<!-- Add New group-->
+<div class="row" id="divnew" style="display:none;">
+    <div class="col-md-12">
+        <section class="panel form-wizard" id="w1">
+            <header class="panel-heading" style="background-color:teal;color:white;">
+                <h2 class="panel-title" style="color:white;">Group & Users</h2>
+            </header>
+            <div class="panel-body panel-body-nopadding">
+                <div class="wizard-tabs">
+                    <ul class="wizard-steps">
+                        <!--Tab for Group Creation-->
+                        <li class="active">
+                            <a href="#w1-account" data-toggle="tab" class="text-center">
+                                Group
+                            </a>
+                        </li>
+                        <!--Tab for User Allocation-->
+                        <li>
+                            <a href="#w1-profile" data-toggle="tab" class="text-center">
+                                User Allocation
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <!--Check Permission for viewing setting page and display group list html elements-->
+                @if (ViewContext.Controller.HasPermission("PermissionSetting-View"))
+                {
+                    <form class="form-horizontal">
+                        <div class="tab-content">
+                            <div id="w1-account" class="tab-pane active">
+                                <div class="form-group">
+                                    <input type="hidden" name="GroupID" id="GroupID" />
+                                    <input type="hidden" id="UniqueId" />
+                                    <label class="col-sm-2 control-label"> Group Name <span class="required">*</span></label>
+                                    <div class="col-sm-4">
+                                        <input type="text" id="Group" onkeypress="allowAlphaNumericSpace(event)" class="form-control space" title="Enter Group" placeholder="Group Name" autocomplete="off" required />
+                                    </div>
+                                    <label class="col-sm-2 control-label"> Group Description <span class="required">*</span></label>
+                                    <div class="col-sm-4">
+                                        <input type="text" id="Description" onkeypress="allowAlphaNumericSpace(event)" class="form-control space" title="Enter Description" placeholder="Description" autocomplete="off" required />
+
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!--Div to display user available for the plant-->
+                            <div id="w1-profile" class="tab-pane">
+                                <div class="panel-body">
+
+                                    <table id="permission_details" class="table table-bordered table-striped mb-none" style="text-align:center;">
+
+                                        <thead>
+                                            <tr>
+                                                <th style="text-align:center;"> Select All<br /> <input type="checkbox" class="all" onclick="checkAll()" required /></th>
+                                                <th style="text-align:center;"> User ID </th>
+                                                <th style="text-align:center;"> User Name </th>
+                                                <th style="text-align:center;"> First Name </th>
+                                                <th style="text-align:center;"> Last Name </th>
+
+
+                                            </tr>
+                                        </thead>
+                                        <tbody class="details">
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!--Submit and cancel button to add group details-->
+                                <footer class="panel-footer">
+                                    <div class="row">
+                                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                                            <button type="button" class="btn btn-primary submit">Submit</button>
+                                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                                        </div>
+                                    </div>
+                                </footer>
+                            </div>
+                        </div>
+                    </form>
+                }
+                <!--Display error message when permission to add is not available-->
+
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- Group Details-->
+<div class="row" id="divdetails">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <section class="panel">
+            <header class="panel-heading" style="background-color:teal;color:white;">
+
+                <div class="panel-actions">
+                    <!--Displaying add button when -->
+                    @if (ViewContext.Controller.HasPermission("PermissionSetting-Add"))
+                    {
+
+                        <button class="btn btn-primary" id="add"><i class="fa fa-plus" aria-hidden="true"> Add New</i></button>
+
+                    }
+                    <!--Displaying redirect button when -->
+                    @if (ViewContext.Controller.HasPermission("AlertSetting-View"))
+                    {
+                        <button class="btn btn-warning" onclick="window.location.href = '@Url.Action("Alert","AlertSetting")'"> Go To Alert Setting</button>
+
+                    }
+                </div>
+
+                <h2 class="panel-title" style="color:white;">List of Groups : </h2>
+            </header>
+            <!--Displaying Group lists already available-->
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="panel-body">
+                        @if (ViewContext.Controller.HasPermission("PermissionSetting-View"))
+                        {
+                            <table class="table table-bordered table-striped mb-none" id="datatable-default">
+                                <thead style="background-color:teal;color:white;">
+                                    <tr>
+                                        <th class="centercls"> S.No </th>
+                                        <th style="display:none;"></th>
+                                        <th> Group Name </th>
+                                        <th style="text-align:center;width:150px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{int RowNo = 0;}
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr class="gradeX">
+                                            <td>
+                                                @{RowNo++;}@RowNo
+                                            </td>
+                                            <td class="GroupID" style="display:none;">
+                                                <span>@Html.Encode(item.GroupID)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.GroupName)</span>
+                                            </td>
+                                            <td style="text-align:center;">
+                                                @if (ViewContext.Controller.HasPermission("PermissionSetting-Edit"))
+                                                {
+                                                    <button class="btn btn-primary" style="margin-top: 10px" id="edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
+                                                }
+                                                @if (ViewContext.Controller.HasPermission("PermissionSetting-Delete"))
+                                                {
+                                                    <button class="btn btn-danger" style="margin-top: 10px" id="delete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <h2>View permission is denied</h2>
+                        }
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+
+<script type="text/javascript">
+    $("#add").click(function () {
+        $("#permission_details TBODY TR").each(function () {
+            var row = $(this);
+            row.find("#Add_form").prop("checked", false);
+            row.find("#View_form").prop("checked", false);
+            row.find("#Edit_form").prop("checked", false);
+            row.find("#Delete_form").prop("checked", false);
+        });
+
+        $("#divnew").show();
+        $("#divdetails").hide();
+    });
+    // to hide add new div content when cancel is clicked
+    $(".cancel").click(function () {
+        $("#divnew").hide();
+        $("#divdetails").show();
+    });
+
+</script>
+@if (@TempData["message"] != null)
+{
+    <script type="text/javascript">
+
+    $(function () {
+        var msg = '@TempData["message"]';
+        //function to show notification message if details added successfully
+        if (msg == "Inserted") {
+            swal({
+                icon: "success",
+                title: "Details Added Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+         //function to show notification message if details updated successfully
+        else if (msg == "Updated") {
+            swal({
+                icon: "success",
+                title: "Details Updated Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        //function to show notification message if Groupid already available
+        else if (msg == "Already") {
+            swal({
+                icon: "error",
+                title: "Failed to Add.GroupId ID already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+        //function to show notification message if Groupname already available
+        else if (msg == "Already GroupName") {
+            swal({
+                icon: "error",
+                title: "Failed to add user group name already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+            //function to show notification message if details deleted successfully
+            else if (msg == "deleted") {
+            swal({
+                icon: "error",
+                title: "Role details deleted successfully",
+                button: true,
+                timer: 4500
+            })
+        }
+        //function to show notification message if action to delete failed
+        else if (msg == "failed") {
+            swal({
+                icon: "error",
+                title: "Failed to delete role",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (!checked) {
+            swal({
+                icon: "error",
+                title: alert("Please select one checkbox to submit."),
+                button: true,
+                timer: 4500
+            })
+            }
+
+         //function to show notification message if action to add failed
+        else {
+            swal({
+                icon: "error",
+                title: "Failed to Add",
+                button: true,
+                timer: 4500
+            })
+        }
+    });
+
+
+    </script>
+}
+
+<script type="text/javascript">
+    $(document).on("keydown", ".space", function (evt) {
+
+        var caretPos = $(this)[0].selectionStart
+        if (evt.keyCode == 32 && caretPos == 0) {
+            return false;
+        }
+    });
+
+    function allowAlphaNumericSpace(e) {
+        var code = ('charCode' in e) ? e.charCode : e.keyCode;
+        if (!(code == 32) && // space
+            !(code > 47 && code < 58) && // numeric (0-9)
+            !(code > 64 && code < 91) && // upper alpha (A-Z)
+            !(code > 96 && code < 123)) { // lower alpha (a-z)
+            e.preventDefault();
+        }
+    }
+
+    $(function () {
+        $('#Group').on('keypress', function (e) {
+            if (e.which == 32) {
+                console.log('Space Detected');
+                return false;
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        //Ajax call to list users
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+        var data_user = {
+            "QueryType": "",
+            "Parameter": '@Session["PlantCode"]',
+            "Parameter1": '@Session["CompanyCode"]',
+        };
+        $.ajax({
+            type: "POST",
+            data: data_user,
+            headers: {
+                Authorization: 'Bearer ' + user1
+            },
+            url: URL + "api/UserSettings/Get_Users",
+            dataType: "json",
+
+            success: function (response) {
+                // Assigning userdetails to the userlist table along with checkbox to enable selection
+                for (var i = 0; i < response.length; i++) {
+                    var newRow = $("<tr>");
+                    var cols = '';
+                    var sc = '';
+
+                    cols += "<td><input type='checkbox' class='oeelive' id='check1' onclick='chk_function(" + response[i].userid + ")' /> </td > ";
+                    cols += "<td> <input type='hidden' name='userid' id='userid' value='" + response[i].userid + "' /> " + response[i].userid + "</td> ";
+                    cols += "<td> " + response[i].username + "</td> ";
+                    cols += "<td> " + response[i].firstname + "</td> ";
+                    cols += "<td> " + response[i].lastname + "</td> ";
+
+                    cols += "</tr>"
+
+                    newRow.append(cols);
+                    $("#permission_details").append(newRow);
+
+
+                }
+            }
+        })
+        //function to call when submit click is executed
+        $(".submit").click(function (event) {
+            var permission = new Array();
+            var role = new Array();
+            var roles = {};
+            //Getting groupid and descirption from text box
+
+            roles.GroupName = $('#Group').val();
+
+            roles.GroupDescription = $('#Description').val();
+            // var checked = $("input[type=checkbox]:checked").length;
+
+            // Sanity check for Group details
+            var remval = sanitize(roles.GroupName);
+            var remval1 = sanitize(roles.GroupDescription);
+            var conditions = ["&lt;", "&#x2F;", "&#x27;", "&amp;", "&gt;", "&quot;"];
+            var test1 = conditions.some(el => remval.includes(el));
+            var test2 = conditions.some(el => remval1.includes(el));
+            if (test1 == true || test2 == true) {
+                upva = 1;
+
+                return swal({
+                    icon: "error",
+                    title: "Entered GroupName or Group Description contain special charecters which is not allowed",
+                    button: true,
+                    timer: 4500
+                })
+
+
+                //alert("Reamrks contain special charecters which is not allowed");
+
+            }
+
+            else if (roles.GroupName == "" && roles.GroupDescription == "" && roles.Line_Code == "") {
+                swal({
+                    icon: "error",
+                    title: "Please Enter GroupName, GroupDescription and Line...!",
+                    button: true,
+                    timer: 4500
+                })
+                return;
+            }
+            else if (roles.GroupName == "") {
+                swal({
+                    icon: "error",
+                    title: "Please Enter GroupName...!",
+                    button: true,
+                    timer: 4500
+                })
+                return;
+            }
+            else if (roles.GroupDescription == "") {
+                swal({
+                    icon: "error",
+                    title: "Please Enter GroupDescription...!",
+                    button: true,
+                    timer: 4500
+                })
+                return;
+            }
+
+
+
+
+            //else if (!checked ) {
+            //    swal({
+            //        icon: "error",
+            //        title: "No User Selected...!",
+            //        button: true,
+            //        timer: 4500
+            //    })
+            //    return;
+            //}
+
+            //Assigning querytype based on Add/Update button clicked by user
+            if ($('.submit').text() == "Update") {
+                roles.QueryType = "Update";
+            }
+            else {
+                roles.QueryType = "Insert";
+            }
+
+
+            roles.GroupID = $('#GroupID').val();
+            role.push(roles);
+
+            $("#permission_details TBODY TR").each(function () {
+                var row = $(this);
+                //updating checkbox with checked if user is already allocated to the group
+                if (row.find("#check1").is(":checked")) {
+
+                    var permissions = {};
+                    permissions.UserID = row.find("#userid").val();
+
+
+                    permissions.GroupID = $('#GroupID').val();
+
+                    if ($('.submit').text() == "Update") {
+                        permissions.QueryType = "Update";
+                    }
+                    else {
+                        permissions.QueryType = "Insert";
+                    }
+                    permission.push(permissions);
+                }
+
+
+
+            });
+
+            var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+            checked = $("input[type=checkbox]:checked").length;
+
+            if (!checked) {
+                alert("Please select one checkbox to submit.");
+                return false;
+            }
+            else {
+                // Ajax call for adding group details and user allocated details
+                $.ajax({
+                    type: "POST",
+                    url: "/UserSettings/Add_Groups_Users",
+                    data: '{permissions: ' + JSON.stringify(permission) + ',grp: ' + JSON.stringify(role) + '}',
+
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    beforeSend: function () {
+                        $('.loading').show();
+                    },
+                    complete: function () {
+                        $('.loading').hide();
+                    },
+                    success: function (response) {
+
+                        $('.submit').text('Submit');
+                        if (response) {
+                            if (response == "Inserted") {
+                                swal({
+                                    icon: "success",
+                                    title: "Details Added Successfully...!",
+                                    showConfirmButton: true,
+                                    confirmButtonText: "Cerrar",
+                                    closeOnConfirm: false
+                                }).then(function (result) {
+                                    window.location = '@Url.Action("UserGroup_settings", "UserSettings")';
+                                })
+                            }
+                            else if (response == "Already") {
+                                swal({
+                                    icon: "error",
+                                    title: "GroupName Already Exist...!",
+                                    showConfirmButton: false,
+                                    timer: 4500
+                                }).then(function (result) {
+                                    window.location = '@Url.Action("UserGroup_settings", "UserSettings")';
+                                })
+                            }
+                            else if (response == "Updated") {
+                                swal({
+                                    icon: "success",
+                                    title: "Details Updated Successfully...!",
+                                    showConfirmButton: true,
+                                    confirmButtonText: "Cerrar",
+                                    closeOnConfirm: false
+                                }).then(function (result) {
+                                    window.location = '@Url.Action("UserGroup_settings", "UserSettings")';
+                                })
+                            }
+                        }
+                        window.location = '@Url.Action("UserGroup_settings", "UserSettings")';
+                    }
+                })
+            }
+            });
+
+
+
+        $('.updated_time').text("N/A");
+        $('.shift').text("N/A");
+
+    });
+</script>
+
+<script type="text/javascript">
+    function sanitize(string12) {
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#x27;',
+            "/": '&#x2F;',
+        };
+        const reg = /[&<>"'/]/ig;
+        return string12.replace(reg, (match) => (map[match]));
+    }
+</script>
+
+<script type="text/javascript">
+    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+    //Function call when edit option in group list is selected
+    $("body").on("click", "#edit", function () {
+        var row = $(this).closest("tr");
+        var GroupID = row.find(".GroupID span").html();
+
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+        //json object containing group id
+        var myData12 = {
+            "QueryType": "Edit_UserGroup",
+            "Parameter": GroupID,
+            "Parameter1": '@Session["CompanyCode"]',
+            "CompanyCode": '@Session["CompanyCode"]',
+                            "PlantCode": '@Session["PlantCode"]',
+                            "LineCode": '@Session["LineCode"]'
+        };
+        $("#divnew").show();
+        $("#divdetails").hide();
+        $('.submit').text('Update');
+        //Ajax Call to retrieve user details corresponding to the groupid
+        $.ajax({
+            type: "POST",
+            url: URL + 'api/Values/User_settings_details',
+            data: myData12,
+            headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+            dataType: "json",
+            //function to show loading till api returns value
+            beforeSend: function () {
+                $('.loading').show();
+            },
+            //function to hide loading once api call returns response
+            complete: function () {
+                $('.loading').hide();
+            },
+
+            success: function (response)
+            {
+                //Assinging already configured group details for editing
+                $('#Group').val(response.data.Table[0].GroupName);
+                $('#Description').val(response.data.Table[0].GroupDescription);
+                $('#GroupID').val(response.data.Table[0].GroupID);
+                $('#UniqueId').val(response.data.Table[0].Unique_id);
+
+
+                //Assigning already available user details for editing
+                for (var i = 0; i < response.data.Table1.length; i++) {
+                    console.log(JSON.stringify(response.data.Table1))
+                    $("#permission_details TBODY TR").each(function () {
+                        var row = $(this);
+                        var permissions = {};
+                        var userid = row.find("#userid").val();
+                        //alert(userid);
+
+                        permissions.Group_id = $('#Group_id').val();
+                        // checkbox value to check if user is allocated to group
+                        if (userid == response.data.Table1[i].UserID) {
+                            row.find("#check1").prop("checked", true);
+                        }
+
+                    });
+                }
+            }
+             //If token expired /invalid page will be redirected to login
+            , error: function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                //if error other than token, notification will display the actual error message
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+            }
+        });
+    });
+    //function to call when delete button is clicked
+    $("body").on("click", "#delete", function () {
+        if (confirm("Do you want to proceed?")) {
+            var row = $(this).closest("tr");
+            var GroupID = row.find(".GroupID span").html();
+            var companycode = '@Session["CompanyCode"]';
+
+            //json data with groupid to be deleted
+            var myData = {
+                  "QueryType": "Delete_UserGroup",
+
+
+                "Parameter": GroupID,
+                "Parameter1": companycode,
+                "CompanyCode": '@Session["CompanyCode"]',
+                         "PlantCode": '@Session["PlantCode"]',
+                         "LineCode": '@Session["LineCode"]'
+
+            };
+
+            var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+            //ajax call to delete group
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/Values/new_delete_User_settings_details',
+                data: myData,
+                   headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+                    // function to show notification when group is deleted
+                     if (response == "deleted") {
+                        swal({
+                            icon: "success",
+                            title: "Group details deleted successfully",
+                            button: true,
+                            timer: 4500
+                        })
+                     }
+                    //function to show notification when users are allocated
+                    else if (response == "failed.Users") {
+                        swal({
+                            icon: "error",
+                            title: "Remove Users from the group to delete the Group",
+                            button: true,
+                            timer: 4500
+                        })
+                    }
+
+                   window.location = '@Url.Action("UserGroup_settings", "UserSettings")';
+                }
+            })
+                 //If token expired /invalid page will be redirected to login
+                .error(function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                     //if error other than token, notification will display the actual error message
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+             });
+        }
+    });
+</script>
+<script>
+    function chk_function(val) {
+        var isChecked = $('.' + val + '').prop("checked");
+        $('#permission_details tr:has(td)').find('input[class="' + val + '"]').prop('checked', isChecked);
+    }
+    //function to check all when select all option is selected
+    function checkAll() {
+        var checkboxes = document.getElementsByTagName('input'), val = null;
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].type == 'checkbox') {
+                if (val === null) val = checkboxes[i].checked;
+                checkboxes[i].checked = val;
+            }
+        }
+    }
+
+</script>
+
+<script>
+    //$(document).ready(function () {
+    //    $('.submit').click(function () {
+    //        checked = $("input[type=checkbox]:checked").length;
+
+    //        if (!checked) {
+    //            alert("Please select one checkbox to submit.");
+    //            return false;
+    //        }
+
+    //    });
+    //});
+</script>
+

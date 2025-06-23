@@ -1,0 +1,598 @@
+﻿@{ ViewBag.Title = "ToolLifeHistoricDashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml"; }
+<link rel="stylesheet" type="text/css" href="~/assets1/datepicker_normal/jquery-ui-1.8.19.custom.css">
+
+<style>
+    .pull-left {
+        float: right !important;
+    }
+</style>
+<header class="page-header">
+    <h2>Tool Life Monitoring Report</h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("MainDashboard","MainDashboard")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+        </ol>
+    </div>
+</header>
+
+<div class="row">
+    <div class="col-md-10">
+        <div class="btn-group" style="right: 10px;">
+            <label class="control-label" style="float:right; font-weight:bold;"> Select Machine <span class="required">*</span></label>
+        </div>
+        <div class="btn-group" style="left: 10px;">
+            <select id="subsystem" class="form-control" name="subsystem">
+                <option value="">Select Machine</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="tabs tabs-danger">
+            <ul class="nav nav-tabs">
+                <li class="active" id="custom">
+                    <a href="#custom" data-toggle="tab">Custom</a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div id="custom" class="tab-pane active">
+                    <section class="panel">
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Date range <span class="required">*</span></label>
+                            <div class="col-md-6" style="right: 190px;">
+                                <div class="input-daterange input-group">
+                                    <span class="input-group-addon">
+                                        <i class="fa fa-calendar"></i>
+                                    </span>
+                                    <input type="text" class="form-control datepic" readonly style="text-align:left;" id="start" name="start">
+                                    <span class="input-group-addon">to</span>
+                                    <input type="text" class="form-control datepic" readonly style="text-align:left;" id="end" name="end">
+
+                                </div>
+
+                            </div>
+                            <div class="btn-group" style="right: 180px;">
+                                <button type="button" id="viewdetails" class="mb-xs mt-xs mr-xs btn btn-primary">View</button>
+                            </div>
+                            <div class="btn-group" style="right: 170px;">
+                                <button type="button" id="clear" class="mb-xs mt-xs mr-xs btn btn-danger">Reset</button>
+                            </div>
+                        </div>
+                        <header class="panel-heading" style="background-color:teal;color:white;">
+                            <div class="panel-actions">
+                                <a href="#" class="fa fa-caret-down"></a>
+                            </div>
+                            <h2 class="panel-title" style="color:white;">Historic View </h2>
+                        </header>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped table-condensed mb-none" id="datatable-custom">
+                                    <thead style="background-color:teal;color:white;">
+                                        <tr>
+                                            <td>S.No</td>
+
+                                            <td>Element</td>
+                                            @*<th>Make</th>*@
+                                            <td>Part Number</td>
+                                            <td>Classification</td>
+                                            <td>Conversion Parameter</td>
+                                            <td>Serial No</td>
+                                            <td>Recommendation Text</td>
+
+                                            @*<th>Current Life Cycles</th>*@
+                                            <td>Rated Life Cycles</td>
+                                            <td>Life at PM</td>
+
+                                            <td>UOM</td>
+                                            @*<th class="hidden-phone">%Usage</th>*@
+                                            <td class="hidden-phone">Last PM</td>
+                                            <td>Status</td>
+                                            <td>Remarks</td>
+                                            <td style='text-align:center;'>View PM</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="custom_details"></tbody>
+                                    @*uncommennted for Standardisation on 7/5/2025*@
+                                    <span class="custom_error" style="color:red;font-size:13px;font-weight:bold;"></span>
+                                </table>
+                            </div>
+
+                        </div>
+                    </section>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PM Details -->
+<div id="myModal" class="modal" style="top:100px;padding-left:160px;">
+    <div class="modal-content" style="width:1000px !important">
+        <div class="close-modal">
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-title" style="text-align:center;font-size:20px;font-weight:bold;">
+            PM Details
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-condensed mb-none" id="datatable_PM">
+                <thead style="background-color:teal;color:white;">
+                    <tr>
+                        <td>S.No</td>
+                        <td>Tool ID</td>
+                        <td>Last PM</td>
+                        <td>Is Replaced</td>
+                        <td>Current Usage</td>
+                        <td>Serial No</td>
+                        <td>Recommendation Text</td>
+                        <td>Remarks</td>
+                    </tr>
+                </thead>
+                <tbody class="PM_details"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- PM Details -->
+
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+<script src="~/assets1/datepicker_normal/datepicker_normal_jquery.min.js"></script>
+<script src="~/assets1/datepicker_normal/jquery-ui-1.8.19.custom.min.js"></script>
+<script src="~/Scripts/bootstrap-datepicker.js"></script>
+
+<script type="text/javascript">
+        $(".datepic").datepicker({
+            format: "yyyy-mm-dd",
+            orientation: "bottom",
+            endDate: '+0d'
+        });
+
+        $('.monthpic').datepicker({
+            format: "yyyy-mm",
+            viewMode: "months",
+            endDate: '+0m',
+            minViewMode: "months",
+            orientation: "bottom"
+        });
+        $('.yearpic').datepicker({
+            minViewMode: 2,
+            format: 'yyyy',
+            startView: 2,
+            endDate: '+0y',
+            orientation: "bottom"
+        });
+
+
+        $(function () {
+            var todaydt = new Date();
+            $("#start").datepicker({
+                autoclose: true,
+                endDate: todaydt,
+                format: 'yyyy-mm-dd',
+                orientation: 'top'
+            }).on('changeDate', function (selected) {
+                var minDate = new Date(selected.date);
+                minDate.setDate(minDate.getDate());
+                $('#end').datepicker('setStartDate', minDate);
+            });
+
+            $("#end").datepicker({
+                autoclose: true,
+                endDate: todaydt,
+                format: 'yyyy-mm-dd',
+                orientation: 'top'
+
+
+            }).on('changeDate', function (selected) {
+                var minDate = new Date(selected.date);
+                minDate.setDate(minDate.getDate() - 1);
+                $('#start').datepicker('setEndDate', minDate);
+            });
+        });
+
+        var URL1 = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+        document.getElementById("clear").addEventListener("click", function () {
+            $('#linecode').val('');
+            $('#subsystem').val('');
+            $('#start').val('');
+            $('#end').val('');
+            $("#datatable-custom").dataTable().fnClearTable();
+            $("#datatable-custom").dataTable().fnDraw();
+            $("#datatable-custom").dataTable().fnDestroy();
+        });
+
+        document.getElementById("viewdetails").addEventListener("click", function () {
+            var active_tab = $('ul .active').attr("id");
+            var linecode = $('#linecode').val();
+            var subsystem = $('#subsystem').val();
+            var start = $('#start').val();
+            var end = $('#end').val();
+            $('.updated_time').text(new Date().toLocaleString());
+            $('.shift').text("N/A");
+
+            $('.line_name').text(linecode);
+            $(".custom_error").text('');
+            $(".custom_pre_error").text('');
+
+
+            if (linecode == '') {
+                swal({
+                    icon: "error",
+                    title: "Please Provide Line details",
+                    button: false,
+                    timer: 4500
+                })
+            }
+            else if (subsystem == '') {
+                swal({
+                    icon: "error",
+                    title: "Please Provide Machine details",
+                    button: false,
+                    timer: 4500
+                })
+            }
+            else if (start == '') {
+                swal({
+                    icon: "error",
+                    title: "Please Provide start date",
+                    button: false,
+                    timer: 4500
+                })
+            }
+            else if (end == '') {
+                swal({
+                    icon: "error",
+                    title: "Please Provide End date",
+                    button: false,
+                    timer: 4500
+                })
+            }
+            else {
+                if (start > end) {
+                    swal({
+                        icon: "error",
+                        title: "Please Provide Dates correctly...",
+                        button: false,
+                        timer: 4500
+                    })
+                }
+                var myData = {
+                    "Flag": "custom",
+                    "linename": '@Session["LineCode"]',
+                    "subsystem": subsystem,
+                    "fromdate": start,
+                    "todate": end,
+                    "CompanyCode": '@Session["CompanyCode"]',
+                    "PlantCode": '@Session["PlantCode"]'
+                };
+                var R_url = '@Url.Action("Login", "Main")';
+                var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+                $.ajax({
+                    type: "POST",
+                    url: URL1 + 'api/Toollife/Gettoolhistorical',
+                    headers: {
+                        Authorization: 'Bearer ' + user1
+                    },
+                    data: myData,
+                    dataType: "json",
+                    beforeSend: function () {
+                        $('.loading').show();
+                    },
+                    complete: function () {
+                        $('.loading').hide();
+                    },
+                    success: function (response) {
+                        var rowsCnt = document.getElementById("datatable-custom").getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
+                        if (rowsCnt > 0) {
+                            for (var i = 0; i < rowsCnt; i++) {
+                                document.getElementById("datatable-custom").deleteRow(1);
+                            }
+                        }
+
+                        if ($.fn.DataTable.isDataTable('#datatable-custom')) {
+                            $('#datatable-custom').DataTable().clear();
+                        }
+
+                        if ($.fn.DataTable.isDataTable('#datatable-custom')) {
+                            $('#datatable-custom').DataTable().destroy();
+                        }
+
+                        if (response.data.length != 0) {
+                            
+                            var j = 1;
+                            for (var i = 0; i < response.data.length; i++) {
+                                var newRow = $("<tr>");
+                                var cols = '';
+                                cols += "<td> " + j + "</td> ";
+                                //cols += "<td> " + response.data[i].linename + "</td> ";
+                                //cols += "<td> " + response.data[i].subsystem + "</td> ";
+                                cols += "<td> " + response.data[i].element + "</td> ";
+                                //cols += "<td> " + response.data[i].make + "</td> ";
+                                cols += "<td> " + response.data[i].partnumber + "</td> ";
+                                cols += "<td> " + response.data[i].classification + "</td> ";
+                                cols += "<td> " + response.data[i].conversionparameter + "</td> ";
+                                cols += "<td> " + response.data[i].SerialNo + "</td> ";
+                                cols += "<td> " + response.data[i].RecText + "</td> ";
+                                //cols += "<td> " + response.data[i].currentlifecycle + "</td> ";
+                                cols += "<td> " + response.data[i].ratedlife + "</td> ";
+                                cols += "<td> " + response.data[i].lifeatpm + "</td> ";
+
+                                cols += "<td> " + response.data[i].uom + "</td> ";
+                                //cols += "<td> " + response.data[i].usage + "</td> ";
+                                cols += "<td> " + response.data[i].lastmain + "</td> ";
+                                if (response.data[i].Status != "") {
+                                    cols += "<td>" + response.data[i].Status + "</td> ";
+                                }
+                                else {
+                                    cols += "<td> pending</td> ";
+                                }
+                                cols += "<td> " + response.data[i].Remarks + "</td> ";
+                                //cols += "<td> " + response.data[i].PM_count + "</td>";
+                                if (response.data[i].PM_count >= 2) {
+                                    cols += `<td style="text-align:center;"> <a class="Edit" id="btn_view" style="text-decoration:none;" onclick="view_PM('${response.data[i].SerialNo}','${response.data[i].ToolID}')">View PM</a></td>`;
+                                }
+                                else {
+                                    cols += "<td> </td>";
+                                }
+                                cols += "</tr>";
+                                newRow.append(cols);
+                                $(".custom_details").append(newRow);
+                                j++;
+                            }
+                            $("#datatable-custom").DataTable({
+                                "responsive": true,
+                                "autoWidth": false,
+                                "searching": true,
+                                scrollY: true,
+                                scrollX: true,
+                                scroller: true,
+                                dom: 'Bfrtip',
+                                buttons: [
+                                    {
+                                        extend: 'excel',
+                                        title: 'Tools History',
+                                        exportOptions: {
+                                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                                        }
+                                    },
+                                ]
+                            });
+                            $('.dataTables_filter').addClass('pull-left');
+                        }
+                        else {
+                            $(".custom_error").text(response.msg);
+                            }
+
+                    },
+                    error: function (response) {
+                        if (response.status == "401") {
+                            swal({
+                                icon: "warning",
+                                title: "Session Timeout",
+                                button: true,
+                                closeModal: false
+                            })
+                            window.location = R_url;
+                        }
+                        else {
+                            swal({
+                                icon: "warning",
+                                title: response.responseText,
+                                button: true,
+                                closeModal: false
+                            })
+
+                        }
+                    }
+                });
+            }
+        });
+
+
+    $(function () {
+        var CompanyCode = '@Session["CompanyCode"]';
+        var PlantCode = '@Session["PlantCode"]';
+        var LineCode = '@Session["LineCode"]';
+        if (CompanyCode == "" && PlantCode == "" && LineCode == "") {
+            swal({
+                icon: "error",
+                title: "Please Select Customer, Plant and Line...!",
+                button: true,
+                timer: 4500
+            })
+            return;
+        }
+        else
+            if (CompanyCode == "") {
+                swal({
+                    icon: "error",
+                    title: "Please Select Customer...!",
+                    button: true,
+                    timer: 4500
+                })
+                return;
+            }
+            else
+                if (PlantCode == "") {
+                    swal({
+                        icon: "error",
+                        title: "Please Select Plant...!",
+                        button: true,
+                        timer: 4500
+                    })
+                    return;
+                }
+        if (LineCode == "") {
+            swal({
+                icon: "error",
+                title: "Please Select Line...!",
+                button: true,
+                timer: 4500
+            })
+            return;
+        }
+        else {
+            var URL1 = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+            var myData1 = {
+                "Flag": "Subsystem",
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]',
+                "LineCode": '@Session["LineCode"]',
+            };
+            var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetSettingdatas1", "Main")',
+                data: myData1,
+                dataType: "json",
+                success: function (response) {
+                    var s = '<option value="">Select Machine</option>';
+                    for (var i = 0; i < response.data.length; i++) {
+                        s += '<option value="' + response.data[i].Code + '">' + response.data[i].Code + "-" + response.data[i].Name + '</option>';
+                    }
+                    $("#subsystem").html(s);
+                },
+                error: function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+                    }
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+                    }
+                }
+            });
+
+        }
+    });
+
+    function exportTableToExcel(tableID, filename = '') {
+        var downloadLink;
+        var dataType = 'application/vnd.ms-excel';
+        var tableSelect = document.getElementById(tableID);
+        var tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
+
+        // Specify file name
+        filename = filename ? filename + '.xls' : 'excel_data.xls';
+
+        // Create download link element
+        downloadLink = document.createElement("a");
+
+        document.body.appendChild(downloadLink);
+
+        if (navigator.msSaveOrOpenBlob) {
+            var blob = new Blob(['\ufeff', tableHTML], {
+                type: dataType
+            });
+            navigator.msSaveOrOpenBlob(blob, filename);
+        } else {
+            // Create a link to the file
+            downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+
+            // Setting the file name
+            downloadLink.download = filename;
+
+            //triggering the function
+            downloadLink.click();
+        }
+    }
+
+    var modal = document.getElementById("myModal");
+    var span = document.getElementsByClassName("close")[0];
+    span.onclick = function () {
+        modal.style.display = "none";
+    }
+
+    function view_PM(Serial_no, Tool_ID) {
+        var modal = document.getElementById("myModal");
+        modal.style.display = "block";
+        var myData = {
+            "Flag": "PM_details",
+            "ToolID": Tool_ID,
+            "linename": '@Session["LineCode"]',
+            "Status": Serial_no,
+            "CompanyCode": '@Session["CompanyCode"]',
+            "PlantCode": '@Session["PlantCode"]'
+        };
+        var R_url = '@Url.Action("Login", "Main")';
+        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+        $.ajax({
+            type: "POST",
+            url: URL1 + 'api/Toollife/Get_PM_Details',
+            headers: {
+                Authorization: 'Bearer ' + user1
+            },
+            data: myData,
+            dataType: "json",
+            beforeSend: function () {
+                $('.loading').show();
+            },
+            complete: function () {
+                $('.loading').hide();
+            },
+            success: function (response) {
+                console.log(response);
+                var rowsCnt = document.getElementById("datatable_PM").getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
+                if (rowsCnt > 0) {
+                    for (var i = 0; i < rowsCnt; i++) {
+                        document.getElementById("datatable_PM").deleteRow(1);
+                    }
+                }
+                if ($.fn.DataTable.isDataTable('#datatable_PM')) {
+                    $('#datatable_PM').DataTable().clear();
+                }
+
+                if ($.fn.DataTable.isDataTable('#datatable_PM')) {
+                    $('#datatable_PM').DataTable().destroy();
+                }
+                if (response.data.Table.length != 0) {
+                    var j = 1;
+                    for (var i = 0; i < response.data.Table.length; i++) {
+                        var newRow = $("<tr>");
+                        var cols = '';
+                        cols += "<td> " + j + "</td> ";
+                        cols += "<td> " + response.data.Table[i].ToolID + "</td> ";
+                        cols += "<td> " + response.data.Table[i].LastMaintenaceDate + "</td> ";
+                        cols += "<td> " + response.data.Table[i].IsReplaced + "</td> ";
+                        cols += "<td> " + response.data.Table[i].Currentusage + "</td> ";
+                        cols += "<td> " + response.data.Table[i].SerialNo + "</td> ";
+                        cols += "<td> " + response.data.Table[i].RecommendationText + "</td> ";
+                        cols += "<td> " + response.data.Table[i].Remarks + "</td> ";
+                        cols += "</tr>";
+                        newRow.append(cols);
+                        $(".PM_details").append(newRow);
+                        j++;
+                    }
+                    $("#datatable_PM").DataTable({
+                        "responsive": true,
+                        "autoWidth": false,
+                        "searching": true,
+                    });
+                }
+            }
+        });
+    }
+
+
+</script>
+

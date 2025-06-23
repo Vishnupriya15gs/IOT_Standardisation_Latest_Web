@@ -1,0 +1,31 @@
+﻿body {
+}
+
+#lefttooltip {
+    position: relative;
+    display: inline-block;
+}
+
+
+#lefttooltip .tooltiptexts {
+    visibility: hidden;
+    width: 200px;
+    background-color: var(--bargraph-tooltip-bg);
+    color: white !important;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    top: 44px;
+    right: 95%;
+    display: inline-block;
+}
+
+#lefttooltip:hover .tooltiptexts {
+    visibility: visible;
+}
+
+.tooltiptexts span {
+    color: white !important;
+}

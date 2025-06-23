@@ -1,0 +1,486 @@
+﻿@model IEnumerable<PlanDigitization_web.Models.Holiday>
+@{
+    ViewBag.Title = "holiday_details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" type="text/css" href="~/assets1/datepicker_normal/jquery-ui-1.8.19.custom.css">
+<header class="page-header">
+    <h2> Holiday Details </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("MainDashboard","MainDashboard")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li><span>Settings</span></li>
+            <li><span>Holiday</span></li>
+        </ol>
+    </div>
+</header>
+
+<!-- Add New Plant-->
+<div class="row" id="divnew" style="display:none;">
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Insert_Holiday","UserSettings")" method="post">
+            <!--@Url.Action("Insert_Holiday","UserSettings")-->
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Add New Holiday</h2>
+                </header>
+                <div class="panel-body">
+                    <div class="form-group">
+                        @*<label class="col-sm-2 control-label"> Plant Name <span class="required">*</span></label>
+                    <div class="col-sm-4">
+                        <select id="ddlplant" class="form-control Plant" name="PlantID" title="Select Plant" required>
+                            <option value="">Select</option>
+                        </select>
+                    </div>*@
+                        <label class="col-sm-2 control-label"> Date <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="Date" name="Date" class="form-control datepic" title="Select Date" placeholder="Date" required />
+                        </div>
+                        <span class="required" id="error_date"></span>
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+                        <label class="col-sm-2 control-label"> Holiday ID <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="HolidayID" name="HolidayID" class="form-control space" title="Enter ID" placeholder="Holiday ID" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Holiday Reason <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="Reason" name="HolidayReason" onkeypress="allowAlphaNumericSpace(event)" class="form-control space" title="Enter Reason" placeholder="Holiday Reason" required />
+                        </div>
+                    </div>
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" onclick="validatefields()" class="btn btn-primary">Submit</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+<!-- Plant Details-->
+<div class="row" id="divdetails">
+    <div class="col-md-12">
+        <section class="panel">
+            <header class="panel-heading" style="background-color:teal;color:white;">
+                @if (ViewContext.Controller.HasPermission("HolidaySetting-Add"))
+                {
+                    <div class="panel-actions">
+                        <button class="btn btn-primary" id="add"><i class="fa fa-plus" aria-hidden="true"> Add New</i></button>
+                    </div>
+                }
+                <h2 class="panel-title" style="color:white;">List of Holidays : </h2>
+            </header>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="panel-body">
+                        @if (ViewContext.Controller.HasPermission("HolidaySetting-View"))
+                        {
+                            <table class="table table-bordered table-striped mb-none" id="datatable-default">
+                                <thead style="background-color:teal;color:white;">
+                                    <tr>
+                                        <th class="centercls"> S.No </th>
+                                        <th style="display:none;"></th>
+                                        <th> Plant </th>
+                                        <th> Date </th>
+                                        <th> Reason </th>
+                                        <th style="text-align:center;width:150px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{int RowNo = 0;}
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr class="gradeX">
+                                            <td>
+                                                @{RowNo++;}@RowNo
+                                            </td>
+                                            <td class="HolidayID" style="display:none;">
+                                                <span>@Html.Encode(item.HolidayID)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.PlantName)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.Dates)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.HolidayReason)</span>
+                                            </td>
+                                            <td style="text-align:center;">
+                                                @if (ViewContext.Controller.HasPermission("HolidaySetting-Edit"))
+                                                {
+                                                    <button class="btn btn-primary" style="margin-top: 10px" id="edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
+                                                }
+                                                @if (ViewContext.Controller.HasPermission("HolidaySetting-Delete"))
+                                                {
+                                                    <button class="btn btn-danger" style="margin-top: 10px" id="delete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <h2>View permission is denied</h2>
+                        }
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!--Edit Plant Details-->
+<div class="row" id="divedit" style="display:none;">
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Update_Holiday","UserSettings")" method="post">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Update Holiday</h2>
+                </header>
+                <div class="panel-body">
+                    <input type="hidden" id="eUnique_id" name="Unique_id" />
+                    <div class="form-group">
+                        @*<label class="col-sm-2 control-label"> Plant Name <span class="required">*</span></label>
+                            <div class="col-sm-4">
+                                <select id="eddlplant" class="form-control Plant" name="PlantID" title="Select Plant" required>
+                                    <option value="">Select</option>
+                                </select>
+                            </div>*@
+                        <label class="col-sm-2 control-label"> Date <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="eDate" name="Date" readonly class="form-control" title="Select Date" placeholder="Date" required />
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+                        <label class="col-sm-2 control-label"> Holiday ID <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="eHolidayID" onkeypress="allowAlphaNumericSpace(event)" name="HolidayID" readonly class="form-control space" title="Enter ID" placeholder="Holiday ID" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Reason <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="eReason" onkeypress="allowAlphaNumericSpace(event)" name="HolidayReason" class="form-control space" title="Enter Reason" placeholder="Holiday Reason" required />
+                        </div>
+
+                    </div>
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+<script src="~/assets1/datepicker_normal/datepicker_normal_jquery.min.js"></script>
+<script src="~/assets1/datepicker_normal/jquery-ui-1.8.19.custom.min.js"></script>
+<script src="~/Scripts/bootstrap-datepicker.js"></script>
+@if (@TempData["message"] != null)
+{
+    <script type="text/javascript">
+    $(function () {
+        var msg = '@TempData["message"]';
+        if (msg == "Inserted") {
+            swal({
+                icon: "success",
+                title: "Details Added Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Updated") {
+            swal({
+                icon: "success",
+                title: "Details Updated Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Already HolidayID") {
+            swal({
+                icon: "error",
+                title: "Failed to Add.Holiday ID already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Already HolidayReason") {
+            swal({
+                icon: "error",
+                title: "Failed to Add.Holiday Reason already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+         else if (msg == "Already Date Assigned") {
+            swal({
+                icon: "error",
+                title: "Failed to Add.Already an holiday assigned for this date",
+                button: true,
+                timer: 4500
+            })
+        }
+
+        else {
+            swal({
+                icon: "error",
+                title: "Failed to Add",
+                button: true,
+                timer: 4500
+            })
+        }
+    });
+    </script>
+}
+
+<script>
+    function validatefields() {
+
+        var date = $("#Date").val();
+        if (date == "" || date == null) {
+            document.getElementById("error_date").innerText = "Required";
+            $("#Date").focus();
+            return false;
+        }
+    }
+</script>
+<script type="text/javascript">
+    $("#add").click(function () {
+        $("#divnew").show();
+        $("#divdetails").hide();
+        $("#divedit").hide();
+    });
+
+    $(".cancel").click(function () {
+        $("#divnew").hide();
+        $("#divdetails").show();
+        $("#divedit").hide();
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).on("keydown", ".space", function (evt) {
+
+        var caretPos = $(this)[0].selectionStart
+        if (evt.keyCode == 32 && caretPos == 0) {
+            return false;
+        }
+    });
+
+    function allowAlphaNumericSpace(e) {
+        var code = ('charCode' in e) ? e.charCode : e.keyCode;
+        if (!(code == 32) && // space
+            !(code > 47 && code < 58) && // numeric (0-9)
+            !(code > 64 && code < 91) && // upper alpha (A-Z)
+            !(code > 96 && code < 123)) { // lower alpha (a-z)
+            e.preventDefault();
+        }
+    }
+
+
+
+</script>
+<script type="text/javascript">
+    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+    $("body").on("click", "#edit", function () {
+        var row = $(this).closest("tr");
+        var ID = row.find(".HolidayID span").html();
+        console.log("HID"+ID);
+        var myData = {
+            "QueryType": "Edit_holiday",
+            "Parameter": ID,
+            "CompanyCode": '@Session["CompanyCode"]',
+                    "PlantCode": '@Session["PlantCode"]',
+                    "LineCode": '@Session["LineCode"]'
+        };
+
+        $("#divedit").show();
+        $("#divnew").hide();
+        $("#divdetails").hide();
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+        $.ajax({
+            type: "POST",
+            url: URL + 'api/UserSettings/User_settings_details',
+            data: myData,
+             headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+            dataType: "json",
+            beforeSend: function () {
+                $('.loading').show();
+            },
+            complete: function () {
+                $('.loading').hide();
+            },
+            success: function (response) {
+
+                console.log("edit:" + response);
+                $('#eReason').val(response.data.Table[0].HolidayReason);
+                $('#eDate').val(response.data.Table[0].Date);
+                $('#eHolidayID').val(response.data.Table[0].HolidayID);
+                $('#eUnique_id').val(response.data.Table[0].Unique_id);
+            }
+            , error: function (response) {
+
+            }
+        }).error(function (response) {
+            if (response.status == "401") {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            }
+            else {
+                swal({
+                    icon: "warning",
+                    title: response.responseText,
+                    button: true,
+                    closeModal: false
+                })
+
+            }
+         });
+    });
+
+    $("body").on("click", "#delete", function () {
+        if (confirm("Do you want to Delete this Holiday?")) {
+            var row = $(this).closest("tr");
+            var ID = row.find(".HolidayID span").html();
+
+            var myData = {
+                "QueryType": "Delete_holiday",
+                "Parameter": ID,
+                "CompanyCode": '@Session["CompanyCode"]',
+                    "PlantCode": '@Session["PlantCode"]',
+                    "LineCode": '@Session["LineCode"]',
+            };
+             var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/UserSettings/new_delete_Holiday_settings_details',
+                data: myData,
+                headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+                    swal({
+                        icon: "success",
+                        title: "Holiday Details Deleted Successfully...!",
+                        button: true,
+                        timer: 4500
+                    })
+                    //window.location = '@Url.Action("holiday_details", "UserSettings")';
+                    window.location = '../UserSettings/holiday_details';
+                }
+            }).error(function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+             });
+        }
+    });
+
+
+
+</script>
+
+<script type="text/javascript">
+    var dateToday = new Date();
+    var yrRange = (dateToday.getFullYear() - 50) + ":" + (dateToday.getFullYear());
+    $(".datepic").datepicker({
+        format: "yyyy-mm-dd",
+        orientation: "bottom"
+
+    });
+
+
+</script>
+<script>
+    $(document).ready(function () {
+        $('.updated_time').text("N/A");
+        $('.shift').text("N/A");
+
+        if ($.fn.DataTable.isDataTable('#datatable-default')) {
+            $('#datatable-default').DataTable().destroy();
+        }
+
+
+        $('#datatable-default').DataTable({
+
+            "responsive": true,
+            "autoWidth": false,
+            scrollY: true,
+            scrollX: true,
+            scroller: true
+        });
+
+
+    });
+</script>

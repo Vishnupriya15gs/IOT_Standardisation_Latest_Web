@@ -1,0 +1,224 @@
+﻿body {
+    background: var(--bg-color-1);
+}
+
+@media(max-width:576px) {
+
+    .container-1 {
+        display: flex;
+        flex-direction: column;
+        height: 100% !important;
+    }
+
+    .container-2 {
+        display: flex;
+        flex-direction: column;
+        height: 723px !important;
+    }
+
+    .box2-2 {
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+.container-main {
+    margin-bottom: 32px;
+}
+
+.container-main-title {
+    text-align: center;
+    font-size: 16px;
+    margin: 8px;
+    font-weight: bold;
+}
+
+.container-1 {
+    display: flex;
+    height: 300px;
+}
+.container-2 {
+    display: flex;
+    height: 241px;
+}
+.container-3 {
+    display: flex;
+}
+.container-4 {
+    display: flex;
+    padding: 0px !important;
+    margin: 0px !important;
+    box-shadow: none !important;
+}
+.container-5 {
+    display: flex;
+    padding: 0px !important;
+    margin: 0px !important;
+    box-shadow: none !important;
+}
+
+
+
+.container-1 div {
+    /*border: 1px #ccc solid;*/
+    box-shadow: var(--box-shadow-1);
+    padding: 8px;
+    margin: 8px;
+    background: var(--bg-color-1);
+}
+
+.container-2 div {
+    /*border: 1px #ccc solid;*/
+    box-shadow: var(--box-shadow-1);
+    padding: 8px;
+    margin: 8px;
+    background: var(--bg-color-1);
+}
+.container-4 div {
+    /*border: 1px #ccc solid;*/
+    box-shadow: none !important;
+    padding: 0px;
+    margin: 0px;
+    background: var(--bg-color-1);
+    text-align: center;
+    font-size: 12px;
+    font-weight: bold;
+    color: black;
+}
+.container-5 div {
+    /*border: 1px #ccc solid;*/
+    /*box-shadow: var(--box-shadow-1);*/
+    box-shadow: none !important;
+    padding: 0px;
+    margin: 0px;
+    background: var(--bg-color-1);
+    text-align: center;
+}
+
+.box-1 {
+    flex: 6;
+    order: 2;
+    display: flex;
+    flex-direction: column;
+    height:434px !important;
+    /*border: 0 !important;*/
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.box-2 {
+    flex: 6;
+    order: 1;
+    display:flex;
+    flex-direction:column;
+}
+
+.box-2 div {
+    box-shadow:none! important;
+    height:80%;
+}
+
+.box-3 {
+    flex: 4;
+    /*height: 225px !important;*/
+}
+
+.box-4 {
+    flex: 2;
+    flex-direction: column;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow:none !important;
+    /*height: 225px !important;*/
+}
+
+.box-5 {
+    flex: 6;
+    /*height: 225px !important;*/
+}
+
+.box-6{
+    flex: 2;
+}
+.box-7{
+    flex: 2;
+}
+.box-8 {
+    flex: 4;
+    order: 2;
+}
+.box-9 {
+    flex: 8;
+}
+
+.box-21 {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    /*justify-content: space-evenly;*/
+    /*margin: 0 !important;
+    padding: 0 !important;*/
+}
+
+.box-22 {
+    flex: 4;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.box2-2 {
+    display: flex;
+    margin: 0 !important;
+    padding:0 !important;
+    height:5%;
+}
+.box2-1 {
+    font-size: 12px;
+    font-weight:bold;
+    color: black;
+    text-align: center;
+    margin: 0 !important;
+    padding: 0 !important;
+    height:95%;
+}
+.box2-1 span {
+    font-size: 16px;
+}
+.box2-1 div span {
+    font-size: 12px;
+}
+
+.box-211{
+    padding: 0px 8px 0px 8px !important;
+    margin: 0px 8px 0px 8px !important;
+}
+
+.box-11 {
+    padding: 8px;
+    margin: 8px;
+    height: 201px !important;
+}
+
+.add {
+    cursor: pointer;
+}
+
+td div {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.container-4 select {
+    height: 20px;
+    padding: 0px;
+    font-weight: normal !important;
+    font-size: 12px;
+    border-radius: 0px;
+}
+
+
+

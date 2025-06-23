@@ -1,0 +1,781 @@
+﻿@model IEnumerable<PlanDigitization_web.Models.Skill_Set>
+@{
+    ViewBag.Title = "Operator_settings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<header class="page-header">
+    <h2> Skill Set Details </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("NewDash","Main")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li><span>Settings</span></li>
+            <li><span>Skill Set</span></li>
+        </ol>
+    </div>
+</header>
+
+
+
+<!----------Select View Div------------>
+
+
+<div class="row" id="select_div" style="display:block;">
+
+    <div class="col-md-12">
+        <section class="panel">
+
+            <header class="panel-heading" style="background-color:teal;color:white;">
+                <div class="panel-actions">
+                    @*<button class="btn btn-primary" id="add" data-toggle="modal" data-target="add_absent_div"><i class="fa fa-plus" aria-hidden="true"> Add Absent</i></button>*@
+                    <button class="btn btn-primary pull-right" id="add" type="button"><i class="fa fa-plus" aria-hidden="true"> Add New</i></button>
+                </div>
+                <h2 class="panel-title" style="color:white;">List of Skill Set </h2>
+            </header>
+
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="panel-body">
+
+                        @*<form action="@Url.Action("Add_Update_Absent_Details","Operatorallocation")" method="post">*@
+                        <div class="form-group">
+
+                            <label class="col-sm-2 control-label"> Select category <span class="required">*</span></label>
+
+                            <div class="col-sm-2">
+                                <select class="form-control" id="scategory" name="Category" required>
+                                </select>
+                            </div>
+
+
+
+                            <div class="col-sm2 " style="text-align:right;">
+                                <button type="submit" id="btn_apply" class="btn btn-primary ">Apply</button>
+                                <button type="button" id="apply_cancel" class="btn btn-danger cancel ">Reset</button>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Table Details-->
+                        <div class="row" id="table_1" style="display:block;">
+                            <div class="form-group">
+                                <div class="panel-body">
+                                    <table class="table table-bordered table-striped mb-none" id="datatable-default" data-swf-path="assets1/vendor/jquery-datatables/extras/TableTools/swf/copy_csv_xls_pdf.swf">
+                                        <thead style="background-color:teal;color:white;">
+                                            <tr>
+                                                <th class="centercls"> S.No </th>
+                                                <th style="display:none;"></th>
+                                                <th class="centercls">Category Name</th>
+                                                <th class="centercls">Skill</th>
+                                                <th style="text-align:center;width:150px;">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{int RowNo = 0;}
+                                            @foreach (var item in Model)
+                                            {
+                                                <tr class="gradeX">
+                                                    <td>
+                                                        @{RowNo++;}@RowNo
+                                                    </td>
+                                                    <td class="ID" style="display:none;">
+                                                        <span>@Html.Encode(item.Id)</span>
+                                                    </td>
+
+                                                    <td>
+                                                        <span>@Html.Encode(item.Category_name)</span>
+                                                    </td>
+                                                    <td>
+                                                        <span>@Html.Encode(item.Skill)</span>
+                                                    </td>
+                                                    <td style="text-align: center; width: 150px;">
+                                                        <button class="btn btn-primary" style="margin-top: 10px" id="edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
+                                                        <button class="btn btn-danger" style="margin-top: 10px" id="delete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--------Select Table View----->
+
+                        <div id="table_2" style="display:none">
+                            <div class="form-group ">
+                                <div class="panel-body">
+                                    <div class="form-group">
+
+                                        <div class="panel-body">
+
+                                            <table class="table table-bordered table-striped mb-none " id="datatable-default1">
+                                                <thead style="background-color:teal;color:white;">
+
+                                                    <tr>
+                                                        <th class="centercls"> S.No </th>
+                                                        <th style="display:none;"></th>
+                                                        <th class="centercls">Category Name</th>
+                                                        <th class="centercls">Skill</th>
+                                                        <th style="text-align:center;width:150px;">Action</th>
+
+                                                    </tr>
+
+                                                </thead>
+
+                                                <tbody class="add_details">
+                                                </tbody>
+
+                                            </table>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <div id="error" style="color:red;font-size:15px;font-weight:bold;">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </section>
+    </div>
+</div>
+
+
+<!-- Add New  Data-->
+<div class="row" id="divnew" style="display:none;">
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Insert_skillset","Operatorallocation")" method="post">
+            <section class="panel">
+
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Add New Skill Set</h2>
+                </header>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Category Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control" id="Category_id" name="Category_id" required>
+                            </select>
+
+                        </div>
+
+                        <label class="col-sm-2 control-label"> Skill <span class="required">*</span></label>
+                        <div class="col-sm-4">
+
+                            <input type="text" id="Skill" name="Skill" class="form-control" title="Enter Skill" placeholder="Name" required />
+                        </div>
+
+                    </div>
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+
+
+<!--Edit Data Details-->
+<div class="row" id="divedit" style="display:none;">
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Update_skillset","Operatorallocation")" method="post">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Update Skill Set </h2>
+                </header>
+                <div class="panel-body">
+                    <input type="hidden" id="eID" name="Id" />
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Category Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control" id="eCategory_id" name="Category_id" required>
+                            </select>
+
+                        </div>
+
+                        <label class="col-sm-2 control-label"> Skill <span class="required">*</span></label>
+                        <div class="col-sm-4">
+
+                            <input type="text" id="eSkill" name="Skill" class="form-control" title="Enter Skill" placeholder="Name" required />
+                        </div>
+                    </div>
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+
+@if (@TempData["message"] != null)
+{
+    <script type="text/javascript">
+    $(function () {
+        var msg = '@TempData["message"]';
+        if (msg == "1") {
+            swal({
+                icon: "success",
+                title: "Details Added Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "2") {
+            swal({
+                icon: "success",
+                title: "Details Updated Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "-1") {
+            swal({
+                icon: "error",
+                title: "Details ID already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+        else {
+            swal({
+                icon: "error",
+                title: "Failed to Add",
+                button: true,
+                timer: 4500
+            })
+        }
+    });
+    </script>
+}
+
+<script>
+
+
+    $(function () {
+
+          var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+          var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+          var R_url = '@Url.Action("Login", "Main")';
+        var data = {
+           "QueryType": "Get_skill_category",
+                "Parameter": '@Session["PlantCode"]',
+                "Parameter1": '@Session["CompanyCode"]',
+
+        };
+        $.ajax({
+            type: "POST",
+            data: data,
+             headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+            url: URL + 'api/UserSettings/User_settings_details',
+            dataType: "json",
+            success: function (response) {
+
+                var s = '<option value="">Please Select</option>';
+                for (var i = 0; i < response.data.Table.length; i++) {
+                    s += '<option value="' + response.data.Table[i].Id + '">' + response.data.Table[i].Category_name + '</option>';
+                }
+                $("#Category_id").html(s);
+            }
+        }).error(function (response) {
+            if (response.status == "401") {
+                swal({
+                    icon: "warning",
+                    title: "Token is not valid",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            }
+            else {
+                swal({
+                    icon: "warning",
+                    title: response.responseText,
+                    button: true,
+                    closeModal: false
+                })
+
+            }
+        });
+     });
+
+</script>
+
+
+<script type="text/javascript">
+
+
+    function sanitize(string12) {
+
+        const map = {
+
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#x27;',
+            "/": '&#x2F;',
+        };
+        const reg = /[&<>"'/]/ig;
+        return string12.replace(reg, (match) => (map[match]));
+    }
+
+    $("#add").click(function () {
+
+        $("#select_div").hide();
+        $("#divnew").show();
+        $("#table_1").hide();
+        $("#table_2").hide();
+
+    });
+
+    $(".cancel").click(function () {
+
+        $("#scategory").val("All")
+        $("#select_div").show();
+        $("#divnew").hide();
+        $("#divedit").hide();
+        $("#table_2").hide();
+        $("#table_1").show();
+
+    });
+     $("#apply_cancel").click(function (event) {
+
+
+            window.location = '@Url.Action("Skill_Set", "Operatorallocation")';
+
+     });
+</script>
+
+<script type="text/javascript">
+
+    //------Load Category Data--------
+
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+        var data = {
+            "QueryType": "Get_skill_category",
+            "Parameter": '@Session["PlantCode"]',
+            "Parameter1": '@Session["CompanyCode"]',
+        };
+    $.ajax({
+
+        type: "POST",
+        data: data,
+        headers: {
+            Authorization: 'Bearer ' + user1
+        },
+        url: URL + 'api/UserSettings/User_settings_details',
+        dataType: "json",
+        success: function (response) {
+
+            var s = '<option value="All">All Category</option>';
+            for (var i = 0; i < response.data.Table.length; i++) {
+                s += '<option value="' + response.data.Table[i].Id + '">' + response.data.Table[i].Category_name + '</option>';
+            }
+            $("#scategory").html(s);
+        }
+
+    //}).error(function (response) {
+
+
+    //    if (response.status == "401") {
+    //            swal({
+    //                icon: "warning",
+    //                title: "Token is not valid",
+    //                button: true,
+    //                closeModal: false
+    //            })
+    //            window.location = R_url;
+    //        }
+    //        else {
+    //            swal({
+    //                icon: "warning",
+    //                title: response.responseText,
+    //                button: true,
+    //                closeModal: false
+    //            })
+
+    //    }
+
+    });
+
+
+    //-------apply button function------------
+
+    $("#btn_apply").click(function (event) {
+
+        $("#table_1").hide();
+        $("#table_2").show();
+
+            var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+            var Category = $("#scategory").val();
+
+
+            if (Category == "0" || Category == "") {
+
+                swal({
+                    icon: "warning",
+                    title: "Please Select Category...!",
+                    button: true,
+                    timer: 4500
+                })
+            }
+            else
+            {
+                    myData = {
+                        "QueryType": "Get_Skill_set_result",
+                        "Parameter": '@Session["PlantCode"]',
+                        "Parameter1": '@Session["CompanyCode"]',
+                        "Parameter2": Category,
+
+                    }
+
+
+                $.ajax({
+                    type: "POST",
+                    url: URL + 'api/UserSettings/User_settings_details',
+                    data: myData,
+                    headers: {
+                        Authorization: 'Bearer ' + user1
+                    },
+                    dataType: "json",
+                    beforeSend: function () {
+                        $('.loading').show();
+                    },
+                    complete: function () {
+                        $('.loading').hide();
+                    },
+                    success: function (response) {
+
+                        console.log(response);
+                        if ($.fn.DataTable.isDataTable('#datatable-default1')) {
+                            $('#datatable-default1').DataTable().destroy();
+                        }
+
+                        var rowsCnt = document.getElementById("datatable-default1").getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
+                        if (rowsCnt > 0) {
+                            for (var i = 0; i < rowsCnt; i++) {
+                                document.getElementById("datatable-default1").deleteRow(1);
+                            }
+                        }
+
+                        if (response.data.Table.length != 0) {
+                            $("#error").html("");
+                            var j = 1;
+                            for (var i = 0; i < response.data.Table.length; i++) {
+                                var newRow = $("<tr>");
+                                var cols = '';
+
+                                cols += '<td >' + j + '</td>';
+                                cols += '<td class="ID"  style="display:none;"> <span>' + response.data.Table[i].Id + '</span></td>';
+                                cols += '<td id="Shift">' + response.data.Table[i].Category_name + '</td>';
+                                cols += '<td >' + response.data.Table[i].Skill + '</td>';
+                                cols += '<td style="text-align:center;width:150px;">  <button class="btn btn-primary" style="margin-top: 10px" id="edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button> <button class="btn btn-danger" style="margin-top: 10px" id="delete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>   </td> ';
+                                cols += "</tr>";
+                                newRow.append(cols);
+                                $(".add_details").append(newRow);
+                                j++;
+                            }
+                            $('#datatable-default1').DataTable({
+                            });
+                        }
+                        else {
+                            $("#apply_table").hide();
+                            $("#error").html("Skills Details Not Found...!");
+                        }
+                    }
+
+
+
+                }).error(function (response) {
+
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Token is not valid",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+                    }
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+
+
+                    }
+                });
+
+            }
+
+
+
+        });
+
+
+
+    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+    var R_url = '@Url.Action("Login", "Main")';
+    var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+    //-----------Edit function------------
+
+    $("body").on("click", "#edit", function () {
+
+        var row = $(this).closest("tr");
+        var ID = row.find(".ID span").html(); //--Get Id value
+
+        var myData = {
+            "QueryType": "Edit_skill_set",
+            "Parameter": ID
+        };
+
+        $("#divedit").show();
+        $("#table_1").hide();
+        $("#table_2").hide();
+        $("#select_div").hide();
+
+        $.ajax({
+            type: "POST",
+            url: URL + 'api/UserSettings/User_settings_details',
+            data: myData,
+            headers: {
+                Authorization: 'Bearer ' + user1
+            },
+            dataType: "json",
+            beforeSend: function () {
+                $('.loading').show();
+            },
+            complete: function () {
+                $('.loading').hide();
+            },
+            success: function (response) {
+
+                $('#eID').val(response.data.Table[0].Id);
+                $('#eSkill').val(response.data.Table[0].Skill);
+
+
+                var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+                var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+                var R_url = '@Url.Action("Login", "Main")';
+                var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+                var data = {
+                    "QueryType": "Get_skill_set",
+                    "Parameter": '@Session["PlantCode"]',
+                    "Parameter1": '@Session["CompanyCode"]',
+                };
+                $.ajax({
+                    type: "POST",
+                    data: data,
+                    headers: {
+                        Authorization: 'Bearer ' + user1
+                    },
+                    url: URL + 'api/UserSettings/User_settings_details',
+                    dataType: "json",
+                    success: function (response2) {
+                        console.log(response2)
+                        var s = '<option value="">Please Select</option>';
+                        for (var i = 0; i < response2.data.Table.length; i++) {
+
+                            if (response2.data.Table[i].Id == response.data.Table[0].Id) {
+
+                                s += '<option value="' + response2.data.Table[i].Category_id + '" selected=selected>' + response2.data.Table[i].Category_name + '</option>';
+                            }
+
+                            else {
+                                s += '<option value="' + response2.data.Table[i].id + '">' + response2.data.Table[i].Category_name + '</option>';
+                            }
+
+                        }
+                        $("#eCategory_id").html(s);
+                    }
+
+
+
+
+                }).error(function (response) {
+
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Token is not valid",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+                    }
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+
+
+                });
+
+
+            }
+        }).error(function (response) {
+
+            if (response.status == "401") {
+                swal({
+                    icon: "warning",
+                    title: "Token is not valid",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            }
+            else {
+                swal({
+                    icon: "warning",
+                    title: response.responseText,
+                    button: true,
+                    closeModal: false
+                })
+
+            }
+
+
+        });
+    });
+
+
+//-------------Delete Function-------------
+
+    $("body").on("click","#delete", function () {
+
+        if (confirm("Do you want to Delete this...?")) {
+
+            var row = $(this).closest("tr");
+            var ID = row.find(".ID span").html();
+            var myData = {
+                "QueryType": "Delete_skill_set",
+                "Parameter": ID
+            };
+
+             var R_url = '@Url.Action("Login", "Main")';
+             var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/UserSettings/delete_User_settings_details',
+                data: myData,
+                 headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+                    swal({
+                        icon: "success",
+                        title: "Details Deleted Successfully...!",
+                        button: true,
+                        timer: 4500
+                    })
+                    window.location = '@Url.Action("Skill_set", "Operatorallocation")';
+                }
+            }).error(function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Token is not valid",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+            });
+        }
+    });
+
+</script>
+
+<script>
+
+    $(document).ready(function () {
+
+        $('.updated_time').text("N/A");
+        $('.shift').text("N/A");
+
+        if ($.fn.DataTable.isDataTable('#datatable-default')) {
+
+            $('#datatable-default').DataTable().destroy();
+        }
+
+
+        $('#datatable-default').DataTable({
+
+            "responsive": true,
+            "autoWidth": false,
+            scrollY: true,
+            scrollX: true,
+            scroller: true
+        });
+
+
+    });
+
+</script>
+

@@ -1,0 +1,682 @@
+﻿body {
+    background-color: white;
+    height: 100%;
+}
+
+.carousel_panel {
+    margin-bottom: 0px;
+    width: 1200px;
+}
+
+.carousel_panel_body {
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.dark-mode {
+    background-color: #1b1c1c;
+}
+
+.legend {
+    float: right;
+    margin-top: -200px;
+    font-size: 12px;
+    color: black;
+    /*font-weight: bold;*/
+    margin-right: -30px;
+}
+
+.legend1 {
+    float: right;
+    margin-top: -105px;
+    font-size: 10px;
+    color: black;
+    /*font-weight: bold;*/
+    margin-right: -30px;
+}
+
+.pie text {
+    font-family: "Verdana";
+    fill: #000;
+}
+
+.pie .name-text {
+    font-size: .8em;
+}
+
+.top_10_duration_table td {
+    font-size: 10px;
+}
+
+.toolTip {
+    position: absolute;
+    display: none;
+    min-width: 80px;
+    height: auto;
+    background: none repeat scroll 0 0 #ffffff;
+    ;
+    border: 1px solid #6F257F;
+    padding: 14px;
+    text-align: center;
+}
+
+.glyphicon .tooltiptext2 {
+    line-height: 1.5;
+}
+
+.modal {
+    padding: 0 !important;
+    /*override inline padding-right added from js*/
+}
+
+    .modal .modal-dialog {
+        width: 94%;
+        height: 95%;
+        margin-left: 3%;
+        padding: 0;
+    }
+
+/*Carousel Alarm Icon*/
+.alm i.fa {
+    display: inline-block;
+    border-radius: 60px;
+    padding: 0.5em 0.6em;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset;
+}
+
+.alm a {
+    color: grey;
+}
+/*Carousel inner cards styles*/
+.kpiCard, .productionCard {
+    height: 245px;
+}
+
+.prodCardMargin {
+    padding: 0 0 0 0;
+}
+/*Popup Live Symbol*/
+.dot_live {
+    height: 8px;
+    width: 8px;
+    background-color: #E74C3C;
+    border-radius: 50%;
+    display: inline-block;
+}
+/*Carousel Title*/
+.fontSanserif {
+    font-family: 'Open Sans', sans-serif;
+}
+/*adjacent fac kpi tooltip*/
+.titleTooltip:hover .tooltiptext2 {
+    visibility: visible;
+    display: block;
+}
+
+.panel1 fontSanserif {
+    color: black;
+    font-weight: bold;
+    
+}
+
+.panel1 .panel-heading .fontSanserif {
+    color: black;
+    font-weight: bold;
+}
+
+.panel1 .panel-heading .titleTooltip {
+    margin-left: 3px;
+}
+
+.panel1  {
+    box-shadow: rgba(0,  0,  0,  0.15) 1.95px 1.95px 2.6px;
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/*Carousel Title Breadcrumbs*/
+section .panel-heading .row .right-wrapper .breadcrumb {
+    margin: 0 0 0 0;
+    padding-bottom: 0;
+    padding-top: 0;
+}
+
+/*Carousel Machine Batchcode*/
+section .panel-heading .row div .machineBatchcode {
+    margin: 0 0 0 0;
+}
+
+/*Centre Text*/
+.centreText {
+    text-align: center;
+}
+/*nopadding*/
+.nopadding {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.noRpadding {
+    padding: 0 0 0 10px !important;
+    margin: 0 !important;
+}
+/*Title attribute tooltip*/
+.titleTooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.titleTooltip_status {
+    position: relative;
+    display: inline-block;
+}
+
+.titleTooltip_status {
+    position: relative;
+    display: inline-block;
+}
+
+.titleTooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: Grey;
+    color: white;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    top: 20px;
+    right: 105%;
+    font-weight: normal;
+    z-index: 100000;
+    font-size:12px;
+}
+/*tooltip for linedetails popup*/
+.titleTooltip .tooltiptext3 {
+    visibility: hidden;
+    width: 120px;
+    background-color: Grey;
+    color: white;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    bottom: -30px;
+    margin-left: -100px;
+    left:100px;
+    font-weight: normal;
+    z-index: 100000;
+    font-size: 12px;
+}
+
+.titleTooltip:hover .tooltiptext, .titleTooltip:hover .tooltiptext3, .titleTooltip:hover .tooltiptext1, .titleTooltip_status:hover .tooltiptext_status {
+    visibility: visible;
+    display: block;
+}
+
+.titleTooltip .tooltiptext1 {
+    visibility: hidden;
+    width: 200px;
+    background-color: Grey;
+    color: white;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    top: 20px;
+    left: 105%;
+    font-weight: normal;
+    z-index: 1;
+    font-size:12px;
+}
+
+.titleTooltip .tooltiptext2 {
+    visibility: hidden;
+    width: 200px;
+    background-color: Grey;
+    color: white;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    top: 20px;
+    left: 105%;
+    font-weight: normal;
+    z-index: 1;
+    font-size: 12px;
+}
+
+.glyphicon-info-sign {
+    content: "\e086";
+    font-size: small;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+
+
+.titleTooltip_status .tooltiptext_status {
+    visibility: hidden;
+    background-color: grey;
+    color: white;
+    /* text-align: center;*/
+    border-radius: 6px;
+    padding: 3px 0;
+    position: absolute;
+    top: 0px;
+    left: 105%;
+    font-weight: normal;
+    height: 50px;
+    width: 224px;
+    line-height: 14px;
+    z-index: 99999 !important;
+    height: 150px;
+    margin-bottom: -200px;
+    font-size: 11px;
+    max-height:60px;
+}
+
+.flex-item-status_bar_box#carouselStatusBar1 {
+    margin: 5px;
+    height: 50px;
+    width: 88px;
+    text-align: center;
+    border-radius: 5px;
+    color: black;
+    background-color: rgb(130, 205, 71);
+}
+
+/* cicular progress bar chart*/
+#darkg center .widget_1, #darkg center .widget_2, #darkg center .widget_3 {
+    width: auto;
+    height: auto;
+}
+
+    #darkg center .widget_1 svg, #darkg center .widget_2 svg, #darkg center .widget_3 svg {
+        width: 119px !important;
+        height: 127px !important;
+        display: block;
+    }
+
+.popupWidget {
+    height: 100%;
+    width: 175px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.carouselWidget {
+    height: 30px;
+    width: 10px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.progress-bar {
+    fill: #2BAAB1;
+    stroke-width: 1;
+    stroke: #2BAAB1;
+}
+
+.oee svg .progress-bar {
+    fill: #0088CC;
+    stroke-width: 1;
+    stroke: #0088CC;
+}
+
+.progress-bar1 {
+    fill: #2BAAB1;
+    stroke-width: 1;
+    stroke: #2BAAB1;
+}
+
+
+/*#2BAAB1*/
+.progress-bar-bg {
+    fill: #ddd;
+    stroke-width: 1;
+    stroke: #ddd;
+}
+
+.progress-label {
+    fill: #aaa;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 20px;
+    text-anchor: middle;
+    font-weight: bolder;
+    dominant-baseline: central;
+}
+
+.progress-label1 {
+    fill: #aaa;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 12px;
+    text-anchor: middle;
+}
+
+.avail, .perf, .qual, .oee {
+    padding: 0;
+    margin: auto;
+    height: 100%;
+}
+
+#darkg .panel-body .col-md-4 .col-md-12 {
+    display: flex;
+    flex-direction: column;
+
+}
+
+
+.statusbar_flex div {
+    width: 50px;
+    height: 50px;
+}
+
+
+
+.modal .modal-content {
+}
+
+.pie .value-text {
+    font-size: 3em;
+}
+
+svg rect.bar, .custome_report rect, .Range_chart_daywise rect, #err_Range_chart_daywise rect {
+    opacity: 0.5;
+    stroke-width: 1;
+    stroke: #0069bf;
+}
+
+.rej_custom rect, #top_10_pareto_chart rect {
+    opacity: 0.5;
+    stroke-width: 1;
+    stroke: #0069bf;
+}
+
+line {
+    shape-rendering: crispEdges;
+}
+
+.axis path, .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+.line {
+    fill: none;
+    stroke: #5F6A6A;
+    stroke-width: 1.5px;
+}
+
+.grid .tick {
+    stroke: lightgrey;
+    opacity: 0.7;
+}
+
+.grid path {
+    stroke-width: 0;
+}
+
+.x_label {
+    border: solid;
+    background-color: cornflowerblue;
+}
+
+.main_div {
+    display: flex;
+}
+
+    .main_div .panel {
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    }
+
+.panel0 {
+    margin-bottom: 0px;
+}
+
+    .panel0 .panel-body {
+        padding-top: 5px;
+        /*padding-bottom:0px;*/
+    }
+
+    .panel0 .row_slide {
+        color: white;
+    }
+
+    .panel0 .panel0_body {
+        padding-bottom: 0px;
+    }
+
+
+/*#myCarousel {*/
+/*padding-top: 20px;*/
+/*width: 1220px;
+        height: 350px;
+    }*/
+#slide_nav_button {
+    background-color: darkgrey;
+    color: darkgrey;
+}
+
+.machine_status_bars #okpart_id {
+    font-size: 19px;
+}
+
+.statusbar_flex {
+    display: flex;
+    padding-left: 12px;
+    /* padding-top: 12px;*/
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 90px;
+    /*width: 650px;*/
+    /*padding-top: 30px;*/
+}
+
+.Flex-item-status {
+    /*border: 1px solid #c3c3c3;*/
+    margin: 5px;
+    height: 50px;
+    max-width: 62px;
+    width: 100%;
+    text-align: center;
+    border-radius: 5px;
+    background-color: #f02416;
+    color: black;
+}
+
+.flex-item-status_bar_box {
+    /*border: 1px solid #c3c3c3;*/
+    margin: 5px;
+    height: 50px;
+    width: 88px;
+    text-align: center;
+    border-radius: 5px;
+    color: black;
+}
+
+.carousel-indicators {
+    /*z-index: 15;*/
+    list-style: none;
+    display: flex;
+    justify-content: center;
+}
+
+.Hourly_Production_Alignment .line {
+    fill: none;
+    stroke-width: 2px;
+}
+
+.Hourly_Production_Alignment .circle {
+    fill: steelblue;
+    stroke: #fff;
+}
+
+.Hourly_Production_Alignment .circle1 {
+    fill: steelblue;
+    stroke: #fff;
+}
+
+.Hourly_Production_Alignment .tooltipHourly {
+    position: absolute;
+    pointer-events: none;
+    background-color: rgb(88, 88, 88);
+    color: #fff;
+    padding: 8px;
+    border-radius: 4px;
+    margin-top: -310px;
+    margin-left: -30px;
+    font-size: 12px;
+    z-index: 100000; /*Increase the z-index value */
+}
+
+/*Title attribute tooltip*/
+.titleTooltipLine {
+    position: relative;
+    display: inline-block;
+}
+
+    .titleTooltipLine:hover .tooltiptext1 {
+        visibility: visible;
+        display: block;
+    }
+
+    .titleTooltipLine .tooltiptext1 {
+        visibility: hidden;
+        width: 200px;
+        background-color: Grey;
+        color: white;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        font-weight: normal;
+    }
+
+#arrowAnim {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@media screen and (min-width: 768px) {
+    .carousel-indicators {
+        bottom: -20px;
+    }
+
+    .arrow {
+        width: 5vw;
+        height: 5vw;
+        border: 2.5vw solid;
+        border-color: black transparent transparent black;
+        transform: rotate(-45deg);
+    }
+
+
+    .arrowSliding {
+        position: absolute;
+        -webkit-animation: slide 4s linear infinite;
+        animation: slide 4s linear infinite;
+    }
+
+    /*.carousel-indicators {
+        bottom: -50px !important;
+    }
+*/
+    .carousel-indicators li {
+        /*margin-left: 25px !important;*/
+        justify-content: center;
+    }
+
+    .delay1 {
+        -webkit-animation-delay: 1s;
+        animation-delay: 1s;
+    }
+
+    .delay2 {
+        -webkit-animation-delay: 2s;
+        animation-delay: 2s;
+    }
+
+    .delay3 {
+        -webkit-animation-delay: 3s;
+        animation-delay: 3s;
+    }
+
+    @-webkit-keyframes slide {
+        0% {
+            opacity: 0;
+            transform: translateX(15vw);
+        }
+
+        20% {
+            opacity: 1;
+            transform: translateX(9vw);
+        }
+
+        80% {
+            opacity: 1;
+            transform: translateX(-9vw);
+        }
+
+        100% {
+            opacity: 0;
+            transform: translateX(-15vw);
+        }
+    }
+
+    @keyframes slide {
+        0% {
+            opacity: 0;
+            transform: translateX(15vw);
+        }
+
+        20% {
+            opacity: 1;
+            transform: translateX(9vw);
+        }
+
+        80% {
+            opacity: 1;
+            transform: translateX(-9vw);
+        }
+
+        100% {
+            opacity: 0;
+            transform: translateX(-15vw);
+        }
+    }
+}
+.centreText {
+    text-align: center
+}
+
+.nok-red {
+    color: red;
+}
+
+.nok-green {
+    color: green;
+}
+
+/*show settiongs input aside menubar*/
+/*.d-none {
+        display: none !important;
+    }*/

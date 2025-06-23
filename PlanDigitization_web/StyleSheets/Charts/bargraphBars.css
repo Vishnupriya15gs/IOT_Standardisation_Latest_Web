@@ -1,0 +1,19 @@
+﻿body {
+}
+
+svg .bargraphBar {
+    fill: var(--bargraph-bar-fill-1);
+}
+
+.bar-label {
+    font-size: 10px !important;
+    font-weight: bold !important;
+}
+.bar1-label{
+    font-size:10px;
+    font-weight:bold;
+}
+.bar2-label {
+    font-size: 10px;
+    font-weight: bold;
+}

@@ -1,0 +1,679 @@
+﻿
+@{
+    ViewBag.Title = "ActualvsTargetCycletime";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    line {
+        shape-rendering: crispEdges;
+    }
+
+    .axis path, .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+    }
+
+    .line {
+        fill: none;
+        stroke: purple;
+        stroke-width: 1.5px;
+    }
+
+    .grid .tick {
+        stroke: lightgrey;
+        opacity: 0.7;
+    }
+
+    .grid path {
+        stroke-width: 0;
+    }
+</style>
+
+@*<script src="~/Scripts/d3.min.js"></script>*@
+<link rel="stylesheet" type="text/css" href="~/assets1/datepicker_normal/jquery-ui-1.8.19.custom.css">
+<link href="~/Content/bootstrapmodel.css" rel="stylesheet" />
+<header class="page-header">
+    <h2>ActualCycleTime vs TargetCycleTime</h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("MainDashboard","MainDashboard")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+
+        </ol>
+    </div>
+</header>
+@if (ViewContext.Controller.HasPermission("ActualvsTargetCycletime-View"))
+{
+    <div class="row" id="Historic" style="display:block;">
+        <div class="col-md-2"></div>
+        <div class="col-md-12">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;"> ActualCycleTime vs TargetCycleTime </h2>
+                </header>
+                <div class="panel-body">
+                    <div class="form-group">
+
+                        <label class="col-sm-2 control-label"> Select Machine  <span class="required">*</span></label>
+                        <div class="col-sm-2">
+                            <select class="form-control" id="Machine">
+                                <option value="0">Select</option>
+                            </select>
+                        </div>
+
+                        <label class="col-sm-2 control-label"> Select Variant  <span class="required">*</span></label>
+                        <div class="col-sm-2">
+                            <select class="form-control" id="Variant"></select>
+                        </div>
+
+                        <label class="col-sm-2 control-label"> Select Report  <span class="required">*</span></label>
+                        <div class="col-sm-2">
+                            <select class="form-control" id="Report_name">
+                                <option value="0">Select </option>
+                                <option value="S1">Shift1</option>
+                                <option value="S2">Shift2</option>
+                                <option value="S3">Shift3</option>
+                                <option value="4">Daywise</option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+
+                        <label class="col-sm-2 control-label"> Date  <span class="required">*</span></label>
+                        <div class="col-sm-2">
+                            <input type="text" class="form-control datepic" id="ShiftDate" autocomplete="off" readonly />
+                        </div>
+                    </div>
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-3 col-sm-offset-3" style="text-align: right; left: 1115px; margin-left: 15px; margin-right: 15px;">
+                            <button type="button" id="Search_Histogram" onclick="getdata()" class="btn btn-primary Search">Search</button>
+                            <button type="button" id="btn_cancel" class="btn btn-danger cancel">Reset</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </div>
+    </div>
+    <div class="panel-body">
+
+        <div id='container' style="height:650px;width:100%">
+
+        </div>
+
+    </div>
+    }
+else
+{
+    <div class="row">
+        <h2 class="panel-title">View Permission is denied</h2>
+    </div>
+    }
+
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+<script src="~/assets1/datepicker_normal/datepicker_normal_jquery.min.js"></script>
+<script src="~/assets1/datepicker_normal/jquery-ui-1.8.19.custom.min.js"></script>
+<script src="~/Scripts/bootstrap-datepicker.js"></script>
+
+
+<script type="text/javascript">
+      $(function () {
+                $(".datepic").datepicker({
+                    format: "yyyy-mm-dd",
+                    orientation: "top",
+                    endDate: '+0d',
+                    autoclose: true
+                });
+
+        var CompanyCode = '@Session["CompanyCode"]';
+        var PlantCode = '@Session["PlantCode"]';
+        var LineCode = '@Session["LineCode"]';
+        if (CompanyCode == "" && PlantCode == "" && LineCode == "") {
+            swal({
+                icon: "error",
+                title: "Please Select Customer, Plant and Line...!",
+                button: true,
+                timer: 4500
+            })
+            return;
+        }
+        else
+            if (CompanyCode == "") {
+                swal({
+                    icon: "error",
+                    title: "Please Select Customer...!",
+                    button: true,
+                    timer: 4500
+                })
+                return;
+            }
+            else
+                if (PlantCode == "") {
+                    swal({
+                        icon: "error",
+                        title: "Please Select Plant...!",
+                        button: true,
+                        timer: 4500
+                    })
+                    return;
+                }
+                if (LineCode == "") {
+                    swal({
+                        icon: "error",
+                        title: "Please Select Line...!",
+                        button: true,
+                        timer: 4500
+                    })
+                    return;
+                }
+                else {
+                    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+                    var myData1 = {
+                        "Flag": "Subsystem",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                       "PlantCode": '@Session["PlantCode"]',
+                        "LineCode":'@Session["LineCode"]',
+                    };
+                     var R_url = '@Url.Action("Login", "Main")';
+                   var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("GetSettingdatas1", "Main")',
+                        data: myData1,
+                        dataType: "json",
+                        success: function (response) {
+                            var s = '<option value="">Select Machine</option>';
+
+                            for (var i = 0; i < response.data.length; i++) {
+                                
+                                if (response.data.length == 1) {
+                                    s += '<option value="' + response.data[i].Code + '" selected=selected>' + response.data[i].Code + "-" + response.data[i].Name + '</option>';
+                                }
+                                else {
+                                    s += '<option value="' + response.data[i].Code + '">' + response.data[i].Code + "-" + response.data[i].Name + '</option>';
+                                }
+                            }
+                            $("#Machine").html(s);
+
+                        },
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+                            }
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                    });
+
+                }
+
+    });
+
+              $("#Machine").change(function ()
+              {
+
+                  var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+                  var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+                  var Machine = $('#Machine').val();
+
+             var data = {
+                 "QueryType": "Get_MachineName",
+                 "Parameter": '@Session["PlantCode"]',
+                 "Parameter1": '@Session["CompanyCode"]',
+                 "Parameter2": Machine
+             };
+
+            var data1 = {
+                "QueryType": "Get_Variants",
+                "Parameter": Machine,
+                "Parameter1": '@Session["CompanyCode"]',
+                "Parameter2": '@Session["PlantCode"]',
+                "Parameter4": '@Session["LineCode"]',
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]',
+                "LineCode": '@Session["LineCode"]'
+            };
+
+            $.ajax({
+                type: "POST",
+                data: data1,
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                url: URL + "api/Values/User_settings_details",
+                dataType: "json",
+                success: function (response) {
+                    
+                    var s = '<option value="">Select Variant</option>';
+                    for (var i = 0; i < response.data.Table.length; i++) {
+                        s += '<option value="' + response.data.Table[i].Variant_Code + '">' + response.data.Table[i].VariantName + '</option>';
+                    }
+                    $("#Variant").html(s);
+                }
+            })
+
+        });
+
+
+
+</script>
+<script>
+            document.getElementById("btn_cancel").addEventListener("click", function () {
+                $('#ShiftDate').val('');
+                select_box = document.getElementById("Variant");
+                select_box.selectedIndex = 0;
+                select_box1 = document.getElementById("Report_name");
+                select_box1.selectedIndex = 0;
+                 var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+                    var myData1 = {
+                        "Flag": "Subsystem",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                       "PlantCode": '@Session["PlantCode"]',
+                        "LineCode":'@Session["LineCode"]',
+                    };
+                     var R_url = '@Url.Action("Login", "Main")';
+                   var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("GetSettingdatas1", "Main")',
+                        data: myData1,
+                        dataType: "json",
+                        success: function (response) {
+                            var s = '<option value="">Select Machine</option>';
+
+                            for (var i = 0; i < response.data.length; i++) {
+                                
+                                if (response.data.length == 1) {
+                                    s += '<option value="' + response.data[i].Code + '" selected=selected>' + response.data[i].Code + "-" + response.data[i].Name + '</option>';
+                                }
+                                else {
+                                    s += '<option value="' + response.data[i].Code + '">' + response.data[i].Code + "-" + response.data[i].Name + '</option>';
+                                }
+                            }
+                            $("#Machine").html(s);
+
+                        },
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+                            }
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                    });
+
+                d3.select("#container svg").remove();
+            })
+            function getdata() {
+                var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+                var linecode = '@Session["LineCode"]';
+                var machinecode = $('#Machine').val();
+                var variant = $('#Variant').val();
+                var start = $('#ShiftDate').val();
+
+                $('.updated_time').text(new Date().toLocaleString());
+                $('.shift').text("N/A");
+
+
+                if (linecode == '') {
+                    swal({
+                        icon: "error",
+                        title: "Please Provide Line details",
+                        button: false,
+                        timer: 4500
+                    })
+                }
+                else if (machinecode == '') {
+                    swal({
+                        icon: "error",
+                        title: "Please Provide Machine details",
+                        button: false,
+                        timer: 4500
+                    })
+                }
+
+                else if (start == '') {
+                    swal({
+                        icon: "error",
+                        title: "Please Provide date",
+                        button: false,
+                        timer: 4500
+                    })
+                }
+                var myData;
+                var report = $("#Report_name option:selected").text();
+                var report1 = $("#Report_name option:selected").val();
+
+                if (report1 != '4') {
+                    var myData = {
+                        "QueryType": "Getcycletime_shiftwise",
+                        "LineCode": linecode,
+                        "Machine": machinecode,
+                        "Variant": variant,
+                        "Date": start,
+                        "Shift": report1,
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]'
+                    };
+                }
+                else {
+                    var myData = {
+                        "QueryType": "Getcycletime_Allshift",
+                        "LineCode": linecode,
+                        "Machine": machinecode,
+                        "Variant": variant,
+                        "Date": start,
+                        "Shift": report1,
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]'
+                    };
+                }
+                var sample_pareto;
+                var R_url = '@Url.Action("Login", "Main")';
+                var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+                $.ajax({
+                    type: "POST",
+                    url: URL + 'api/Rawtable/Get_Planned_Cycletime',
+                    headers: {
+                        Authorization: 'Bearer ' + user1
+                    },
+                    data: myData,
+                    dataType: "json",
+                    beforeSend: function () {
+                        $('.loading').show();
+                    },
+                    complete: function () {
+                        $('.loading').hide();
+                    },
+                    success: function (response) {
+                        if (report1 == 'S1') {
+                            var Hrarr = [8, 9, 10, 11, 12, 13, 14, 15, 16];
+                        }
+                        else if (report1 == 'S2') {
+                            var Hrarr = [0,16,17,18,19,20,21,22,23];
+                        }
+                        else if (report1 == 'S3') {
+                            var Hrarr = [0,1,2,3,4,5,6,7,8];
+                        }
+                        if (response.status != "Error") {
+
+                            sample_pareto = response.data.Table;
+                            var Register = new Array();
+
+                            if (report1 != 4) {
+                                for (var i = 0; i < Hrarr.length; i++) {
+                                    var registers = {};
+                                   /* alert("Hi");*/
+                                    if (response.data.Table.some(e => e.Hour == Hrarr[i])) {
+                                        response.data.Table.filter(el => {
+                                            if (el.Hour == Hrarr[i]) {
+                                                registers.Hour = el.Hour;
+                                                registers.Operationtime = el.Operationtime;
+                                                registers.Targetcycle_time = el.Targetcycle_time;
+                                            }
+                                        }
+                                        );
+                                    } else {
+                                        registers.Hour = Hrarr[i];
+                                        registers.Operationtime = 0;
+                                        registers.Targetcycle_time = response.data.Table[0].Targetcycle_time;
+                                    }
+
+                                    Register.push(registers);
+                                }
+                            } else {
+                                response.data.Table.map(e => {
+                                    Register.push(e);
+                                })
+
+                            }
+                            
+                            const a = $('#container').height();
+                            const b = $('#container').width();
+
+
+
+                            var m = { top: 25, right: 50, bottom: 150, left: 50 }
+                                , h = a - m.top - m.bottom - 25
+                                , w = b - m.left - m.right
+                                , hh = a - 50 - m.bottom - 25
+                                , barWidth = 5;
+
+                            var dataset = null;
+                            //typecast Amount to #, calculate total, and cumulative amounts
+
+
+                            //Axes and scales
+                            var xScale = d3.scaleBand().rangeRound([0, w], 0.1);
+                            xScale.domain(Register.map(function (d) { return d.Hour; }));
+                            xScale.paddingInner(0.2)
+                            xScale.paddingOuter(0.2);
+
+                            //var yhist = d3.scaleLinear()
+                            //    .domain([0, 100])
+                            //    .range([h, 0]);
+                            var yhist = d3.scaleLinear()
+                                .domain([0, d3.max(Register, function (d) { return d.Targetcycle_time + 8; })])
+                                .range([h, 0]);
+                            var ycum = d3.scaleLinear()
+                                .domain([0, 100])
+                                .range([h, 0]);
+
+                            var xAxis = d3.axisBottom()
+                                .scale(xScale);
+
+
+                            var yAxis = d3.axisLeft()
+                                .scale(yhist)
+
+
+                            var yAxis2 = d3.axisRight()
+                                .scale(ycum);
+
+                            d3.selectAll("#container > *").remove();
+                            $("#container").empty();
+
+
+                            ////Draw svg
+                            var svg_pareto = d3.select("#container").append("svg")
+                                .attr("width", w + m.left + m.right)
+                                .attr("height", h + m.top + m.bottom)
+                                .append("g")
+                                .attr("transform", "translate(" + m.left + "," + m.top + ")");
+
+                            var color = d3.scaleOrdinal(d3.schemeCategory10);
+
+                            //Draw histogram
+                            var bar_pareto = svg_pareto.selectAll(".bar")
+                                .data(Register)
+                                .enter().append("g")
+                                .attr("class", "bar")
+
+
+
+
+                            bar_pareto.append("rect")
+                                .attr("x", function (d) { return xScale(d.Hour); })
+                                .attr("width", xScale.bandwidth() - 2)
+                                .attr("y", function (d) { return yhist(d.Operationtime); })
+                                .attr("height", function (d) { return h - yhist(d.Operationtime); })
+                                .style("fill", function (d) {
+                                    return color(d.Operationtime)
+                                })
+                                .attr("fill", color)
+                                .attr("text", function (d) { return `${d.Operationtime}` })
+
+
+                            bar_pareto.selectAll(".bar-title")
+                                .data(Register)
+                                .enter()
+                                .append("text")
+                                .classed('bar-title', true)
+                                .attr('text-anchor', 'middle')
+                                .style("color", "black")
+                                .attr("x", d => xScale(d.Hour) + xScale.bandwidth() / 2)
+                                .attr("y", function (d) { return yhist(d.Operationtime); })
+                                .text((a) => `${a.Operationtime}`)
+
+
+                            ////Draw CDF line
+                            var guide = d3.line()
+                                .x(function (d) { return xScale(d.Hour) + (xScale.bandwidth() / 2); })
+                                .y(function (d) { return ycum(d.Operationtime) });
+
+
+                            var line = svg_pareto.append('path')
+                                .datum(Register)
+                                .attr('d', guide)
+                                .attr('class', 'line');
+
+
+                            //Draw axes
+                            var x = response.data.Table[0].Targetcycle_time;
+
+                            const y2 = yhist(response.data.Table[0].Targetcycle_time);
+
+                            svg_pareto.append("line")
+                                        .style("stroke", "black")
+                                        .attr("x1",0)
+                                        .attr("y1",y2)
+                                        .attr("x2", w)
+                                     .attr("y2", y2);
+
+
+
+
+                            svg_pareto.append("g")
+                                .attr("class", "x axis")
+                                .attr("transform", "translate(0," + h + ")")
+                                .call(xAxis)
+                                .selectAll("text")
+                                .style("text-anchor", "end")
+                                .attr("transform", "rotate(0)");
+
+                            svg_pareto.append("g")
+                                .attr("class", "y axis")
+                                .call(yAxis)
+                                .append("text")
+                                .attr("transform", "rotate(-90)")
+                                .attr("y", -50)
+                                .attr("dy", ".71em")
+                                .style("text-anchor", "end")
+                                .text("ActualCycleTime");
+                            if (report1 != '4') {
+                                svg_pareto.append('text')
+                                    .attr('class', 'label')
+                                    .attr('x', 500)
+                                    .attr('y', 475)
+                                    .attr('text-anchor', 'middle')
+                                    .text("Hour")
+                            } else {
+                                svg_pareto.append('text')
+                                    .attr('class', 'label')
+                                    .attr('x', 500)
+                                    .attr('y', 475)
+                                    .attr('text-anchor', 'middle')
+                                    .text("Shift")
+                            }
+                            svg_pareto.append('text')
+                                .attr('class', 'label')
+                                .attr('x', 500)
+                                .attr('y', y2-20)
+                                .attr('text-anchor', 'middle')
+                                .text("TargetCycletime:"+ x +"seconds")
+
+                            svg_pareto.append("text")
+                                .attr("class", "y label")
+                                //.attr("text-anchor", "end")
+                                .attr("y", -50)
+                                .attr("dy", ".75em")
+                                .attr('text-anchor', 'end')
+
+                                .attr("transform", "rotate(-90)")
+                                .text("ActualCycleTime(Seconds)");
+
+
+                        }
+                        else {
+                            $("#container").empty();
+                            var div_width = 400;
+                            var div_height = 400;
+                            var svg = d3.select("#container").append("svg")
+                                .attr("width", div_width)
+                                .attr("height", div_height)
+                                .attr("preserveAspectRatio", "xMidYMid")
+                                .append("g")
+                                .attr("transform", "translate(" + (div_width / 2 - 50) + "," + (div_height / 2 - 50) + ")");
+
+                            svg.append("text")
+                                .text("No Data Available")
+                                .style("font-size", "40px");
+                        }
+                    },
+                    error: function (response) {
+                        if (response.status == "401") {
+                            swal({
+                                icon: "warning",
+                                title: "Session Timeout",
+                                button: true,
+                                closeModal: false
+                            })
+                            window.location = R_url;
+                        }
+                        else {
+                            swal({
+                                icon: "warning",
+                                title: response.responseText,
+                                button: true,
+                                closeModal: false
+                            })
+
+                        }
+
+
+                    }
+
+                });
+            }
+</script>

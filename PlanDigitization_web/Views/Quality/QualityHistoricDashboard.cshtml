@@ -1,0 +1,1757 @@
+﻿@{ ViewBag.Title = "ProductionHistoricDashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml"; }
+
+
+<style>
+    .highlight {
+        left: 50px;
+        transform: scale(1.5) translate(25px);
+        outline: 2px blue dashed;
+    }
+
+    /*.marker {
+        stroke: red;
+        stroke-width: 2;
+        stroke-dasharray: 5, 5;*/ /* Dashed line */
+    /*}
+
+    .marker-label {
+        fill: red;
+        font-weight: bold;
+    }*/
+</style>
+
+
+
+
+@*<script src="~/Scripts/d3.min.js"></script>*@
+<script src="~/Scripts/d3_v4.min.js"></script>
+@*<script src="https://d3js.org/d3-interpolate.v2.min.js"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v2.min.js"></script>*@
+<link rel="stylesheet" type="text/css" href="~/assets1/datepicker_normal/jquery-ui-1.8.19.custom.css">
+
+<header class="page-header">
+    <h2>Quality Analysis - Rejection Reason Pareto </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("MainDashboard","MainDashboard")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            @*<li><span>Quality</span></li>
+                <li><span>Historic Data & Analytics</span></li>
+                <li><span>Quality Analysis</span></li>
+                <li><span>Pareto</span></li>*@
+        </ol>
+    </div>
+</header>
+@if (ViewContext.Controller.HasPermission("Rejection_Pareto-View"))
+{
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="btn-group">
+                <label class="control-label" style="float:right; font-weight:bold;"> Select Machine <span class="required">*</span> </label>
+            </div>
+            <div class="btn-group">
+                <select id="machinecode" class="form-control" name="machinecode">
+                    <option value="">Select Line First</option>
+                </select>
+            </div>
+
+            <div class="btn-group">
+                <label class="control-label" style="margin-left:30px;" font-weight:bold;"> Select Variant <span class="required">*</span> </label>
+            </div>
+
+            <div class="btn-group">
+                <select class="form-control" id="Variant">
+                    <option value="All">All</option>
+                </select>
+            </div>
+
+
+        </div>
+
+
+        <div id="myModal1" class="modal">
+            <!-- Modal content -->
+            <div class="modal-block">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <span class="close" data-dismiss="modal">&times;</span>
+                        <h4>  Rejection Reason</h4>
+                        <div style="text-align:center">
+                            <span>
+                                <h3>Machine Name: <span id="MachineN"></span> </h3>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="modal-body" id="machine_status">
+
+                        <div>
+                            <table class="table table-bordered table-striped mb-none" id="datatable-default">
+
+                                <thead style="background-color:teal;color:white;">
+                                    <tr>
+                                        @*<th class="centercls" > S.No </th>*@
+                                        <th style="width:40px;"> S.No </th>
+                                        <th style="widows:120px !important;">Variant Name</th>
+                                        <th>Shift Id</th>
+                                        @*<th>Rejection Code</th>*@ @*Removed for PLC Standardisation 29-03-2025*@
+                                        <th>Reject Reason</th>
+                                        <th style="">Time Stamp </th>
+
+                                    </tr>
+                                </thead>
+                                <tbody class="Historic_details">
+                                    <span class="rejection_error" style="color:red;font-size:13px;font-weight:bold;"></span>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+    <div class="row">
+        <div class="col-md-12" style="padding-left:8px;">
+            <div class="tabs tabs-danger">
+                <ul class="nav nav-tabs">
+                    <li class="active" id="custom_report">
+                        <a href="#custom" data-toggle="tab">Custom</a>
+                    </li>
+                    <li id="yearly_report">
+                        <a href="#yearly" data-toggle="tab"> Yearly</a>
+                    </li>
+                    <li id="monthly_report">
+                        <a href="#monthly" data-toggle="tab">Monthly</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div id="custom" class="tab-pane active">
+                        <section class="panel">
+                            <div class="form-group">
+                                <label class="col-md-1 control-label">Date range <span class="required">*</span></label>
+                                <div class="col-md-6">
+                                    <div class="input-daterange input-group">
+                                        <span class="input-group-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </span>
+                                        <input type="text" class="form-control datepic" style="text-align:left;z-index:0;" id="start" name="start" readonly>
+                                        <span class="input-group-addon">to</span>
+                                        <input type="text" class="form-control datepic" style="text-align:left;z-index:0;" id="end" name="end" readonly>
+                                    </div>
+                                    <span style="font-weight:bold">Note:Please select the same date for From and To</span>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="btn-group">
+                                        <button type="button" id="searchcustomwise" class="mb-xs mt-xs mr-xs btn btn-primary">View</button>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button type="button" id="resetcustom" class="mb-xs mt-xs mr-xs btn btn-danger">Reset</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="form-group" style="margin-left:50px;font-weight:bold">
+                                Total count:<span id="totalcount"></span>
+                            </div>
+
+                            <div class="panel-body">
+                              
+                                <div id="heat_head" style="display:none"><h2>heat map for rejections</h2></div>
+                                <div id="container" class="heatmap_custom" style="height:600px;">
+
+                                </div>
+
+                            </div>
+                        </section>
+                    </div>
+
+                    <div id="yearly" class="tab-pane">
+                        <section class="panel">
+                            <div class="form-group">
+                                <div class="col-md-2"></div>
+                                <label class="col-md-2 control-labe">Select Year <span class="required">*</span></label>
+                                <div class="col-md-4">
+                                    <div class="input-group" style="position: relative; right:80px;">
+                                        <span class="input-group-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </span>
+                                        <input class="date-own form-control" style="width: 150px;z-index:0;" type="text" id="year" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-4" style="position: relative; right:150px;">
+                                    <div class="btn-group">
+                                        <button type="button" id="searchyearwise" class="mb-xs mt-xs mr-xs btn btn-primary">View</button>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button type="button" id="resetyear" class="mb-xs mt-xs mr-xs btn btn-danger">Reset</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-left:50px;font-weight:bold">
+                                Total count:<span id="totalcountyear"></span>
+                            </div>
+
+                            <div class="panel-body">
+                                <div id='container' class="year_report" style="height:600px;">
+
+                                    <svg style="height:100%;width:100%"></svg>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <div id="monthly" class="tab-pane">
+                        <section class="panel">
+                            <div class="form-group">
+                                <div class="col-md-2"></div>
+                                <label class="col-md-2 control-label">Select Month <span class="required">*</span></label>
+                                <div class="col-md-4">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </span>
+                                        <input class="month-own form-control" style="width: 150px;z-index:0;" type="text" id="month" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="btn-group">
+                                        <button type="button" id="searchmonthwise" class="mb-xs mt-xs mr-xs btn btn-primary">View</button>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button type="button" id="resetmonth" class="mb-xs mt-xs mr-xs btn btn-danger">Reset</button>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style="margin-left: 50px; font-weight: bold">
+                                    Total count:<span id="totalcountmonth"></span>
+                                </div>
+                            </div>
+
+                            <div class="panel-body">
+                                @*<div class="chart chart-md" id="custom1"></div>*@
+                                <div id='container' class='monthly_chart' style="height:600px;">
+                                    <svg class="custom1" style="height:100%;width:100%"></svg>
+                                </div>
+
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+else
+{
+    <div class="row">
+        <h2 class="panel-title">View Permission is denied</h2>
+    </div>
+}
+
+<!-- end: page -->
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+<script src="~/assets1/datepicker_normal/datepicker_normal_jquery.min.js"></script>
+<script src="~/assets1/datepicker_normal/jquery-ui-1.8.19.custom.min.js"></script>
+<script src="~/Scripts/bootstrap-datepicker.js"></script>
+<script type="text/javascript">
+    $(".datepic").datepicker({
+        format: "yyyy-mm-dd",
+        orientation: "bottom",
+        endDate: '+0d'
+    });
+
+    $('.month-own').datepicker({
+        format: "yyyy-mm",
+        viewMode: "months",
+        endDate: '+0m',
+        minViewMode: "months",
+        orientation: "bottom"
+    });
+    $('.date-own').datepicker({
+        minViewMode: 2,
+        format: 'yyyy',
+        startView: 2,
+        endDate: '+0y',
+        orientation: "bottom"
+    });
+
+    $(function () {
+        var todaydt = new Date();
+        $("#start").datepicker({
+            autoclose: true,
+            endDate: todaydt,
+            format: 'yyyy-mm-dd'
+        }).on('changeDate', function (selected) {
+            var minDate = new Date(selected.date);
+            minDate.setDate(minDate.getDate());
+            $('#end').datepicker('setStartDate', minDate);
+        });
+
+        $("#end").datepicker({
+            autoclose: true,
+            endDate: todaydt,
+            format: 'yyyy-mm-dd'
+        }).on('changeDate', function (selected) {
+            var minDate = new Date(selected.date);
+            minDate.setDate(minDate.getDate() - 1);
+            $('#start').datepicker('setEndDate', minDate);
+        });
+    });
+</script>
+
+<style>
+    #reasons_table thead th {
+        background-color: #F3A94D;
+        color: white;
+    }
+
+    #breakdown {
+        margin-top: 20px;
+        height: 500px;
+        overflow: auto;
+        width: 100%;
+    }
+
+        #breakdown th div {
+            position: absolute;
+            margin-top: -20px;
+        }
+</style>
+
+<script type="text/javascript">
+    $(function () {
+        var CompanyCode = '@Session["CompanyCode"]';
+        var PlantCode = '@Session["PlantCode"]';
+        var LineCode = '@Session["LineCode"]';
+        if (CompanyCode == "" && PlantCode == "" && LineCode == "") {
+            swal({
+                icon: "error",
+                title: "Please Select Customer, Plant and Line...!",
+                button: true,
+                timer: 4500
+            })
+            return;
+        }
+        else
+            if (CompanyCode == "")
+            {
+                swal({
+                    icon: "error",
+                    title: "Please Select Customer...!",
+                    button: true,
+                    timer: 4500
+                })
+                return;
+            }
+            else
+                if (PlantCode == "")
+                {
+                    swal({
+                        icon: "error",
+                        title: "Please Select Plant...!",
+                        button: true,
+                        timer: 4500
+                    })
+                    return;
+                }
+        if (LineCode == "") {
+            swal({
+                icon: "error",
+                title: "Please Select Line...!",
+                button: true,
+                timer: 4500
+            })
+            return;
+        }
+        else
+        {
+            var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+            var myData1 = {
+                "Flag": "Subsystem",
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]',
+                "LineCode": '@Session["LineCode"]',
+            };
+            var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetSettingdatas1", "Main")',
+                data: myData1,
+                dataType: "json",
+                success: function (response) {
+                    var s = '<option value="">Select Machine</option>';
+                    for (var i = 0; i < response.data.length; i++) {
+                        console.log(response.data.length);
+                        if (response.data.length == 1) {
+                            s += '<option value="' + response.data[i].Code + '" selected=selected>' + response.data[i].Name + '</option>';
+                        }
+                        else {
+                            s += '<option value="' + response.data[i].Code + '">' + response.data[i].Code + "-" + response.data[i].Name + '</option>';
+                        }
+                    }
+                    $("#machinecode").html(s);
+                },
+                error: function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+                    }
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                }
+            });
+        }
+
+
+        $("#machinecode").click(function () {
+            console.log("event clicked");
+            var Machine = $('#machinecode').val();
+            var data = {
+                "QueryType": "Get_MachineName",
+                "Parameter": '@Session["PlantCode"]',
+                "Parameter1": '@Session["CompanyCode"]',
+                "Parameter2": Machine
+            };
+
+            var data1 = {
+                "QueryType": "Get_Variants",
+                "Parameter": Machine,
+                "Parameter1": '@Session["CompanyCode"]',
+                "Parameter2": '@Session["PlantCode"]',
+                "Parameter4": '@Session["LineCode"]',
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]',
+                "LineCode": '@Session["LineCode"]'
+            };
+
+            $.ajax({
+                type: "POST",
+                data: data1,
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                url: URL + "api/Values/User_settings_details",
+                dataType: "json",
+
+                success: function (response) {
+                    var s = '<option value="All">All</option>';
+                    for (var i = 0; i < response.data.Table.length; i++) {
+                        s += '<option value="' + response.data.Table[i].Variant_Code + '">' + response.data.Table[i].VariantName + '</option>';
+                    }
+                    $("#Variant").html(s);
+                }
+            })
+
+        });
+    });
+
+    setTimeout(() => {
+        var selected = document.querySelectorAll('#machinecode option')[1].getAttribute('selected');
+        if (selected === 'selected') document.querySelectorAll('#machinecode')[0].click();
+    },2000);
+
+
+    document.getElementById("resetcustom").addEventListener("click", function () {
+        $('#start').val('');
+        $('#end').val('');
+        $("#totalcount").text('');
+        d3.select("#container svg").remove();
+    })
+    document.getElementById("resetyear").addEventListener("click", function () {
+        $('#year').val('');
+        $("#totalcountyear").text('');
+        d3.select(".year_report svg").remove();
+    })
+    document.getElementById("resetmonth").addEventListener("click", function () {
+        $('#month').val('');
+        d3.select(".monthly_week svg").remove();
+        d3.select(".month_daily svg").remove();
+        d3.select(".month_shift svg").remove();
+        $("#totalcountmonth").text('');
+    })
+
+
+
+
+</script>
+
+
+<script type="text/javascript">
+
+    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+    document.getElementById("searchcustomwise").addEventListener("click", function ()
+    {
+
+        var linecode = '@Session["LineCode"]';
+        var machinecode = $('#machinecode').val();
+        var Variant = $('#Variant').val();
+        var start = $('#start').val();
+        var end = $('#end').val();
+        $('.updated_time').text(new Date().toLocaleString());
+        $('.shift').text("N/A");
+
+        var syear = start.substr(0, 4);
+        var eyear = end.substr(0, 4);
+
+
+        if (linecode == '' && machinecode == '' && start == '' && end == '') {
+            swal({
+                icon: "error",
+                title: "Please Provide Required Information...",
+                button: false,
+                timer: 4500
+            })
+        }
+        else
+            if (machinecode == '') {
+                swal({
+                    icon: "error",
+                    title: "Please Select Machine",
+                    button: false,
+                    timer: 4500
+                })
+            }
+
+            else if (start == '' || end == '' ) {
+                                                    if (start == '') {
+                                                        swal({
+                                                            icon: "error",
+                                                            title: "Please Select Start Date",
+                                                            button: false,
+                                                            timer: 4500
+                                                             })
+                                                                       }
+                                                     else   if (end == '') {
+                                                            swal({
+                                                                icon: "error",
+                                                                title: "Please Select End Date",
+                                                                button: false,
+                                                                timer: 4500
+                                                            })
+                                                        }
+
+                                              }
+
+            else {
+
+
+             if (start>end) {
+                swal({
+                    icon: "error",
+                    title: "Please Provide Dates correctly...",
+                    button: false,
+                    timer: 4500
+                })
+             }
+             else
+                 if (syear != eyear) {
+                     swal({
+                         icon: "error",
+                         title: "Please Select Same Year for Fromdate and Todate...!",
+                         button: false,
+                         timer: 4500
+                     })
+                     d3.select("svg").remove();
+                     return;
+                 }
+
+             var myData = {
+                 "line": linecode,
+                 "machine": machinecode,
+                 "FromDate": start,
+                 "ToDate": end,
+                 "CompanyCode": '@Session["CompanyCode"]',
+                 "PlantCode": '@Session["PlantCode"]',
+                 "Variant": Variant
+             };
+              var R_url = '@Url.Action("Login", "Main")';
+                   var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             $.ajax({
+                 type: "POST",
+                 url: URL + 'api/Quality/GetRejection_Pareto_CustomReport',
+                 headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                 data: myData,
+                 dataType: "json",
+                 beforeSend: function () {
+                     $('.loading').show();
+                 },
+                 complete: function () {
+                     $('.loading').hide();
+                 },
+                 success: function (response) {
+                     console.log(response)
+                     d3.select(".custom svg").remove();
+                     $('#custom_line').text(linecode);
+                     $('#custom_subsystem').text(machinecode);
+                     if (response.status != "Error") {
+                         sample_pareto = response.data.Table;
+                         for (var i = 0; i < response.data.Table.length; i++) {
+                             x = response.data.Table[i].total;
+                             $("#totalcount").text(x);
+                         }
+
+                         graph(".heatmap_custom", response);
+                     }
+                     else {
+                         $(".heatmap_custom").empty();
+                         $(".heatmap_custom").css("width", "100%");
+                         var div_width = 400;
+                         var div_height = 400;
+                         var svg = d3.select(".heatmap_custom").append("svg")
+                             .attr("width", div_width)
+                             .attr("height", div_height)
+                             .attr("preserveAspectRatio", "xMidYMid")
+                             .append("g")
+                             .attr("transform", "translate(" + (div_width / 2 - 50) + "," + (div_height / 2 - 50) + ")");
+
+                         svg.append("text")
+                             .text("No Data Available")
+                             .style("font-size", "40px");
+                     }
+                 },
+                 error: function (response) {
+                     if (response.status == "401") {
+                         swal({
+                             icon: "warning",
+                             title: "Session Timeout",
+                             button: true,
+                             closeModal: false
+                         })
+                         window.location = R_url;
+                     }
+                     else {
+                         swal({
+                             icon: "warning",
+                             title: response.responseText,
+                             button: true,
+                             closeModal: false
+                         })
+
+                     }
+                 }
+             });
+        }
+    })
+
+    document.getElementById("searchyearwise").addEventListener("click", function () {
+
+        var linecode = '@Session["LineCode"]';
+        var machinecode = $('#machinecode').val();
+        var Variant = $("#Variant").val();
+        var year = $('#year').val();
+        $('.updated_time').text(new Date().toLocaleString());
+        $('.shift').text("N/A");
+
+        if (linecode == '')
+        {
+            swal({
+                icon: "error",
+                title: "Please Select Line...",
+                button: false,
+                timer: 4500
+            })
+        }
+        else
+            if (machinecode == '')
+            {
+                swal({
+                    icon: "error",
+                    title: "Please Select Machine...",
+                    button: false,
+                    timer: 4500
+                })
+
+            }
+            else
+                if (year == '') {
+                    swal({
+                        icon: "error",
+                        title: "Please Select Year...",
+                        button: false,
+                        timer: 4500
+                    })
+
+                }
+        else {
+            var myData = {
+                "line": linecode,
+                "Machine": machinecode,
+                "Year": year,
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]',
+                "Variant": Variant
+            };
+
+
+            var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: URL + 'api/Quality/GetRejection_Pareto_YearwiseReport',
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                data: myData,
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+                    d3.select("svg").remove();
+                    if (response.status != "Error") {
+                        sample_pareto = response.data.Table;
+                        for (var i = 0; i < response.data.Table.length; i++) {
+                            x = response.data.Table[i].total;
+                            $("#totalcountyear").text(x);
+                        }
+
+                        graph(".year_report", response);
+
+                    }
+
+                    else {
+                        sample = "";
+
+                        $(".year_report").empty();
+                        $(".year_report").css("width", "100%");
+                        var div_width = 400;
+                        var div_height = 400;
+                        var svg = d3.select(".year_report").append("svg")
+                            .attr("width", div_width)
+                            .attr("height", div_height)
+                            .attr("preserveAspectRatio", "xMidYMid")
+                            .append("g")
+                            .attr("transform", "translate(" + (div_width / 2 - 50) + "," + (div_height / 2 - 50) + ")");
+
+                        svg.append("text")
+                            .text("No Data Available")
+                            .style("font-size", "40px");
+                    }
+                },
+                error: function (result) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+                    }
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                }
+            });
+
+        }
+    });
+
+    document.getElementById("searchmonthwise").addEventListener("click", function () {
+
+        var linecode = '@Session["LineCode"]';
+        var machinecode = $('#machinecode').val();
+        var Variant = $("#Variant").val();
+        var month = $('#month').val();
+        $('.updated_time').text(new Date().toLocaleString());
+        $('.shift').text("N/A");
+        if (linecode == '') {
+            swal({
+                icon: "error",
+                title: "Please Select Line...",
+                button: false,
+                timer: 4500
+            })
+        }
+        else
+            if (machinecode == '') {
+                swal({
+                    icon: "error",
+                    title: "Please Select Machine...",
+                    button: false,
+                    timer: 4500
+                })
+
+            }
+            else
+                if (month == '') {
+                    swal({
+                        icon: "error",
+                        title: "Please Select Month...",
+                        button: false,
+                        timer: 4500
+                    })
+
+                }
+        else {
+            var chartData = [];
+            var myData = {
+                "line": linecode,
+                "Machine": machinecode,
+                "Year": month,
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]',
+                "Variant": Variant
+            };
+            var myData_daily = {
+                "line": linecode,
+                "Machine": machinecode,
+                "Month": month,
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]',
+                "Variant": Variant
+            };
+             var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: URL + 'api/Quality/GetRejection_Pareto_MonthwiseReport',
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                data: myData,
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+                    d3.select(".monthly_chart svg").remove();
+                    if (response.status != "Error") {
+
+                        sample_pareto = response.data.Table;
+                        for (var i = 0; i < response.data.Table.length; i++) {
+                            x = response.data.Table[i].total;
+                            $("#totalcountmonth").text(x);
+                        }
+
+                        graph(".monthly_chart", response);
+                    }
+                    else {
+                            sample = "";
+                        $(".monthly_chart").css("width", "100%");
+
+                            var div_width = 400;
+                            var div_height = 400;
+                            var svg = d3.select(".monthly_chart").append("svg")
+                                .attr("width", div_width)
+                                .attr("height", div_height)
+                                .attr("preserveAspectRatio", "xMidYMid")
+                                .append("g")
+                                .attr("transform", "translate(" + (div_width / 2 - 50) + "," + (div_height / 2 - 50) + ")");
+
+                            svg.append("text")
+                                .text("No Data Available")
+                                .style("font-size", "40px");
+                    }
+
+                    //Daily Details
+
+                },
+                error: function (result) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+                    }
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                }
+            });
+
+        }
+
+    })
+
+</script>
+
+
+
+<script></script>
+<style>
+    line {
+        shape-rendering: crispEdges;
+    }
+
+    .axis path, .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+    }
+
+    .line {
+        fill: none;
+        stroke: purple;
+        stroke-width: 1.5px;
+    }
+
+    .grid .tick {
+        stroke: lightgrey;
+        opacity: 0.7;
+    }
+
+    .grid path {
+        stroke-width: 0;
+    }
+
+    .x_label {
+        border: solid;
+        background-color: cornflowerblue;
+    }
+
+    body {
+        padding-right: 0px !important;
+    }
+</style>
+<script>
+
+
+    function color(myHash, slope, cnst, frequency) {
+
+        const i = ((frequency * slope) + cnst);
+        var per = Math.abs(i);
+        const opacity = per;
+        per = per * 10;
+        if (!myHash[per]) {
+            myHash[per] = 'rgb(0,0,255,' + opacity + ')';
+
+        }
+        console.log(myHash[per]);
+        return myHash[per];
+    }
+
+
+
+
+    function graph(id, response) {
+        // const queue = [ "#005100", "#008200", "#00b300", "#00e400", "#16ff16", "#47ff47", "#78ff78", "#a9ffa9","#dafeda","#cee2da"];
+        var myHash = {};
+        sample_pareto = response.data.Table;
+        for (var i = 0; i < response.data.Table.length; i++) {
+            x = response.data.Table[i].total;
+            $('totalcount').text(x);
+        }
+
+        if (sample_pareto.length == 1) {
+            $(id).css("width", "20%");
+
+        }
+        else
+            if (sample_pareto.length <= 2) {
+                $(id).css("width", "30%");
+
+            }
+
+            else if (sample_pareto.length < 5) {
+                $(id).css("width", "50%");
+
+            }
+            else if (sample_pareto.length > 5 && sample_pareto.length < 10) {
+                $(id).css("width", "80%");
+            }
+            else {
+                $(id).css("width", "100%");
+            }
+
+        const a = $(id).height();
+        const b = $(id).width();
+
+
+
+        var m = { top: 25, right: 50, bottom: 150, left: 50 }
+            , h = a - m.top - m.bottom - 25
+            , w = b - m.left - m.right
+            , barWidth = 5;
+
+        var dataset = null;
+        //typecast Amount to #, calculate total, and cumulative amounts
+        const max = d3.max(sample_pareto, function (d) { return d.Frequency; });
+        const min = d3.min(sample_pareto, function (d) { return d.Frequency; });
+
+
+        const max2 = d3.max(sample_pareto, d => d.Frequency);
+        const thresholdValue = 0.8 * max2; // 80% of max frequency
+
+        //const thresholdValue = 0.8 * max; // 80% of max frequency
+        //y=mx+c
+
+        const slope = (0.7 / (max - min));
+        const cnst = (0.3 - (min * slope));
+        // console.log("max:"+max+" min:"+min+" slope:" + slope + "cnst:" + cnst);
+        //const slope = ((max - min) );
+        //const cnst = (150 - (min * slope));
+
+
+        //Axes and scales
+        var xScale = d3.scaleBand().rangeRound([0, w], 0.1);
+        xScale.domain(sample_pareto.map(function (d) { return d.RejectionDescription; }));
+        xScale.paddingInner(0.2)
+        xScale.paddingOuter(0.2);
+
+        var yhist = d3.scaleLinear()
+            .domain([0, d3.max(sample_pareto, function (d) { return d.Frequency; })])
+            .range([h, 0]);
+
+        var ycum = d3.scaleLinear().domain([0, 100]).range([h, 0]);
+
+        var xAxis = d3.axisBottom()
+            .scale(xScale);
+
+
+        var yAxis = d3.axisLeft()
+            .scale(yhist)
+
+
+        var yAxis2 = d3.axisRight()
+            .scale(ycum);
+
+        d3.selectAll(id + " > *").remove();
+
+        var tooltip = d3.select(".custom")
+            .append("div")
+            .style("opacity", 0)
+            .attr("class", "tooltip")
+            .style("background-color", "tranparent")
+            .style("border", "solid")
+            .style("border-width", "2px")
+            .style("border-radius", "5px")
+            .style("padding", "5px")
+
+
+
+        tooltip = d3.select("body").append("div").style("width", "200px").style("height", "150px").style("background", "white")
+            .style("opacity", "1").style("position", "absolute").style("visibility", "hidden").style("padding", "5px");
+        toolval = tooltip.append("div");
+
+        ////Draw svg
+        var svg_pareto = d3.select(id).append("svg")
+            .attr("width", w + m.left + m.right)
+            .attr("height", h + m.top + m.bottom)
+            .append("g")
+            .attr("transform", "translate(" + m.left + "," + m.top + ")");
+
+
+
+
+        //var color = d3.scaleOrdinal(d3.schemeCategory10);
+
+        //Draw histogram
+        var bar_pareto = svg_pareto.selectAll(".bar")
+            .data(sample_pareto)
+            .enter().append("g")
+            .attr("class", "bar")
+
+
+
+
+        var check = bar_pareto.append("rect")
+            .attr("x", function (d) { return xScale(d.RejectionDescription) + 10; })
+            .attr("width", Math.min(xScale.bandwidth() - 2, 70))
+            .attr("y", function (d) { return yhist(d.Frequency); })
+            .attr("height", function (d) { return h - yhist(d.Frequency); })
+            .style("fill", function (d) {
+                return color(myHash, slope, cnst, d.Frequency);
+            })
+            .attr("text", function (d) { return `${d.Frequency}` })
+
+
+
+            .on("mouseout", function () {
+                d3.select(this).style('Stroke', 'none');
+                d3.selectAll(".bar").transition()
+                    .style("opacity", 1);
+                tooltip.style("visibility", "hidden");
+            })
+
+            .on("mousemove", function (d) {
+                var bar = d3.select(this);
+                var label = d3.select(this.parentNode).selectAll('.label').data([d]);
+                d3.selectAll(".bar").transition()
+                    .style("opacity", 4);
+                d3.select(this).style('Stroke', 'white');
+                d3.select(this).style('stroke-width', '2');
+                d3.select(this).transition()
+                    .style("opacity", 2);
+                tooltip.style("visibility", "visible")
+                    .style("top", (d3.event.pageY - 30) + "px").style("left", (d3.event.pageX + 20) + "px");
+
+                var text = 'Occurence: ' + d.Frequency + ' (times)<br/> Percentage: ' + d.Percentage + '<br/> Weightage: ' + d.Weightage + '' + "%" + ' <br/> RejectionDescription: ' + d.RejectionDescription + '';
+
+
+                tooltip.select("div").html(text)
+
+
+            })
+
+
+
+        if (id == ".heatmap_custom")
+            check.on("click", function (d) {
+                get_Rejection_data(d.RejectionDescription);
+
+            })
+        else
+            if (id == ".year_report")
+                check.on("click", function (d) {
+                    get_Rejection_data_yearwise(d.RejectionDescription);
+
+                })
+            else
+                if (id == ".monthly_chart")
+                    check.on("click", function (d) {
+                        get_Rejection_data_monthwise(d.RejectionDescription);
+
+                    })
+
+
+        bar_pareto.selectAll(".bar-title")
+            .data(sample_pareto)
+            .enter()
+            .append("text")
+            .classed('bar-title', true)
+            .attr('text-anchor', 'middle')
+            .attr("x", d => xScale(d.RejectionDescription) + xScale.bandwidth() / 2)
+            .attr("y", function (d) { return yhist(d.Frequency); })
+            .style('fill', '#000000')
+            .text((a) => `${a.Frequency}`)
+
+
+        ////Draw CDF line
+
+        var guide = d3.line()
+            .x(function (d) { return xScale(d.RejectionDescription) + (xScale.bandwidth() / 2); })
+            .y(function (d) { return ycum(d.Percentage) });
+
+
+        var line = svg_pareto.append('path')
+            .datum(sample_pareto)
+            .attr('d', guide)
+            .attr('class', 'line');
+
+        var selectCircle = svg_pareto.selectAll(".circle")
+            .data(sample_pareto)
+        selectCircle
+            .enter().append("circle")
+            .attr("r", 3.5)
+            .attr("cx", function (d) { return xScale(d.RejectionDescription) + (xScale.bandwidth() / 2); })
+            .attr("cy", function (d) { return ycum(d.Percentage) });
+
+        // Draw vertical line at 80% mark
+        const yThreshold = yhist(thresholdValue); // Y position for the 80% threshold
+        const barAtThreshold = sample_pareto.find(d => d.Frequency >= thresholdValue);
+        if (barAtThreshold) {
+            const barX = xScale(barAtThreshold.RejectionDescription) + xScale.bandwidth() / 2; // Center of the bar
+            //svg_pareto.append("line")
+            //    .attr("class", "marker")
+            //    .attr("x1", barX) // X position for the center of the bar
+            //    .attr("y1", yThreshold) // Y position for the 80% threshold
+            //    .attr("x2", barX) // Same X position
+            //    .attr("y2", h) // Extend to the bottom of the chart
+            //    .attr("stroke", "red")
+            //    .attr("stroke-width", 2);
+
+            // Add label for the marker
+            //svg_pareto.append("text")
+            //    .attr("class", "marker-label")
+            //    .attr("x", barX + 5) // Position next to the line
+            //    .attr("y", yThreshold - 5) // Position just above the line
+            //    .text("80%")
+            //    .style("text-anchor", "start")
+            //    .style("fill", "red");
+        }
+
+
+        //Draw axes
+        //svg_pareto.append("g")
+        //    .attr("class", "x axis")
+        //    .attr("transform", "translate(0," + h + ")")
+        //    .call(xAxis)
+        //    .selectAll("text")
+        //    .style("text-anchor", "end")
+        //    .attr("transform", "rotate(-65)");
+
+        //tooltip on x axis label 
+        svg_pareto.append('g')
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + h + ")")
+            .call(xAxis)
+            .selectAll("text")
+            .style("text-anchor", "end")
+            .attr("transform", "rotate(-65)")
+            .append("title")  // This line adds tooltip functionality
+            .text(function (d) { return d; });
+
+
+        svg_pareto.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", -50)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+
+            .text("Occurrence (times)");
+
+        svg_pareto.append("g")
+            .attr("class", "y axis")
+            .attr("transform", "translate(" + [w, 0] + ")")
+            .call(yAxis2)
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 50)
+            .attr("dy", "-.71em")
+            .style("text-anchor", "end")
+            .text(" Rejection Reason Pareto Percentage");
+
+
+        svg_pareto.append("text")
+            .attr("class", "y label")
+            //.attr("text-anchor", "end")
+            .attr("y", -50)
+            .attr("dy", ".75em")
+            .attr('text-anchor', 'end')
+
+            .attr("transform", "rotate(-90)")
+            .text("Occurrence (times)");
+
+        svg_pareto.append("text")
+            .attr("class", "y label2")
+            //.attr("text-anchor", "end")
+            //.attr("y", -50)
+            .attr("dy", ".75em")
+            .attr('text-anchor', 'end')
+
+            .attr("transform", "translate(" + [w, 0] + ")")
+            .attr("transform", "rotate(-90)")
+            .attr("y", w + 40)
+            .text("Pareto Percentage %");
+
+
+    }
+
+
+
+
+</script>
+
+<script>
+    function get_Rejection_data(x) {
+
+        //$('.modal').on('hidden.bs.modal', function (e) {
+        //    $(this).removeData();
+        //});
+
+
+        $("#myModal1").modal('show');
+
+
+            var mac_code = $("#machinecode").val();
+            var varnt = $("#Variant").val();
+
+        var Start = $("#start").val();
+        var End = $("#end").val();
+        var y = x.split("-").shift();
+
+
+        console.log("hello" + y);
+
+
+        console.log(x);
+        console.log(mac_code);
+        console.log(varnt);
+        var j = 1;
+
+
+
+        //        var date = new Date();
+        //var current_date = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+
+        //var Fdate = current_date;
+        //var Tdate = current_date;
+
+
+        if (Start != "" && End != "") {
+
+            var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+            var myData = {
+
+
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]',
+                "Line_Code": '@Session["LineCode"]',
+                "Machine": mac_code,
+                "RejectionCode": y,
+                "FromDate": Start,
+                "ToDate": End,
+                "variant": varnt,
+
+            };
+
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/UserSettings/Get_Historic_Rejection_Reason',
+                data: myData,
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+
+
+
+                    if (response.status != "Error") {
+                        var j = 1,ii=0;
+
+                        var rowsCnt = document.getElementById("datatable-default").getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
+                        if (rowsCnt > 0) {
+                            for (var i = 0; i < rowsCnt; i++) {
+                                document.getElementById("datatable-default").deleteRow(1);
+                            }
+                        }
+                        if ($.fn.DataTable.isDataTable('#datatable-default')) {
+                            $('#datatable-default').DataTable().clear();
+                        }
+
+                        if ($.fn.DataTable.isDataTable('#datatable-default')) {
+                            $('#datatable-default').DataTable().destroy();
+                        }
+
+                        $(".rejection_error").empty();
+
+                        $("#MachineN").html(response.data.Table[ii].AssetName);
+
+                        for (var jj = 0; jj < response.data.Table.length; jj++) {
+
+
+                            var newRow = $("<tr>");
+                            var cols = '';
+                            cols += "<td style='width:50px;text-align:center;'> " + j + "</td> ";
+                            cols += "<td style='text-align:center;'> " + response.data.Table[jj].VariantDescription + "</td> ";
+                            cols += "<td style='text-align:center;'> " + response.data.Table[jj].Shift_Id + "</td> ";
+                            cols += "<td style='text-align:center;'> " + response.data.Table[jj].Reject_Reason + "</td> ";
+                            cols += "<td style='width:150px !important;'> " +x+ "</td> ";
+                            cols += "<td style='width:200px !important; text-align:center;'> " + response.data.Table[jj].Time_stamp + "</td> ";
+                            cols += "</tr>";
+                            newRow.append(cols);
+                            $(".Historic_details").append(newRow);
+                            j++;
+                        }
+
+                        $('#datatable-default').DataTable({
+                            "responsive": true,
+                            scrollY: '50vh',
+                            "autoWidth": false,
+                        });
+                    }
+
+                    else {
+                        var rowsCnt = document.getElementById("datatable-default").getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
+                        if (rowsCnt > 0) {
+                            for (var i = 0; i < rowsCnt; i++) {
+                                document.getElementById("datatable-default").deleteRow(1);
+                            }
+                        }
+                        if ($.fn.DataTable.isDataTable('#datatable-default')) {
+                            $('#datatable-default').DataTable().clear();
+                        }
+
+                        if ($.fn.DataTable.isDataTable('#datatable-default')) {
+                            $('#datatable-default').DataTable().destroy();
+                        }
+                        $(".rejection_error").text(response.msg);
+
+                    }
+
+
+                },
+                error: function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Expired",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+                    }
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                }
+            });
+
+
+        }
+        else {
+
+            swal({
+                icon: "warning",
+                title: "Please Select Date",
+                button: true,
+                closeModal: false
+            })
+
+
+
+        }
+
+
+    }
+
+    function get_Rejection_data_monthwise(x) {
+
+
+
+        $("#myModal1").modal('show');
+
+
+            var mac_code = $("#machinecode").val();
+            var varnt = $("#Variant").val();
+
+        var month = $('#month').val();
+        var y = x.split("-").shift();
+
+
+
+
+
+        if (month != "" ) {
+
+            var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+            var myData = {
+
+
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]',
+                "Line_Code": '@Session["LineCode"]',
+                "Machine": mac_code,
+                "RejectionCode": y,
+                "month":month,
+                "variant": varnt,
+
+            };
+
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/UserSettings/Get_Historic_Rejection_Reason_monthwise',
+                data: myData,
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+
+
+
+                    if (response.status != "Error") {
+                        var j = 1, ii = 0;
+
+                        var rowsCnt = document.getElementById("datatable-default").getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
+                        if (rowsCnt > 0) {
+                            for (var i = 0; i < rowsCnt; i++) {
+                                document.getElementById("datatable-default").deleteRow(1);
+                            }
+                        }
+                        if ($.fn.DataTable.isDataTable('#datatable-default')) {
+                            $('#datatable-default').DataTable().clear();
+                        }
+
+                        if ($.fn.DataTable.isDataTable('#datatable-default')) {
+                            $('#datatable-default').DataTable().destroy();
+                        }
+
+                        $(".rejection_error").empty();
+
+                        $("#MachineN").html(response.data.Table[ii].AssetName);
+
+                        for (var jj = 0; jj < response.data.Table.length; jj++) {
+
+
+                            var newRow = $("<tr>");
+                            var cols = '';
+                            cols += "<td style='width:50px;text-align:center;'> " + j + "</td> ";
+                            cols += "<td style='text-align:center;'> " + response.data.Table[jj].VariantDescription + "</td> ";
+                            cols += "<td style='text-align:center;'> " + response.data.Table[jj].Shift_Id + "</td> ";
+                            cols += "<td style='text-align:center;'> " + response.data.Table[jj].Reject_Reason + "</td> ";
+                            cols += "<td style='width:150px !important;'> " + x + "</td> ";
+                            cols += "<td style='width:200px !important; text-align:center;'> " + response.data.Table[jj].Time_stamp + "</td> ";
+                            cols += "</tr>";
+                            newRow.append(cols);
+                            $(".Historic_details").append(newRow);
+                            j++;
+                        }
+
+                        $('#datatable-default').DataTable({
+                            "responsive": true,
+                            scrollY: '50vh',
+                            "autoWidth": false,
+                        });
+                    }
+
+                    else {
+
+                        $(".rejection_error").text(response.msg);
+
+                    }
+
+
+                },
+                error: function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Expired",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+                    }
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                }
+            });
+
+
+        }
+        else {
+
+            swal({
+                icon: "warning",
+                title: "Please Select Date",
+                button: true,
+                closeModal: false
+            })
+
+
+
+        }
+
+
+    }
+
+
+    function get_Rejection_data_yearwise(x) {
+
+
+
+        $("#myModal1").modal('show');
+
+
+            var mac_code = $("#machinecode").val();
+            var varnt = $("#Variant").val();
+
+        var year = $('#year').val();
+        var y = x.split("-").shift();
+
+
+
+
+        if (year != "") {
+
+            var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+            var myData = {
+
+
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]',
+                "Line_Code": '@Session["LineCode"]',
+                "Machine": mac_code,
+                "RejectionCode": y,
+                "year": year,
+                "variant": varnt,
+
+            };
+
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/UserSettings/Get_Historic_Rejection_Reason_yearwise',
+                data: myData,
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+
+
+                    if (response.status != "Error") {
+                        var j = 1, ii = 0;
+
+                        var rowsCnt = document.getElementById("datatable-default").getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
+                        if (rowsCnt > 0) {
+                            for (var i = 0; i < rowsCnt; i++) {
+                                document.getElementById("datatable-default").deleteRow(1);
+                            }
+                        }
+                        if ($.fn.DataTable.isDataTable('#datatable-default')) {
+                            $('#datatable-default').DataTable().clear();
+                        }
+
+                        if ($.fn.DataTable.isDataTable('#datatable-default')) {
+                            $('#datatable-default').DataTable().destroy();
+                        }
+
+                        $(".rejection_error").empty();
+
+                        $("#MachineN").html(response.data.Table[ii].AssetName);
+
+                        for (var jj = 0; jj < response.data.Table.length; jj++) {
+
+
+                            var newRow = $("<tr>");
+                            var cols = '';
+                            cols += "<td style='width:50px;text-align:center;'> " + j + "</td> ";
+                            cols += "<td style='text-align:center;'> " + response.data.Table[jj].VariantDescription + "</td> ";
+                            cols += "<td style='text-align:center;'> " + response.data.Table[jj].Shift_Id + "</td> ";
+                            cols += "<td style='text-align:center;'> " + response.data.Table[jj].Reject_Reason + "</td> ";
+                            cols += "<td style='width:150px !important;'> " + x + "</td> ";
+                            cols += "<td style='width:200px !important; text-align:center;'> " + response.data.Table[jj].Time_stamp + "</td> ";
+                            cols += "</tr>";
+                            newRow.append(cols);
+                            $(".Historic_details").append(newRow);
+                            j++;
+                        }
+
+                        $('#datatable-default').DataTable({
+                            "responsive": true,
+                            scrollY: '50vh',
+                            "autoWidth": false,
+                        });
+                    }
+
+                    else {
+
+                        $(".rejection_error").text(response.msg);
+
+                    }
+
+
+                },
+                error: function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Expired",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+                    }
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                }
+            });
+
+
+        }
+        else {
+
+            swal({
+                icon: "warning",
+                title: "Please Select Date",
+                button: true,
+                closeModal: false
+            })
+
+
+
+        }
+
+
+    }
+
+</script>

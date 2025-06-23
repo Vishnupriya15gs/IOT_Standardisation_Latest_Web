@@ -1,0 +1,798 @@
+﻿@model IEnumerable<PlanDigitization_web.Models.Department>
+@{ ViewBag.Title = "Ewon Settings";
+    Layout = "~/Views/Shared/_Layout.cshtml"; }
+
+
+<header class="page-header">
+    <h2> Gateway Details </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("MainDashboard","MainDashboard")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li><span>Settings</span></li>
+            <li><span>Ewon Details Settings for Datalogging</span></li>
+        </ol>
+    </div>
+</header>
+
+<!-- Add New Ewon details-->
+<div class="row" id="divnew" style="display:none;">
+    <div class="col-md-2"></div>
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Add_Ewon_Details","UserSettings")" method="post">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Add New Gateway Details</h2>
+                </header>
+                <div class="panel-body">
+
+                    <div class="form-group">
+
+                        <label class="col-sm-2 control-label"> Device ID <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="device_id" class="form-control" title="Enter Device ID" placeholder="Device ID" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Device Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="devicename" class="form-control" title="Enter Device name" placeholder="Devicename" required />
+                        </div>
+                    </div>
+                    <div class="form-group" style=" margin-top: 12px;">
+                        <label class="col-sm-2 control-label"> Device IP <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="deviceip" class="form-control" title="Enter Device IP"
+                                   onKeyDown="return DisableCopyPaste(event)" onMouseDown="return DisableCopyPaste (event)"
+                                   onkeypress="return isNumberKey(event)" placeholder="Device IP" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Cloud Account <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="t2maccount" class="form-control" title="Enter  Talk2m Account" placeholder=" Talk2m Account" required />
+                        </div>
+
+                    </div>
+                    <div class="form-group"  style=" margin-top: 12px;">
+                        <label class="col-sm-2 control-label"> Cloud Username <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="t2musername" class="form-control" title="Enter Talk2m Username" placeholder="Talk2m Username" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Cloud Password <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="t2mpassword" class="form-control" title="Enter  Talk2m Password" placeholder=" Talk2m Password" required />
+                        </div>
+
+                    </div>
+                    <div class="form-group"  style=" margin-top: 12px;">
+                        <label class="col-sm-2 control-label"> Cloud DeveloperId <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="t2mdeveloperid" class="form-control" title="Enter Talk2m DeveloperId" placeholder="Talk2m DeveloperId" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Cloud Deviceusername <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="t2mdeviceusername" class="form-control" title="Enter  Talk2m Deviceusername" placeholder=" Talk2m Deviceusername" required />
+                        </div>
+
+
+                    </div>
+                    <div class="form-group"  style=" margin-top: 12px;">
+                        <label class="col-sm-2 control-label"> Cloud Devicepassword <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="t2mdevicepassword" class="form-control" title="Talk2m Devicepassword" placeholder="Talk2m Devicepassword" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Status <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control" name="status" required>
+                                <option value="">Please Select</option>
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="form-group"  style=" margin-top: 12px;">
+                        <label class="col-sm-2 control-label"> Gateway Local URL <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="ewonurl" class="form-control" title="Gateway URL" placeholder="Gateway URL" required />
+                        </div>
+
+                    </div>
+
+
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+<!--Display ewon details-->
+<div class="row" id="divdetails">
+    <div class="col-md-12">
+        <section class="panel">
+
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="panel-body">
+
+                        <header class="panel-heading" style="background-color:teal;color:white;">
+
+                            <div class="panel-actions">
+                                <button class="btn btn-primary" id="add"><i class="fa fa-plus" aria-hidden="true"> Add New</i></button>
+                            </div>
+
+                            <h2 class="panel-title" style="color:white;">Gateway List : </h2>
+                        </header>
+
+                        <table class="table table-bordered table-striped mb-none" id="datatable-default1">
+                            <thead style="background-color:teal;color:white;">
+                                <tr>
+                                    <th class="">Device ID</th>
+                                    <th>Device Name</th>
+                                    <th>Device IP</th>
+                                    <th>Cloud Account</th>
+                                    <th>Cloud Username</th>
+                                    <th>Cloud Password</th>
+                                    <th>Cloud DeveloperId</th>
+                                    <th>Cloud Deviceusername</th>
+                                    <th>Cloud Devicepassword</th>
+                                    <th>Status</th>
+                                    <th class="linename">Line Name</th>
+                                    <th class="ID" style="display:none;">UniqueID</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody class="custom_preventive"></tbody>
+
+
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!--Edit Ewon Details-->
+<div class="row" id="divedit" style="display:none;">
+    <div class="col-md-2"></div>
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Update_Ewon_Details","UserSettings")" method="post">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Update Gateway Details</h2>
+                </header>
+                <div class="panel-body">
+                    <input type="hidden" id="e_uniqueid" name="Unique_id" />
+                    <div class="form-group">
+
+                        <label class="col-sm-2 control-label"> Device ID <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="device_id" id="e_id" class="form-control" title="Enter Device ID" readonly placeholder="Device ID" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Device Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="devicename" id="e_name" class="form-control" title="Enter Device name" readonly placeholder="Devicename" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Device IP <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="deviceip" id="e_deviceip" class="form-control" title="Enter Device IP" readonly placeholder="Device IP" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Cloud Account <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="t2maccount" id="e_account" class="form-control" title="Enter  Talk2m Account" readonly placeholder=" Talk2m Account" required />
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Cloud Username <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="t2musername" id="e_username" class="form-control" title="Enter Talk2m Username" readonly placeholder="Talk2m Username" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Cloud Password <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="t2mpassword" id="e_password" class="form-control" title="Enter  Talk2m Password" readonly placeholder=" Talk2m Password" required />
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Cloud DeveloperId <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="t2mdeveloperid" id="e_developerid" class="form-control" title="Enter Talk2m DeveloperId" readonly placeholder="Talk2m DeveloperId" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Cloud Deviceusername <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="t2mdeviceusername" id="e_dusername" class="form-control" title="Enter  Talk2m Deviceusername" readonly placeholder=" Talk2m Deviceusername" required />
+                        </div>
+
+
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Cloud Devicepassword <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="t2mdevicepassword" id="e_dpassword" class="form-control" title="Talk2m Devicepassword" readonly placeholder="Talk2m Devicepassword" required />
+                        </div>
+
+
+                        <label class="col-sm-2 control-label"> Status <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                        @*<input type="text" name="status" id="e_status" class="form-control" title="Enter Status" placeholder="Active/Inactive" required />*@
+                        <select class="form-control estatus" id="e_status" name="status" required>
+                                <option value="0">Select</option>
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                        </div>
+
+
+                        <!--<label class="col-sm-2 control-label"> Status <span class="required">*</span></label>
+                        <div class="col-sm-4">-->
+                            @*<input type="text" name="status" id="e_status" class="form-control" title="Enter Status" placeholder="Active/Inactive" required />*@
+                            <!--<select class="form-control estatus" id="eRole" name="status" required>
+                                <option value="">Select</option>
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                        </div>-->
+
+
+
+
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Gateway Local URL <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="ewonurl" id="e_ewonurl" class="form-control" title="Gateway URL" placeholder="Gateway URL" required />
+                        </div>
+
+                    </div>
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+@if (@TempData["message"] != null)
+{
+    <script type="text/javascript">
+    $(function () {
+        var msg = '@TempData["message"]';
+        if (msg == "Inserted") {
+            swal({
+                icon: "success",
+                title: "Details Added Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Updated") {
+            swal({
+                icon: "success",
+                title: "Details Updated Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Already Available Gatewayid") {
+            swal({
+                icon: "error",
+                title: "Failed to Add.Gateway ID already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Gatewayid Details Not Available") {
+            swal({
+                icon: "error",
+                title: "Gatewayid Details Not Available",
+                button: true,
+                timer: 4500
+            })
+        }
+
+        else if (status == '') {
+            swal({
+                icon: "error",
+                title: "Please select status",
+                button: true,
+                timer: 4500
+            })
+        }
+
+        else {
+            swal({
+                icon: "error",
+                title: "Failed to Add",
+                button: true,
+                timer: 4500
+            })
+        }
+    });
+    </script>
+}
+
+<script type="text/javascript">
+    $("#add").click(function () {
+        $("#divnew").show();
+        $("#divdetails").hide();
+        $("#divedit").hide();
+        $("#lineselect").hide();
+    });
+
+    $(".cancel").click(function () {
+        $("#divnew").hide();
+        $("#divdetails").show();
+        $("#divedit").hide();
+        $("#lineselect").show();
+    });
+
+</script>
+
+
+<script type="text/javascript">
+    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+    $(function () {
+
+        var active_tab = $('ul .active').attr("id");
+        var linename = '@Session["LineCode"]';
+
+        // alert(toolname)
+
+        // alert(toolname)
+        $(".custom_pre_error").text('');
+
+        if (linename == '') {
+            swal({
+                icon: "error",
+                title: "Please Provide Line details",
+                button: false,
+                timer: 4500
+            })
+        }
+
+        else {
+
+            var preData = {
+                "linecode": linename,
+                "QueryType": "Details",
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]',
+                "Unique_id":''
+            };
+            var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+            //$.ajax({
+            //    type: 'Get',
+            //    url: URL + 'api/UserSettings/GetEmployee',
+            //    headers: {
+            //        Authorization: 'Bearer ' + user1
+            //    },
+            //    dataType: 'json'
+            //}).success(function (response) {
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/UserSettings/Ewon_details',
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                data: preData,
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+
+                    //$("#machinename").text(response.data[0].toolname);
+                    //$("#stockno").text("2015/234");
+
+                    var rowsCnt = document.getElementById("datatable-default1").getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
+                    if (rowsCnt > 0) {
+                        for (var i = 0; i < rowsCnt; i++) {
+                            document.getElementById("datatable-default1").deleteRow(1);
+                        }
+                    }
+
+                    if ($.fn.DataTable.isDataTable('#datatable-default1')) {
+                        $('#datatable-default1').DataTable().destroy();
+                    }
+
+                    $(".custom_preventive").html("");
+
+                    if (response.data.length != 0) {
+
+                        var j = 1;
+                        for (var i = 0; i < response.data.length; i++) {
+                            var newRow = $("<tr>");
+                            var cols = '';
+
+                            cols += "<td class='deviceid'><span id='' style='Display:none'> " + response.data[i].device_id + "</span> " + response.data[i].device_id + "</td> ";
+                            cols += "<td> " + response.data[i].devicename + "</td> ";
+                             cols += "<td> " + response.data[i].deviceip + "</td> ";
+                            cols += "<td> " + response.data[i].t2maccount + "</td> ";
+                            cols += "<td> " + response.data[i].t2musername + "</td> ";
+                            cols += "<td> " + response.data[i].t2mpassword + "</td> ";
+                            cols += "<td> " + response.data[i].t2mdeveloperid + "</td> ";
+                            cols += "<td> " + response.data[i].t2mdeviceusername + "</td> ";
+                            cols += "<td> " + response.data[i].t2mdevicepassword + "</td> ";
+
+
+                            var sts = "";
+
+                            if (response.data[i].status == 0) {
+                                /*alert("ok");*/
+                                response.data[i].status = "Active";
+                            }
+                            if (response.data[i].status == 1) {
+                                console.log("bcc");
+                                response.data[i].status = "Inactive";
+                            }
+
+
+
+                            cols += "<td> " + response.data[i].status + "</td> ";
+                            cols += "<td> " + response.data[i].linecode + "</td> ";
+
+                            cols += "<td class='ID' style='display:none;'><span> " + response.data[i].Unique_id + "</span></td> ";
+                            cols += "<td style='text - align: center'>" +
+                                "<a class='btn btn-info btn-xs btn-edit' id='edit' title='edit'><i class='fa fa-pencil'></i></a>" + " " +
+                                "<a class='btn btn-danger btn-xs btn-delete' id='delete' title='delete'><i class='fa fa-trash-o'></i></a></td >";
+                            cols += "</tr>";
+                            newRow.append(cols);
+                            $(".custom_preventive").append(newRow);
+                            j++;
+                        }
+
+
+
+                        $('#datatable-default1').DataTable({
+
+                            "responsive": true,
+                            "autoWidth": false,
+                            scrollY: true,
+                            scrollX: true,
+                            scroller: true,
+                            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]]
+
+                        });
+
+
+
+                    }
+                    else {
+
+                        //$(".custom_pre_error").text(response.msg);
+                        var newRow = $("<tr>");
+                        var cols = '';
+                        cols += "<td colspan='6' style='text-align:center'> No Data Available </td> ";
+                        cols += "</tr>";
+                        newRow.append(cols);
+                        $(".custom_preventive").append(newRow);
+                        $('.shift').text("N/A");
+                        $('#maccode').text("N/A");
+                        $('.updated_time').text(new Date().toLocaleString());
+                    }
+
+                }
+            }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+        }
+
+    });
+
+
+
+</script>
+
+
+
+<script type="text/javascript">
+    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+    @*$("body").on("click", "#edit", function () {
+        var row = $(this).closest("tr");
+        var ID = row.find(".ID span").html();
+
+         var preData = {
+
+             "QueryType": "edit_Details",
+             "Unique_id":ID,
+                    "CompanyCode": '@Session["CompanyCode"]',
+                    "PlantCode": '@Session["PlantCode"]'
+                 };
+
+        $("#divedit").show();
+        $("#divnew").hide();
+        $("#divdetails").hide();
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+        $.ajax({
+            type: "POST",
+            url: URL + 'api/UserSettings/Ewon_details',
+            data: preData,
+             headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+            dataType: "json",
+            beforeSend: function () {
+                $('.loading').show();
+            },
+            complete: function () {
+                $('.loading').hide();
+            },
+            success: function (response) {
+                $('.Line').val(response.data[0].linecode);
+                $('#e_id').val(response.data[0].device_id);
+                $('#e_name').val(response.data[0].devicename);
+                $('#e_account').val(response.data[0].t2maccount);
+                $('#e_username').val(response.data[0].t2musername);
+                $('#e_password').val(response.data[0].t2mpassword);
+                $('#e_developerid').val(response.data[0].t2mdeveloperid);
+                $('#e_dusername').val(response.data[0].t2mdeviceusername);
+                $('#e_dpassword').val(response.data[0].t2mdevicepassword);
+
+                //if (response.data[0].status != '') {
+                //    var s = '<option value="0">Please Select</option>';
+
+                //        if (response.data[0].status=='Active') {
+                //            s += '<option value="' + response.data[0].status + '" selected=selected >' + response.data[0].status  + '</option>';
+                //        }
+                //        else if (response.data[0].status == 'Inactive'){
+                //            s += '<option value="' + response.data[0].status + '" selected=selected>' + response.data[0].status + '</option>';
+                //        }
+
+                //    $(".estatus").html(s);
+                //}
+
+
+                if (response.data[0].status != '') {
+                    var s = '<option value="0">Please Select</option>';
+
+                    if (response.data[0].status == 'Active') {
+                        s += '<option value="' + response.data[0].status + '" selected=selected >' + response.data[0].status + '</option>';
+                    }
+                    else if (response.data[0].status == 'Inactive') {
+                        s += '<option value="' + response.data[0].status + '"selected=selected>' + response.data[0].status + '</option>';
+                    }
+
+                    $("#eRole").html(s);
+                }
+
+                $('#e_uniqueid').val(response.data[0].Unique_id);
+                $('#e_deviceip').val(response.data[0].deviceip);
+                $('#e_ewonurl').val(response.data[0].ewonurl);
+            }
+            , error: function (response) {
+
+            }
+        }).error(function (response) {
+                 swal({
+                     icon: "warning",
+                     title: "Session Timeout",
+                     button: true,
+                     closeModal: false
+                 })
+                 window.location = R_url;
+             });
+    });*@
+
+
+     $("body").on("click", "#edit", function () {
+        var row = $(this).closest("tr");
+        var ID = row.find(".ID span").html();
+
+         var preData = {
+
+             "QueryType": "edit_Details",
+             "Unique_id":ID,
+                    "CompanyCode": '@Session["CompanyCode"]',
+                    "PlantCode": '@Session["PlantCode"]'
+                 };
+
+        $("#divedit").show();
+        $("#divnew").hide();
+        $("#divdetails").hide();
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+         $.ajax({
+             type: "POST",
+             url: URL + 'api/UserSettings/Ewon_details',
+             data: preData,
+             headers: {
+                 Authorization: 'Bearer ' + user1
+             },
+             dataType: "json",
+             beforeSend: function () {
+                 $('.loading').show();
+             },
+             complete: function () {
+                 $('.loading').hide();
+             },
+             success: function (response) {
+                 $('.Line').val(response.data[0].linecode);
+                 $('#e_id').val(response.data[0].device_id);
+                 $('#e_name').val(response.data[0].devicename);
+                 $('#e_account').val(response.data[0].t2maccount);
+                 $('#e_username').val(response.data[0].t2musername);
+                 $('#e_password').val(response.data[0].t2mpassword);
+                 $('#e_developerid').val(response.data[0].t2mdeveloperid);
+                 $('#e_dusername').val(response.data[0].t2mdeviceusername);
+                 $('#e_dpassword').val(response.data[0].t2mdevicepassword);
+
+
+                 if (response.data[0].status != '') {
+                     var s = '<option value="">Please Select</option>';
+
+                     if (response.data[0].status == '') {
+                         s += '<option value="' + response.data[0].status + '" selected=selected >' + response.data[0].status + '</option>';
+
+                     }
+                     else {
+                         s += '<option value="' + response.data[0].status + '" selected=selected >' + response.data[0].status + '</option>';
+                     }
+
+                     $("#eRole").html(s);
+                 }
+
+
+
+                     $('#e_uniqueid').val(response.data[0].Unique_id);
+                     $('#e_deviceip').val(response.data[0].deviceip);
+                     $('#e_ewonurl').val(response.data[0].ewonurl);
+                 }
+
+            , error: function (response) {
+
+                 }
+
+        }).error(function (response) {
+                 swal({
+                     icon: "warning",
+                     title: "Session Timeout",
+                     button: true,
+                     closeModal: false
+                 })
+                 window.location = R_url;
+             });
+    });
+
+
+
+
+
+
+    $("body").on("click", "#delete", function () {
+        if (confirm("Do you want to Delete this?")) {
+            var row = $(this).closest("tr");
+            var ID = row.find(".ID span").html();
+            var deviceid = row.find(".deviceid span").html();
+            var preData = {
+
+                "QueryType": "Delete",
+                "device_id": deviceid.trim(),
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]',
+                "LineCode": '@Session["LineCode"]',
+            };
+             var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/UserSettings/delete_Ewondetails',
+                data: preData,
+                headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+                    swal({
+                        icon: "success",
+                        title: "Details Deleted Successfully...!",
+                        showConfirmButton: false,
+                        timer: 4500
+                    })
+                    window.location = '@Url.Action("Ewon_Details", "UserSettings")';
+                }
+            }).error(function (response) {
+                 swal({
+                     icon: "warning",
+                     title: "Session Timeout",
+                     button: true,
+                     closeModal: false
+                 })
+                 window.location = R_url;
+             });
+        }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('.updated_time').text("N/A");
+        $('.shift').text("N/A");
+
+    });
+</script>
+
+
+
+<script>
+    function DisableCopyPaste(e) {
+        // Message to display
+        var message = "Cntrl key/ Right Click Option disabled";
+        // check mouse right click or Ctrl key press
+        var kCode = event.keyCode || e.charCode;
+        //FF and Safari use e.charCode, while IE use e.keyCode
+        if (kCode == 17 || kCode == 2) {
+            alert(message);
+            return false;
+        }
+    }
+</script>

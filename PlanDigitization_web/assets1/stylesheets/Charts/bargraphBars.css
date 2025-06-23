@@ -1,0 +1,6 @@
+﻿body {
+}
+
+svg .bargraphBar {
+    fill: var(--bargraph-bar-fill-1);
+}

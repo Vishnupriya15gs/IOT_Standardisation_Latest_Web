@@ -1,0 +1,451 @@
+﻿@model IEnumerable<PlanDigitization_web.Models.Shift>
+@{
+    ViewBag.Title = "Shift_settings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/Content/jquery.timepicker.css" rel="stylesheet" />
+<header class="page-header">
+    <h2> Shift Settings Details </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("MainDashboard","MainDashboard")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li><span>Settings</span></li>
+            <li><span>Shift Details</span></li>
+        </ol>
+    </div>
+</header>
+
+<!-- Add New Shift-->
+<div class="row" id="divnew" style="display:none;">
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Insert_Shifts","UserSettings")" method="post">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Add New Shift</h2>
+                </header>
+                <div class="panel-body">
+                    @*<div class="form-group">
+
+                            <label class="col-sm-2 control-label"> Line <span class="required">*</span></label>
+                            <div class="col-sm-4">
+                                <select id="linecode" class="form-control" name="Line_Code" title="*"></select>
+                            </div>
+                        </div>*@
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Shift Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="ShiftName" name="ShiftName" class="form-control space" title="Enter Shift" placeholder="Shift Name" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Start Time <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="time" id="StartTime" name="StartTime" onchange="validatetime()" onkeypress='return restrictAlphabets(event)' class="form-control timepicker space" title="Enter Start" placeholder="Start Time" autocomplete="off" required />
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+                        <label class="col-sm-2 control-label"> End Time <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="time" id="EndTime" onchange="validatetime()" name="EndTime" onkeypress='return restrictAlphabets(event)' class="form-control timepicker space" title="Enter End" placeholder="End Time" autocomplete="off" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Break Time <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="number" id="BreakTime" name="BreakTime" class="form-control space" title="Enter Break" placeholder="Break Time" required />
+                        </div>
+                    </div>
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+<!-- Shift Details-->
+<div class="row" id="divdetails">
+    <div class="col-md-12">
+        <section class="panel">
+            <header class="panel-heading" style="background-color:teal;color:white;">
+                @if (ViewContext.Controller.HasPermission("ShiftSetting-Add"))
+                {
+                    <div class="panel-actions">
+                        <button class="btn btn-primary" id="add"><i class="fa fa-plus" aria-hidden="true"> Add New</i></button>
+                    </div>
+                }
+                <h2 class="panel-title" style="color:white;">List of Shifts : </h2>
+            </header>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="panel-body">
+                        @if (ViewContext.Controller.HasPermission("ShiftSetting-View"))
+                        {
+                            <table class="table table-bordered table-striped mb-none" id="datatable-default" data-swf-path="assets1/vendor/jquery-datatables/extras/TableTools/swf/copy_csv_xls_pdf.swf">
+                                <thead style="background-color:teal;color:white;">
+                                    <tr>
+                                        <th class="centercls"> S.No </th>
+                                        <th style="display:none;"></th>
+                                        <th> Shift Name </th>
+                                        <th>Start Time</th>
+                                        <th>End Time</th>
+                                        <th> Break Time</th>
+                                        <th style="text-align:center;width:150px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{int RowNo = 0;}
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr class="gradeX">
+                                            <td>
+                                                @{RowNo++;}@RowNo
+                                            </td>
+                                            <td class="ID" style="display:none;">
+                                                <span>@Html.Encode(item.ID)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.ShiftName)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.StartTime)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.EndTime)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.BreakTime)</span>
+                                            </td>
+                                            <td style="text-align:center;">
+                                                @if (ViewContext.Controller.HasPermission("ShiftSetting-Edit"))
+                                                {
+                                                    <button class="btn btn-primary" style="margin-top: 10px" id="edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
+                                                }
+                                                @if (ViewContext.Controller.HasPermission("ShiftSetting-Delete"))
+                                                {
+                                                    <button class="btn btn-danger" style="margin-top: 10px" id="delete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <h2>View permission is denied</h2>
+                        }
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!--Edit Shift Details-->
+<div class="row" id="divedit" style="display:none;">
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Update_Shift","UserSettings")" method="post">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Update Shift</h2>
+                </header>
+                <div class="panel-body">
+                    <input type="hidden" id="eID" name="ID" />
+                    @*<div class="form-group">
+
+                            <label class="col-sm-2 control-label"> Line <span class="required">*</span></label>
+                            <div class="col-sm-4">
+                                <select id="linecodeedit" class="form-control" name="Line_Code" title="*"></select>
+                            </div>
+                        </div>*@
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Shift Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="eShiftName" name="ShiftName" class="form-control space" title="Enter Shift" placeholder="Shift Name" required readonly />
+                        </div>
+                        <label class="col-sm-2 control-label"> Start Time <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="time" id="eStartTime" name="StartTime" onkeypress='return restrictAlphabets(event)' class="form-control timepicker space" title="Enter Start" placeholder="Start Time" autocomplete="off" required />
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+                        <label class="col-sm-2 control-label"> End Time <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="time" id="eEndTime" name="EndTime" onkeypress='return restrictAlphabets(event)' class="form-control timepicker space" title="Enter End" placeholder="End Time" autocomplete="off" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Break Time <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="number" id="eBreakTime" name="BreakTime" class="form-control space" title="Enter Break" placeholder="Break Time" required />
+                        </div>
+                    </div>
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+<script src="~/Scripts/jquery.timepicker.js"></script>
+@if (@TempData["message"] != null)
+{
+    <script type="text/javascript">
+    $(function () {
+        var msg = '@TempData["message"]';
+        if (msg == "Inserted") {
+            swal({
+                icon: "success",
+                title: "Details Added Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Updated") {
+            swal({
+                icon: "success",
+                title: "Details Updated Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Already") {
+            swal({
+                icon: "error",
+                title: "Failed to Add.Shift Name already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+        else {
+            swal({
+                icon: "error",
+                title: "Failed to Add",
+                button: true,
+                timer: 4500
+            })
+        }
+    });
+    </script>
+}
+<script type="text/javascript">
+    $('.timepicker').timepicker({
+        timeFormat: 'HH:mm',
+        dynamic: true,
+        dropdown: true,
+        scrollbar: true
+    });
+    $("#add").click(function () {
+        $("#divnew").show();
+        $("#divdetails").hide();
+        $("#divedit").hide();
+    });
+
+    $(".cancel").click(function () {
+        $("#divnew").hide();
+        $("#divdetails").show();
+        $("#divedit").hide();
+    });
+    $(document).on("keydown", ".space", function (evt) {
+
+        var caretPos = $(this)[0].selectionStart
+        if (evt.keyCode == 32 && caretPos == 0) {
+            return false;
+        }
+    });
+    function validatetime() {
+        var start = $("#StartTime").val();
+        var end = $("#EndTime").val();
+        if (start != "" && end != "") {
+            var dtStart = new Date("1/1/2023 " + start);
+            var dtEnd = new Date("1/1/2023 " + end);
+            var difference_in_milliseconds = dtEnd - dtStart;
+
+            if (difference_in_milliseconds < 0) {
+                swal({
+                    icon: "error",
+                    title: "End time should be greater than start time",
+                    button: true,
+                    timer: 1500
+                })
+                $("#StartTime").val("");
+                $("#EndTime").val("");
+            }
+        }
+    }
+
+</script>
+
+<script type="text/javascript">
+    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+    function restrictAlphabets(e) {
+        var x = e.which || e.keycode;
+        if ((x >= 48 && x <= 57))
+            return true;
+        else
+            return false;
+    }
+    $("body").on("click", "#edit", function () {
+        var row = $(this).closest("tr");
+        var ID = row.find(".ID span").html();
+
+        var myData = {
+            "QueryType": "Edit_Shift",
+            "Parameter": ID,
+            "CompanyCode": '@Session["CompanyCode"]',
+            "PlantCode": '@Session["PlantCode"]',
+            "LineCode": '@Session["LineCode"]'
+        };
+        $("#divedit").show();
+        $("#divnew").hide();
+        $("#divdetails").hide();
+        var R_url = '@Url.Action("Login", "Main")';
+        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+        $.ajax({
+            type: "POST",
+            url: URL + 'api/Values/User_settings_details',
+            data: myData,
+            headers: {
+                Authorization: 'Bearer ' + user1
+            },
+            dataType: "json",
+            beforeSend: function () {
+                $('.loading').show();
+            },
+            complete: function () {
+                $('.loading').hide();
+            },
+            success: function (response) {
+                $('#eID').val(response.data.Table[0].ID);
+                $('#eShiftName').val(response.data.Table[0].ShiftName);
+                $('#eStartTime').val(response.data.Table[0].StartTime);
+                $('#eEndTime').val(response.data.Table[0].EndTime);
+                $('#eBreakTime').val(response.data.Table[0].BreakTime);
+
+
+            }
+            , error: function (response) {
+
+            }
+        }).error(function (response) {
+            if (response.status == "401") {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            }
+            else {
+                swal({
+                    icon: "warning",
+                    title: response.responseText,
+                    button: true,
+                    closeModal: false
+                })
+
+            }
+        });
+    });
+
+    $("body").on("click", "#delete", function () {
+        if (confirm("Do you want to Delete this...?")) {
+            var row = $(this).closest("tr");
+            var ID = row.find(".ID span").html();
+
+            var myData = {
+                "QueryType": "Delete_shift",
+                "Parameter": ID,
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]',
+                "LineCode": '@Session["LineCode"]'
+            };
+            var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/Values/delete_User_settings_details',
+                data: myData,
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+                    swal({
+                        icon: "success",
+                        title: "Details Deleted Successfully...!",
+                        button: true,
+                        timer: 4500
+                    })
+                    window.location = '@Url.Action("Shift_settings", "UserSettings")';
+                }
+            }).error(function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+                }
+            });
+        }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('.updated_time').text("N/A");
+        $('.shift').text("N/A");
+
+        if ($.fn.DataTable.isDataTable('#datatable-default')) {
+            $('#datatable-default').DataTable().destroy();
+        }
+
+        $('#datatable-default').DataTable({
+
+            "responsive": true,
+            "autoWidth": false,
+            scrollY: true,
+            scrollX: true,
+            scroller: true
+        });
+    });
+</script>

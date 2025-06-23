@@ -1,0 +1,370 @@
+﻿@model IEnumerable<PlanDigitization_web.Models.Skill_Category>
+@{
+    ViewBag.Title = "Operator_settings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<header class="page-header">
+    <h2> Skill Category Details </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("NewDash","Main")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li><span>Settings</span></li>
+            <li><span>Skill Category</span></li>
+        </ol>
+    </div>
+</header>
+
+<!-- Add New  Data-->
+
+<div class="row" id="divnew" style="display:none;">
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Insert_category","Operatorallocation")" method="post">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Add New Skill Category</h2>
+                </header>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Category Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="Category_name" name="Category_name" class="form-control" title="Enter Nmae" placeholder="Name" required />
+                        </div>
+                    </div>
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary sumbit">Submit</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+<!-- Table Details-->
+
+<div class="row" id="divdetails">
+    <div class="col-md-12">
+        <section class="panel">
+            <header class="panel-heading" style="background-color:teal;color:white;">
+                <div class="panel-actions">
+                    <button class="btn btn-primary" id="add"><i class="fa fa-plus" aria-hidden="true"> Add New</i></button>
+                </div>
+                <h2 class="panel-title" style="color:white;">List of Skill Category : </h2>
+            </header>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="panel-body">
+                        <table class="table table-bordered table-striped mb-none" id="datatable-default" data-swf-path="assets1/vendor/jquery-datatables/extras/TableTools/swf/copy_csv_xls_pdf.swf">
+                            <thead style="background-color:teal;color:white;">
+                                <tr>
+                                    <th class="centercls"> S.No </th>
+                                    <th style="display:none;"></th>
+                                    <th>Category Name</th>
+                                    <th style="text-align:center;width:150px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{int RowNo = 0;}
+                                @foreach (var item in Model)
+                                {
+                                    <tr class="gradeX">
+                                        <td>
+                                            @{RowNo++;}@RowNo
+                                        </td>
+                                        <td class="ID" style="display:none;">
+                                            <span>@Html.Encode(item.Id)</span>
+                                        </td>
+                                        <td>
+                                            <span>@Html.Encode(item.Category_name)</span>
+                                        </td>
+                                        <td style="text-align: center; width: 150px;">
+                                            <button class="btn btn-primary" style="margin-top: 10px" id="edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
+                                            <button class="btn btn-danger" style="margin-top: 10px" id="delete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!--Edit  Data Details-->
+<div class="row" id="divedit" style="display:none;">
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Update_Category","Operatorallocation")" method="post">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Update Skill Category</h2>
+                </header>
+                <div class="panel-body">
+                    <input type="hidden" id="eID" name="Id" />
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Category Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="eCategory_name" name="Category_name" class="form-control" title="Enter Name" placeholder="Name" required />
+                        </div>
+                    </div>
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+
+@if (@TempData["message"] != null)
+{
+    <script type="text/javascript">
+    $(function () {
+        var msg = '@TempData["message"]';
+        if (msg == "1") {
+            swal({
+                icon: "success",
+                title: "Details Added Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "2") {
+            swal({
+                icon: "success",
+                title: "Details Updated Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "-1") {
+            swal({
+                icon: "error",
+                title: "Details ID already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+        else {
+            swal({
+                icon: "error",
+                title: "Failed to Add",
+                button: true,
+                timer: 4500
+            })
+        }
+    });
+    </script>
+}
+<script type="text/javascript">
+
+
+    $("#add").click(function () {
+        $("#divnew").show();
+        $("#divdetails").hide();
+        $("#divedit").hide();
+    });
+
+    $(".cancel").click(function () {
+        $("#divnew").hide();
+        $("#divdetails").show();
+        $("#divedit").hide();
+    });
+
+
+</script>
+
+
+<script type="text/javascript">
+
+    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+    var R_url = '@Url.Action("Login", "Main")';
+    var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+    //-------edit function---------
+
+    $("body").on("click", "#edit", function () {
+        var row = $(this).closest("tr");
+        var ID = row.find(".ID span").html();
+
+        var myData = {
+            "QueryType": "Edit_skill_category",
+            "Parameter3": ID,
+            "Parameter": '@Session["PlantCode"]',
+                "Parameter1": '@Session["CompanyCode"]',
+                "Parameter2": '@Session["LineCode"]',
+        };
+
+        $("#divedit").show();
+        $("#divnew").hide();
+        $("#divdetails").hide();
+
+        $.ajax({
+            type: "POST",
+            url: URL + 'api/UserSettings/User_settings_details',
+            data: myData,
+            headers: {
+                Authorization: 'Bearer ' + user1
+            },
+            dataType: "json",
+            beforeSend: function () {
+                $('.loading').show();
+            },
+            complete: function () {
+                $('.loading').hide();
+            },
+            success: function (response) {
+                $('#eID').val(response.data.Table[0].Id);
+                $('#eCategory_name').val(response.data.Table[0].Category_name);
+            },
+            //error: function (response) {
+            //    if (response4.status == "401") {
+            //        swal({
+            //            icon: "warning",
+            //            title: "Token is not valid",
+            //            button: true,
+            //            closeModal: false
+            //        })
+            //        window.location = R_url;
+            //    }
+            //    else {
+            //        swal({
+            //            icon: "warning",
+            //            title: response.responseText,
+            //            button: true,
+            //            closeModal: false
+            //        })
+
+            //    }
+            //}
+        }).error(function (response) {
+            if (response4.status == "401") {
+                swal({
+                    icon: "warning",
+                    title: "Token is not valid",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            }
+            else {
+                swal({
+                    icon: "warning",
+                    title: response.responseText,
+                    button: true,
+                    closeModal: false
+                })
+
+            }
+
+        });
+    });
+
+    //-----------Delete function----------
+
+    $("body").on("click", "#delete", function () {
+        if (confirm("Do you want to Delete this...?")) {
+            var row = $(this).closest("tr");
+            var ID = row.find(".ID span").html();
+            var myData = {
+                "QueryType": "Delete_skill_category",
+                "Parameter3": ID,
+                "Parameter": '@Session["PlantCode"]',
+                "Parameter1": '@Session["CompanyCode"]',
+                "Parameter2": '@Session["LineCode"]',
+            };
+             var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/UserSettings/delete_User_settings_details',
+                data: myData,
+                 headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+                    swal({
+                        icon: "success",
+                        title: "Details Deleted Successfully...!",
+                        button: true,
+                        timer: 4500
+                    })
+                    window.location = '@Url.Action("Skill_category", "Operatorallocation")';
+                }
+            }).error(function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Token is not valid",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+             });
+        }
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('.updated_time').text("N/A");
+        $('.shift').text("N/A");
+
+        if ($.fn.DataTable.isDataTable('#datatable-default')) {
+            $('#datatable-default').DataTable().destroy();
+        }
+
+
+        $('#datatable-default').DataTable({
+
+            "responsive": true,
+            "autoWidth": false,
+            scrollY: true,
+            scrollX: true,
+            scroller: true
+        });
+
+
+    });
+</script>

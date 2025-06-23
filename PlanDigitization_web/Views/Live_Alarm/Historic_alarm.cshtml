@@ -1,0 +1,651 @@
+﻿
+@{ ViewBag.Title = "Historic_alarm"; }
+
+<header class="page-header">
+    <h2> Historic Alarm Details </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("MainDashboard","MainDashboard")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+
+        </ol>
+    </div>
+</header>
+<style type="text/css">
+
+    .Grid {
+        border: 1px solid #ccc;
+        border-collapse: collapse;
+        background-color: #fff;
+    }
+
+        .Grid th {
+            background-color: #B8DBFD;
+            color: #333;
+            font-weight: bold;
+        }
+
+    .ChildGrid th, .ChildGrid td {
+        padding: 5px;
+        border: 1px solid #ccc;
+    }
+
+    .Grid img {
+        cursor: pointer;
+    }
+
+    .ChildGrid {
+        width: 100%;
+    }
+
+        .ChildGrid th {
+            background-color: #6C6C6C;
+            color: #fff;
+            font-weight: bold;
+        }
+
+    /*.dataTables_filter label {
+        display: flex;
+        align-items: center;
+    }*/
+
+    .dataTables_filter label input[type="search"] {
+        margin: 0 0 0 10px;
+    }
+</style>
+
+<div class="row" id="Historic">
+
+    <div class="col-md-2"></div>
+    <div class="col-md-12">
+        <section class="panel">
+            <header class="panel-heading" style="background-color:teal;color:white;">
+                <div class="panel-actions">
+                </div>
+                <h2 class="panel-title" style="color:white;"> Historic Alarm </h2>
+            </header>
+            <div class="panel-body">
+
+                <div class="form-group" id="div_dates">
+                    <label class="col-sm-2 control-label" style="top: 5px;"> From Date  <span class="required">*</span></label>
+                    <div class="col-sm-2" style="right: 90px;">
+                        <input type="text" class="form-control datepic" id="FromDate" autocomplete="off" readonly />
+                    </div>
+
+                    <label class="col-sm-2 control-label" style="right: 75px;top: 5px;"> To Date  <span class="required">*</span></label>
+                    <div class="col-sm-2" style="right: 90px;">
+                        <input type="text" class="form-control datepic" id="ToDate" autocomplete="off" readonly />
+                    </div>
+                    @*<label class="col-sm-2 control-label" style="right: 75px;top: 5px;"> Shift  <span class="required">*</span></label>*@
+                    @*<div class="col-sm-2" style="right: 90px;">
+                        <select id="Shift_id" class="form-control">
+                            <option value="0">Select</option>
+                            <option value="All">All</option>
+                            <option value="S1">S1</option>
+                            <option value="S2">S2</option>
+                            <option value="S3">S3</option>
+                        </select>
+                    </div>*@
+
+                    <div class="col-sm-4" style="float:right;"> <span style="font-weight:bold;font-size:13px;">Note : Select Less than 2 days to see all instance of particular alarm</span> </div>
+
+                </div>
+            </div>
+            <footer class="panel-footer">
+                <div class="row">
+                    <div class="col-sm-9 col-sm-offset-3" style="text-align:right;">
+                        <button type="button" id="Search" class="btn btn-primary">Search</button>
+                        <button id="cancel" class="btn btn-danger ">Reset</button>
+                    </div>
+                </div>
+            </footer>
+
+        </section>
+    </div>
+</div>
+
+<!-- historic Alarm Details-->
+
+<div class="row" id="divdetails" style="display:none">
+    <div class="col-md-12">
+        <section class="panel">
+            <header class="panel-heading" style="background-color:teal;color:white;">
+
+                <h2 class="panel-title" style="color:white;"> Table Details  </h2>
+            </header>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="panel-body">
+                        @if (ViewContext.Controller.HasPermission("AlarmAnalysis-View"))
+                        {
+            <table class="table table-bordered table-striped mb-none" id="datatable_default">
+                <thead style="background-color:teal;color:white;">
+                    <tr>
+                        <th class="centercls text-center"> S No </th>
+                        @*<th>Start Time</th>*@
+                        <th class="text-center">Machine</th>
+                        @*<th class="text-center">Alarm ID </th>*@  @*Removed for PLC Standardisation 29-03-2025*@
+                        <th class="text-center">Alarm Description</th>
+                        <th class="text-center">Total Duration (Minutes)</th>
+                        <th class="text-center">Occurence</th>
+                        <th class="text-center">Last Timestamp</th>
+                        @*<th style="display:none;"> id </th>*@
+                        <th class="text-center"> Help</th>
+
+                        @*<th>FromDate</th>
+        <th>Todate</th>*@
+                    </tr>
+                </thead>
+                <tbody class="Historic_details"></tbody>
+            </table> }
+        else
+        {
+<h2>View Permission is denied</h2>}
+
+                    </div>
+
+
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+
+
+<script>
+
+    //var r_url = '@Url.Action("Historic_alarm","Historic_alarm")';
+    var r_url= '@Url.Action("Historic_alarm", "Live_Alarm")';
+
+    //$(function () {
+
+    //    var todaydt = new Date();
+    //    $("#FromDate").datepicker({
+    //        autoclose: true,
+    //        endDate: todaydt,
+    //        format: 'yyyy-mm-dd'
+    //    }).on('changeDate', function (selected) {
+    //        var minDate = new Date(selected.date);
+    //        minDate.setDate(minDate.getDate() );
+    //        $('#ToDate').datepicker('setStartDate', minDate);
+    //    });
+
+    //    $("#ToDate").datepicker({
+    //        autoclose: true,
+    //        format: 'yyyy-mm-dd'
+    //    }).on('changeDate', function (selected) {
+    //        var minDate = new Date(selected.date);
+    //        minDate.setDate(minDate.getDate() - 1);
+    //        $('#FromDate').datepicker('setEndDate', minDate);
+    //    });
+
+    //});
+
+    $(function () {
+
+        var todaydt = new Date();
+        $("#FromDate").datepicker({
+            autoclose: true,
+            endDate: todaydt,
+            format: 'yyyy-mm-dd'
+        }).on('changeDate', function (selected) {
+            var minDate = new Date(selected.date);
+            minDate.setDate(minDate.getDate());
+            $('#ToDate').datepicker('setStartDate', minDate);
+        });
+
+
+        var Fdate = $("#FromDate").val();
+
+        $("#ToDate").datepicker({
+            autoclose: true,
+            startDate: Fdate,
+            endDate: todaydt,
+            format: 'yyyy-mm-dd'
+        }).on('changeDate', function (selected) {
+            var minDate = new Date(selected.date);
+            minDate.setDate(minDate.getDate());
+            $('#FromDate').datepicker('setEndDate', minDate);
+        });
+
+    });
+
+    $(function () {
+        $('#FromDate').keypress(function (event) {
+            event.preventDefault();
+            return false;
+        });
+    });
+
+    $(function () {
+        $('#ToDate').keypress(function (event) {
+            event.preventDefault();
+            return false;
+        });
+    });
+
+
+
+
+    $("#cancel").click(function () {
+        $("#FromDate").val('');
+        $("#ToDate").val('');
+        /* $(".Historic_details").empty();*/
+        var rowsCnt = document.getElementById("datatable_default").getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
+        if (rowsCnt > 0) {
+            for (var i = 0; i < rowsCnt; i++) {
+                document.getElementById("datatable_default").deleteRow(1);
+            }
+        }
+        if ($.fn.DataTable.isDataTable('#datatable_default')) {
+            $('#datatable_default').DataTable().clear();
+        }
+
+        if ($.fn.DataTable.isDataTable('#datatable_default')) {
+            $('#datatable_default').DataTable().destroy();
+        }
+
+    });
+
+
+    function update_subtable(alarmID) {
+        //$('#datatable_default tbody tr').each(function (e) {
+            //var alarm_id = $(this).find('.Alarm_ID').val();
+            var alarm_id = alarmID;
+            var Fdate = $("#FromDate").val();
+            var Tdate = $("#ToDate").val();
+            var Shift_id = $("#Shift_id").val();
+            var record_id = 1;
+            //console.log(alarm_id + "alame");
+
+            if (alarm_id.length > 0)
+            {
+                record_id++;
+
+                var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+                var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+                var myData1 =
+                {
+                    "QueryType": "Historic_sub",
+                    "CompanyCode": '@Session["CompanyCode"]',
+                    "PlantCode": '@Session["PlantCode"]',
+                    "Line_Code": '@Session["LineCode"]',
+                    "Parameter4": Fdate,
+                    "Parameter5": Tdate,
+                    "Alarm_ID": alarm_id,
+                    "Shift_id": Shift_id
+                };
+
+                var tbl = '';
+                $.ajax({
+                    type: "POST",
+                    url: URL + 'api/Live_Alarm/Get_Historic_Alarm_data',
+                    data: myData1,
+                    async: false,
+                    headers: {
+                        Authorization: 'Bearer ' + user1
+                    },
+                    dataType: "json",
+                    beforeSend: function () {
+                        $('.loading').show();
+                    },
+                    complete: function () {
+                        $('.loading').hide();
+                    },
+                    success: function (response1) {
+                        console.log(response1);
+                        tbl += "<div>"
+                            + "<table cellpadding='0' cellspacing='0' class='ChildGrid'>"
+                            + "<tr>"
+                            + "<th>S.No </th>"
+                            /*+ "<th>Alarm ID</th>"*/
+                            + "<th>Alarm Description</th>"
+                            + "<th>Start Time</th>"
+                            + "<th>End Time</th>"
+                            + "<th>Total Duration(Minutes)</th>"
+                            /*  + "<th>Occurence</th>"*/
+                            + "</tr>";
+                        var j = 1;
+                        for (var ii = 0; ii < response1.data.Table.length; ii++) {
+                            console.log(response1.data.Table.length);
+                            tbl += "<tr>"
+                                + "<td> " + j + " </td> "
+                                /*+ "<td>" + response1.data.Table[ii].Alarm_ID + "</td>"*/
+                                + "<td>" + response1.data.Table[ii].Alarm_Description + "</td>"
+                                + "<td>" + response1.data.Table[ii].Start_Time + "</td>"
+                                + "<td>" + response1.data.Table[ii].End_Time + "</td>"
+                                + "<td>" + response1.data.Table[ii].tot_duration + "</td>"
+                                + "</tr>";
+                            j++;
+                        }
+                        tbl += "</table>"
+                            + "</div>";
+                        //console.log($(this));
+                        $('#datatable_default tbody tr').find('.sub_table_data').html(tbl);
+                    },
+                    error: function (response1) {
+
+                    }
+                });
+                
+            }
+        //});
+
+    }
+
+    function get_alarm_data() {
+        var Fdate = $("#FromDate").val();
+        var Tdate = $("#ToDate").val();
+        var syear = Fdate.substr(0, 4);
+        var eyear = Tdate.substr(0, 4);
+        var Shift_id = $("#Shift_id").val();
+
+        if (Fdate != "" && Tdate != "") {//&& Shift_id != "0"
+
+            $("#divdetails").show();
+
+            var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+            var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+            var Fdate = $("#FromDate").val();
+            var Tdate = $("#ToDate").val();
+
+
+            var date1 = new Date(Fdate);
+            var date2 = new Date(Tdate);
+            var diffTime = Math.abs(date2 - date1);
+            var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            var myData = {
+                "QueryType": "Historic",
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]',
+                "Line_Code": '@Session["LineCode"]',
+                "Parameter4": Fdate,
+                "Parameter5": Tdate,
+                "Shift_id": Shift_id
+            };
+
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/Live_Alarm/Get_Historic_Alarm_data',
+                data: myData,
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+                    if (response.status != "Error") {
+                        var j = 1;
+
+                        //var rowsCnt = document.getElementById("datatable_default").getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
+                        //if (rowsCnt > 0) {
+                        //    for (var i = 0; i < rowsCnt; i++) {
+                        //        document.getElementById("datatable_default").deleteRow(1);
+                        //    }
+                        //}
+                        if ($.fn.DataTable.isDataTable('#datatable_default')) {
+                            $('#datatable_default').DataTable().clear();
+                        }
+
+                        if ($.fn.DataTable.isDataTable('#datatable_default')) {
+                            $('#datatable_default').DataTable().destroy();
+                        }
+                        $(".Historic_details").empty();
+
+                        for (var i = 0; i < response.data.Table.length; i++) {
+                            var tbl = "";
+                            var newRow = $("<tr>");
+                            var cols = '';
+                            // cols += "<td> " + j + "</td> ";
+                            if (diffDays < 3) {
+                                cols += "<td> <img src='../Images/plus02.png' value='" + response.data.Table[i].Alarm_ID + "' /> <div style='display:none;' class='sub_table_data'></div> </td>";
+
+                            }
+                            else {
+                                cols += "<td> " + j + "</td> ";
+                            }
+
+                            cols += "<td class='text-center'> <input type='hidden' class='Machine_Code' value='" + response.data.Table[i].Machine_Code + "' /> " + response.data.Table[i].Machine_Code + "  </td> ";
+                            /*cols += "<td class='text-center'> <input type='hidden' class='Alarm_ID' value='" + response.data.Table[i].Alarm_ID + "' /> " + response.data.Table[i].Alarm_ID + "</td> ";*/
+                            cols += "<td class='text-center'> " + response.data.Table[i].Alarm_Description + "</td> ";
+                            cols += "<td class='text-center'> " + response.data.Table[i].tot_duration + "</td> ";
+                            cols += "<td class='text-center'> " + response.data.Table[i].no_of_times + "</td> ";
+                            cols += "<td class='text-center'> " + response.data.Table[i].last_time + "</td> ";
+                            cols += "<td style='display: none' class='id'> " + response.data.Table[i].Help + "</td> ";
+                            cols += "<td class='text-center'>"
+                                + " <button class='btn btn-primary' onclick='myFunction(" + response.data.Table[i].Help + ")' type='button' style='margin-top: 10px' class='download'><i class='fa fa-question-circle' aria-hidden='true'></i></button>"
+                                + " </td>";
+                            cols += "</tr>";
+                            newRow.append(cols);
+                            $(".Historic_details").append(newRow);
+                            j++;
+
+                        }
+
+                        $('#datatable_default').DataTable({
+                            "responsive": true,
+                            "autoWidth": false,
+                            drawCallback: function () {
+                                if (diffDays < 3) {
+                                    //update_subtable();
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        $(".Historic_details").text(response.msg);
+                    }
+                    if (diffDays < 3) {
+                        //update_subtable();
+                    }
+                },
+                error: function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Expired",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+                    }
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                }
+            });
+        }
+        else {
+            if (Fdate == '') {
+                swal({
+                    icon: "error",
+                    title: "Please Select Fromdate",
+                    button: false,
+                    timer: 4500
+                })
+            }
+            else if (Tdate == '') {
+                swal({
+                    icon: "error",
+                    title: "Please Select Todate",
+                    button: false,
+                    timer: 4500
+                })
+            }
+            else if (Shift_id == '0') {
+                swal({
+                    icon: "error",
+                    title: "Please Select Shift",
+                    button: false,
+                    timer: 4500
+                })
+            }
+            else if (Fdate > Tdate) {
+                swal({
+                    icon: "error",
+                    title: "Please Provide Dates correctly...",
+                    button: false,
+                    timer: 4500
+                })
+            }
+            else if (syear != eyear) {
+                swal({
+                    icon: "error",
+                    title: "Please Select Same Year for Fromdate and Todate...!",
+                    button: false,
+                    timer: 4500
+                })
+                d3.select("svg").remove();
+                return;
+            }
+        }
+    }
+
+    $(document).ready(function () {
+        $("#Search").click(function () {
+            get_alarm_data();
+        });
+    });
+
+    function myFunction(id)
+    {
+
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+        var CompanyCode = '@Session["CompanyCode"]'
+        var PlantCode = '@Session["PlantCode"]'
+        var LineCode = '@Session["LineCode"]'
+
+
+        if (!id) {
+
+            swal({
+                icon: "warning",
+                title: "No Alarmhelp File Configured",
+                button: false,
+                timer: 1500
+            })
+
+        }
+        else {
+
+
+            var myDatas2 = {
+                "QueryType": "File",
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]',
+                "LineCode": '@Session["LineCode"]',
+                "Unique_id": id,
+            };
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+            $.ajax({
+                type: "POST",
+                data: myDatas2,
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                url: URL + 'api/Values/CollectFileName_settings_details',
+                dataType: "json",
+                success: function (response3) {
+                    try {
+                    var filename = response3.data.Table[0].filename;
+                    console.log(filename);
+
+                        var path1 = window.location.protocol + "//" + window.location.host + "/Manuals/" + CompanyCode + "/" + PlantCode + "/" + LineCode + "/" + filename;
+
+
+                        console.log(path1)
+                        // window.open(path1, '_blank');
+                        var link = document.createElement("a");
+                        link.download = filename;
+                        link.href = path1;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        delete link;
+                        return false;
+                    }
+
+                    catch (err) {
+
+                        swal({
+                            icon: "warning",
+                            title: "No Alarmhelp File Configured",
+                            button: false,
+                            timer: 1500
+                        })
+
+                     }
+
+
+
+                }
+            }).error(function (response3) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+            });
+
+        }
+    }
+
+</script>
+
+<script type="text/javascript">
+    //Assign Click event to Plus Image.
+    $("body").on("click", "img[src*='plus02.png']", function () {
+        if (!$(this).data("valuePrinted")) {
+            var value = $(this).attr("value");
+            var parentTr = $(this).closest('tr'); 
+            var parentClass = parentTr.attr('class');
+            console.log(parentTr); // Print the value
+            update_subtable(value);
+            $(this).data("valuePrinted", true); // Set a flag on this image to indicate the value has been printed
+        }
+        $(this).closest("tr").after("<tr><td></td><td colspan = '999' class='sub_table_data'>" + $(this).next().html() + "</td></tr>");
+        $(this).attr("src", "../Images/minus02.png");
+    });
+    //Assign Click event to Minus Image.
+    $("body").on("click", "img[src*='minus02.png']", function () {
+        $(this).attr("src", "../Images/plus02.png");
+        $(this).closest("tr").next().remove();
+    });
+</script>

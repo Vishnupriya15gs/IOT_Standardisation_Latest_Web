@@ -1,0 +1,440 @@
+﻿
+
+@{ ViewBag.Title = "Paretoanalysis";
+    Layout = "~/Views/Shared/_Layout.cshtml"; }
+<style>
+    svg {
+        font: 10px sans-serif;
+        height: 900 !important;
+    }
+
+    .bar rect {
+        fill: steelblue;
+        shape-rendering: crispEdges;
+    }
+
+    .axis path, .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+    }
+
+    .line {
+        fill: none;
+        stroke: purple;
+        stroke-width: 1.5px;
+    }
+
+
+
+    #custome_report1.active + .btn-group.select-btn {
+        display: none;
+    }
+
+    #yearly_report1.active + .btn-group.select-btn {
+        display: none;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn.select-btn {
+        display: inline-flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        left: 43%;
+    }
+
+    .select-btn {
+        display: none;
+        position: relative;
+        left: 75%;
+        transform: translateY(-42px);
+        align-items: center;
+    }
+
+    .control-label.variant-label {
+        margin-bottom: 0;
+    }
+
+    .Allattr {
+    }
+</style>
+<link rel="stylesheet" type="text/css" href="~/assets1/datepicker_normal/jquery-ui-1.8.19.custom.css">
+<header class="page-header">
+    <h2>Shiftwise Production Summary</h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("MainDashboard","MainDashboard")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+
+        </ol>
+    </div>
+</header>
+@if (ViewContext.Controller.HasPermission("Production_Summary-View"))
+{
+    <div class="row">
+        <div class="btn-group" style="padding-right: 15px;">
+            <label class="control-label" style="float:right; font-weight:bold;">Select Machine<span class="required">*</span></label>
+        </div>
+        <div class="btn-group">
+            <select id="machinecode" class="form-control" name="machinecode" @*title="*"*@>
+                <option value="">Select Line First</option>
+            </select>
+        </div>
+
+
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="tabs tabs-danger">
+                <ul class="nav nav-tabs">
+                    <li class="active" id="custom_report">
+                        <a href="#custom" data-toggle="tab">Custom</a>
+                    </li>
+                    <li id="yearly_report">
+                        <a href="#yearly" data-toggle="tab"> Yearly</a>
+                    </li>
+                    <li id="monthly_report">
+                        <a href="#monthly" data-toggle="tab">Monthly</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div id="custom" class="tab-pane active">
+                        <section class="panel">
+                            <div class="form-group">
+                                <label class=" control-label" style="margin-right: 100px;">Date range<span class="required">*</span></label>
+                                <div class="col-md-6" style="right: 80px;">
+                                    <div class="input-daterange input-group">
+                                        <span class="input-group-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </span>
+                                        <input type="text" class="form-control datepic" style="text-align:left;z-index:0;" id="start" name="start" readonly>
+                                        <span class="input-group-addon">to</span>
+                                        <input type="text" class="form-control datepic" style="text-align:left;z-index:0;" id="end" name="end" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-4" style="right: 80px;">
+                                    <div class="btn-group">
+                                        <button type="button" id="searchcustomwise" class="mb-xs mt-xs mr-xs btn btn-primary">View</button>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button type="button" id="resetcustom" class="mb-xs mt-xs mr-xs btn btn-danger">Reset</button>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="tabs tabs-danger">
+                                <ul class="nav nav-tabs">
+                                    <li class="active" id="custom_report_tab">
+                                        <a href="#custome_report1" data-toggle="tab">Variantwise Production </a>
+                                    </li>
+                                    <li id="custom_report_tab_day">
+                                        <a href="#custome_Duration1" data-toggle="tab">Daywise Production</a>
+                                    </li>
+                                </ul>
+                                <div class="select-btn">
+                                    <label class="control-label variant-label" style="margin-right: 16px;font-weight: bold;padding: 0;font-weight: bold;"> Select Variant </label>
+                                    <select class="form-control" id="Variant" style="width: fit-content;display: inline-block;">
+                                        <option value="All">All</option>
+                                    </select>
+                                </div>
+                                <div class="tab-content">
+                                    <div id="custome_report1" class="tab-pane active">
+                                        <section class="panel-body">
+                                            <div class='custome_report' style="height: 450px; width:1102px ; background-color: rgb(91 165 241 / 10%); "></div>
+                                        </section>
+                                    </div>
+
+                                    <div id="custome_Duration1" class="tab-pane">
+                                        <section class="panel-body">
+                                            <div class='custome_Duration' style="height: 450px; width:1102px ;background-color: #e0e0e0; "></div>
+                                        </section>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </section>
+                    </div>
+
+                    <div id="yearly" class="tab-pane">
+                        <section class="panel">
+                            <div class="form-group">
+                                <div class="col-md-2"></div>
+                                <label class="col-md-2 control-labe" style="right: 190px;">Select Year<span class="required">*</span></label>
+                                <div class="col-md-4" style="right: 290px;">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </span>
+                                        <input class="date-own form-control" style="width: 150px;z-index:0;" type="text" id="year" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-4" style="right: 95px;">
+                                    <div class="btn-group">
+                                        <button type="button" id="searchyearwise" class="mb-xs mt-xs mr-xs btn btn-primary">View</button>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button type="button" id="resetyear" class="mb-xs mt-xs mr-xs btn btn-danger">Reset</button>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
+
+                            <div class="tabs tabs-danger">
+                                <ul class="nav nav-tabs">
+                                    <li class="active" id="yearly_report_tab">
+                                        <a href="#yearly_report1" data-toggle="tab">Variantwise Production </a>
+                                    </li>
+                                    <li id="yearly_report_tab_day">
+                                        <a href="#yearly_Duration1" data-toggle="tab">Daywise Production</a>
+                                    </li>
+                                </ul>
+                                <div class="select-btn">
+                                    <label class="control-label variant-label" style="margin-right: 16px;font-weight: bold;padding: 0;font-weight: bold;"> Select Variant </label>
+                                    <select class="form-control" id="Yearly_Variant" style="width: fit-content;display: inline-block;">
+                                        <option value="All">All</option>
+                                    </select>
+                                </div>
+                                <div class="tab-content">
+                                    <div id="yearly_report1" class="tab-pane active">
+                                        <section class="panel-body">
+                                            <div class='year_report' style="height: 450px; width:1102px ; background-color: rgb(91 165 241 / 10%); "></div>
+                                        </section>
+                                    </div>
+
+                                    <div id="yearly_Duration1" class="tab-pane">
+                                        <section class="panel-body">
+                                            <div class='year_Duration' style="height: 450px; width:1102px ;background-color: #e0e0e0; "></div>
+                                        </section>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
+
+                        </section>
+                    </div>
+
+                    <div id="monthly" class="tab-pane">
+                        <section class="panel">
+                            <div class="form-group">
+                                <div class="col-md-2"></div>
+                                <label class="col-md-2 control-label" style="right: 190px;">Select Month<span class="required">*</span></label>
+                                <div class="col-md-4" style="right: 285px;">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </span>
+                                        <input class="month-own form-control" style="width: 150px;z-index:0;" type="text" id="month" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-4" style="right: 95px;">
+                                    <div class="btn-group">
+                                        <button type="button" id="searchmonthwise" class="mb-xs mt-xs mr-xs btn btn-primary">View</button>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button type="button" id="resetmonth" class="mb-xs mt-xs mr-xs btn btn-danger">Reset</button>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="tabs tabs-danger">
+                                <ul class="nav nav-tabs">
+                                    <li class="active" id="monthly_report_tab">
+                                        <a href="#monthly_report1" data-toggle="tab">Variantwise Production </a>
+                                    </li>
+                                    <li id="monthly_report_tab_day">
+                                        <a href="#monthly_Duration1" data-toggle="tab">Daywise Production</a>
+                                    </li>
+                                </ul>
+                                <div class="select-btn">
+                                    <label class="control-label variant-label" style="margin-right: 16px;font-weight: bold;padding: 0;font-weight: bold;"> Select Variant </label>
+                                    <select class="form-control" id="Monthly_Variant" style="width: fit-content;display: inline-block;">
+                                        <option value="All">All</option>
+                                    </select>
+                                </div>
+                                <div class="tab-content">
+                                    <div id="monthly_report1" class="tab-pane active">
+                                        <section class="panel-body">
+                                            <div class='monthly_report' style="height: 450px; width:1102px ; background-color: rgb(91 165 241 / 10%); "></div>
+                                        </section>
+                                    </div>
+
+                                    <div id="monthly_Duration1" class="tab-pane">
+                                        <section class="panel-body">
+                                            <div class='monthly_Duration' style="height: 450px; width:1102px ;background-color: #e0e0e0; "></div>
+                                        </section>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
+
+
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> }
+else
+{
+    <div class="row">
+        <h2 class="panel-title">View Permission is denied</h2>
+    </div>}
+
+<!-- end: page -->
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+<script src="~/assets1/datepicker_normal/datepicker_normal_jquery.min.js"></script>
+<script src="~/assets1/datepicker_normal/jquery-ui-1.8.19.custom.min.js"></script>
+<script src="~/Scripts/bootstrap-datepicker.js"></script>
+<script src="~/Scripts/d3_v3.min.js"></script>
+<script type="text/javascript" src="~/Scripts/Shiftwise_production/monthly.js"></script>
+<script type="text/javascript" src="~/Scripts/Shiftwise_production/graph.js"></script>
+<script type="text/javascript" src="~/Scripts/Shiftwise_production/yearly.js"></script>
+<script type="text/javascript" src="~/Scripts/Shiftwise_production/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/Shiftwise_production/common.js"></script>
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+
+    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+    var CompanyCode = '@Session["CompanyCode"]';
+    var PlantCode = '@Session["PlantCode"]';
+    var LineCode = '@Session["LineCode"]';
+    var R_url = '@Url.Action("Login", "Main")';
+    var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+     $(function ()
+    {
+        var URL2 = '@Url.Action("GetSettingdatas1", "Main")';
+        SelectMachine(URL2, URL, CompanyCode, PlantCode, LineCode, R_url, user1);
+
+    });
+
+
+
+     function assignValue()
+    {
+
+
+         var value = {
+             'URL': URL,
+            'machinecode': $('#machinecode').val(),
+            'machinecode1': $('#machinecode option:selected').text(),
+            'records': $('.record').val(),
+            'year': $('#year').val(),
+            'month': $('#month').val(),
+            'start' : $('#start').val(),
+            'end' : $('#end').val(),
+            'MonthlyVariant': $('#Monthly_Variant').val(),
+            'Yearly_Variant': $('#Yearly_Variant').val(),
+            'Custom_Variant': $('#Variant').val()
+
+
+        };
+
+
+        return value;
+
+
+    }
+
+
+
+   /* MonthlyCode*/
+
+    $('#Monthly_Variant').on('change', () => {
+
+         var value = assignValue();
+        MonthlyVariantChange(value['URL'],CompanyCode, PlantCode, LineCode, R_url, user1, value['machinecode'], value['month'], value['MonthlyVariant']);
+
+    });
+    $("#searchmonthwise").on("click", function () {
+        var value = assignValue();
+        MonthlyGraphCheck(value['URL'], CompanyCode, PlantCode, LineCode, R_url, user1, value['machinecode'], value['month']);
+
+    })
+
+
+    ///* YearlyCode*/
+
+    $('#Yearly_Variant').on('change', () => {
+
+        var value = assignValue();
+        YearlyVariantChange(value['URL'], CompanyCode, PlantCode, LineCode, R_url, user1, value['machinecode'], value['year'], value['Yearly_Variant']);
+
+    });
+
+    $("#searchyearwise").on("click", function () {
+        var value = assignValue();
+        YearlyGraphCheck(value['URL'], CompanyCode, PlantCode, LineCode, R_url, user1, value['machinecode'], value['year']);
+
+
+    });
+
+
+    ///*CustomCode*/
+
+
+    $('#Variant').on('change', () => {
+
+        var value = assignValue();
+        CustomVariantChange(value['URL'], CompanyCode, PlantCode, LineCode, R_url, user1, value['machinecode'], value['start'], value['end'], value['Custom_Variant']);
+
+    });
+
+
+
+
+    $("#searchcustomwise").on("click", function () {
+        debugger;
+
+        var value = assignValue();
+
+
+        CustomGraphCheck(value['URL'], CompanyCode, PlantCode, LineCode, R_url, user1, value['machinecode'], value['start'], value['end']);
+
+
+
+    });
+
+
+
+
+
+
+</script>
+
+
+
+
+
+

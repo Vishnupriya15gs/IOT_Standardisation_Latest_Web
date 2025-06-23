@@ -1,0 +1,292 @@
+﻿/*﻿
+.tab-tiles ul {
+    list-style: none;
+    display: flex;
+    padding: 0px;
+}
+
+.tab-tiles ul li {
+    padding: 8px;
+    margin: 8px;
+    background-color: white;
+    min-width: 50px;
+    text-align: center;
+}
+
+    .tab-tiles ul li:hover {
+        border-bottom: 2px solid #0088cc;
+    }*/
+    /* Your existing styles here */
+    /*.tab-tiles ul li.active {
+        border-bottom: 2px solid #0088cc !important;
+    }*/
+
+
+/* Style the TABS */
+.tab {
+    /*overflow: hidden;
+    border: 1px solid #ccc;*/
+    /*background-color: #f1f1f1;*/
+    /*width: fit-content;*/
+    list-style: none;
+    display: flex;
+    padding: 0px;
+}
+
+
+    .tab button {
+        /*background-color: inherit;
+        float: left;
+        border: 1px solid #ccc;
+        cursor: pointer;
+        padding: 14px 16px;
+        transition: 0.3s;
+        font-size: 17px;*/
+        padding: 8px;
+        background: #f4f4f4;
+        min-width: 50px;
+        text-align: center;
+        border-radius: 5px 5px 0px 0px;
+        border-bottom: none;
+        border-left: 1px solid #eeeeee;
+        border-right: 1px solid #eeeeee;
+        border-top: 3px solid #dddddd;
+    }
+
+
+        .tab button:hover {
+            /*background-color: #ddd;*/
+            border-top: 3px solid #0088cc;
+        }
+
+
+        .tab button.active {
+            /*background-color: #ccc;*/
+            border-top: 3px solid #0088cc !important;
+            background-color: white;
+        }
+
+.tabcontent {
+    display: none;
+    padding: 2px 2px;
+    animation: fadeEffect 1s;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.04);
+    background-color: white;
+    border: 1px solid #eeeeee;
+    
+    
+}
+@keyframes fadeEffect {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+
+
+/*.bar {
+    fill: #28C587;
+}*/
+/* Lighten the axis lines */
+#x-axis path, #y-axis line, #y-axis path {
+    stroke: #666;
+}
+/* Remove the tick marks on the x-axis */
+#x-axis .tick line {
+   /* visibility: hidden;*/
+}
+
+text {
+    font-size: 12px;
+}
+
+#x-axis text {
+    font-weight: 600;
+}
+.tooltip {
+    position: absolute;
+    text-align: center;
+    padding: 5px;
+    /*font: 12px sans-serif;
+    background: #f0f0f0;*/
+    background-color: Grey;
+    color: white;
+    font-weight: normal;
+    z-index: 100000;
+    font-size: 12px;
+    border: 1px solid #d3d3d3;
+    border-radius: 6px;
+    pointer-events: none;
+}
+
+/* basic positioning */
+.legend {
+    list-style: none;
+    padding-left: 10px;
+}
+
+    .legend li {
+        float: left;
+        margin-right: 10px;
+    }
+
+    .legend span {
+        border: 1px solid #ccc;
+        float: left;
+        width: 12px;
+        height: 12px;
+        margin: 2px;
+    }
+    /* your colors */
+    .legend .superawesome {
+        background-color: #4CAF50;
+    }
+
+    .legend .awesome {
+        background-color: #F44336;
+    }
+
+    .legend .kindaawesome {
+        background-color: #4C88CD;
+    }
+    .legend .regretawesome {
+        background-color: #ed9c28;
+    }
+
+#popup {
+    /*    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 15px;
+    z-index: 1;*/
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+#closeBtn {
+    position: absolute;
+    top: 18px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    background: lightgrey;
+    border-radius: 50%;
+    width: 2%;
+}
+
+.chart-container {
+    max-width: 100%;
+    /*width: 50%;
+    max-width: 200px; */
+    /* Adjust the maximum width as needed */
+    /*//margin: 20px auto;*/
+}
+/* Modal Content */
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    height: 70%;
+}
+.dateslabel
+{
+    margin-top: 5px;
+}
+
+/* CSS for the loading spinner */
+#loadingSpinner {
+    display: none; /* Initially hide the spinner */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+.bars {
+    stroke: none;
+}
+
+.line {
+    fill: none;
+    stroke-width: 2px;
+}
+
+.legend {
+    font-size: 14px;
+}
+
+.tooltipsvg {
+    position: absolute;
+    text-align: center;
+    padding: 8px;
+    font: 12px sans-serif;
+    background: #fff;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    pointer-events: none;
+}
+
+.legendsvg {
+    font-size: 9px;
+    margin-top: -18px;
+}
+
+    .legendsvg .completedcss {
+        background-color: #00FF00
+    }
+
+    .legendsvg .overduecss {
+        background-color: #FF0000;
+    }
+
+    .legendsvg .noduecss {
+        background-color: #FFFF00;
+    }
+
+    .legendsvg .pmcompletedcss {
+        background-color: #555555;
+    }
+
+    .legendsvg .completeddelaycss {
+        background-color: #FFA500;
+    }
+.deviceselection {
+    font-size: 13px !important;
+    font-weight: 100 !important;
+}

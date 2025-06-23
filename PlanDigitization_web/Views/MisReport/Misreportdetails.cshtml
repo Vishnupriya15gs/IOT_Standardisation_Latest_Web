@@ -1,0 +1,811 @@
+﻿@model PlanDigitization_web.Models.ExcelReportViewModel
+@{ ViewBag.Title = "MIS Report";
+    Layout = "~/Views/Shared/_Layout.cshtml"; }
+
+
+<style type="text/css">
+    .radiobtn {
+        margin: 10px;
+    }
+
+    .line {
+        fill: none;
+        stroke: #007fd6;
+        stroke-width: 4px;
+    }
+
+    .node {
+        fill: #007fd6;
+        stroke: #fff;
+        stroke-width: 2px;
+    }
+
+    .tooltip {
+        position: absolute;
+        text-align: center;
+        width: 60px;
+        height: 28px;
+        position: center;
+        padding: 2px;
+        font: 12px sans-serif;
+        background: lightsteelblue;
+        border: 0px;
+        border-radius: 8px;
+        pointer-events: none;
+    }
+
+
+    /* #container {
+        margin: 20px;
+        width: 50%;
+    }*/
+
+    #chart {
+        background-color: #eee;
+    }
+
+    .datePicker {
+        z-index: 9999; /*Changed this css property which was 100 prior*/
+        position: absolute;
+        display: none;
+        top: 0;
+        left: 0;
+        width: 17em;
+        top: 433.938px;
+        background-color: #b7c6b2;
+        border-bottom: 1px solid #000;
+        border-right: 1px solid #000;
+        margin: 0;
+        padding: 1px 1px 2px 2px;
+    }
+</style>
+
+
+
+<header class="page-header">
+    <h2> MIS Report Details</h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("Misreportdetails","MisReport")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li><span>MIS Report</span></li>
+        </ol>
+    </div>
+</header>
+
+<div class="row" id="Historic" style="display:block;">
+    <div class="col-md-2"></div>
+    <div class="col-md-12">
+        <section class="panel">
+            <header class="panel-heading" style="background-color:teal;color:white;">
+                <div class="panel-actions">
+                </div>
+                <h2 class="panel-title" style="color:white;"> MIS Report </h2>
+            </header>
+            <div class="panel-body">
+                <div class="form-group">
+
+                    <div class="col-md-3">
+                        <label class="control-label">Select Date :  <span class="required">*</span></label>
+                        <input type="text" class="form-control datepic" id="Date" autocomplete="off" readonly />
+                    </div>
+                    <span class="required" id="error_date"></span>
+
+                    <div class="col-md-2">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="control-label"> Select Machine :  <span class="required">*</span></label>
+                        <select class="form-control mb-md" id="StationCode" name="StationCode">
+                        </select>
+                        <span class="field-validation-valid" data-valmsg-for="StationCode" data-valmsg-replace="true"></span>
+                    </div>
+                    <div class="col-md-5"></div>
+                    <div class="loading-overlay" style="background-color: rgba(255 ,255, 255,0.5); border-radius: 0px 0px 10px 10px; position: fixed"><div class="bounce-loader"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div></div>
+                </div>
+            </div>
+            <footer class="panel-footer">
+                <div class="row">
+                    <div class="col-sm-9 col-sm-offset-3" style="text-align:right;">
+                        <button type="button" id="downloadReport" class="btn btn-primary">Download</button>
+                        <button type="button" id="sendEmail" class="btn btn-success">SendMail</button>
+                    </div>
+                </div>
+            </footer>
+        </section>
+    </div>
+</div>
+<div class="panel-body">
+    <div id='container' style="height:100%; width: 100% ">
+        <div id="emailListAlert">
+        </div>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+
+@section scripts{
+
+    <script src="~/assets2/vendor/jquery/jquery.js"></script>
+    <script src="~/assets1/javascripts/swal.js"></script>
+    <script src="~/assets1/javascripts/swal_alert.js"></script>
+    <script src="~/assets1/datepicker_normal/datepicker_normal_jquery.min.js"></script>
+    <script src="~/assets1/datepicker_normal/jquery-ui-1.8.19.custom.min.js"></script>
+    <script src="~/Scripts/bootstrap-datepicker.js"></script>
+    <script src="~/assets1/vendor/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+
+    <script type="text/javascript">
+
+        var SQLConnectionString = "";
+        var contentType = 'application/json;charset=utf-8';
+        var apiURL = '@System.Configuration.ConfigurationManager.AppSettings["misreportwebapiurl"]';
+        //var apiURL = 'https://localhost:44361/api/File/';
+
+        ConnectionString();
+        $(document).ready(function ()
+        {
+
+            var endDay = new Date();
+            endDay.setDate(endDay.getDate() - 1);
+            $("#Date").datepicker({
+                autoclose: true,
+                format: "yyyy-mm-dd",
+                endDate: endDay,
+                orientation: "top",
+                todayHighlight: true
+            });
+
+            $('#emailListAlert').hide();
+
+            $("#downloadReport").click(function () {
+
+                if (validateFormData() == false) {
+                    return false;
+                }
+
+                if (validateFormWebAPI() == false) {
+                    return false;
+                }
+
+
+                SQLConnectionString = "";
+
+      validateFormSqlConnectionString(function (SQLConnectionString) {
+
+                GetCompanyLogo(function (CompanyLogo) {
+
+
+                $('#emailListAlert').hide();
+                $('#emailListAlert').hide();
+
+                let txtDate = $("#Date").val();
+                let txtCompanyCode = '@Session["CompanyCode"]';
+                let txtCompanyName = '@Session["CompanyName"]';
+                let txtPlantCode = '@Session["PlantCode"]';
+                let txtLineCode = '@Session["LineCode"]';
+                let txtStationCode = $("#StationCode").val();
+                let txtSQLConnectionString = SQLConnectionString;
+
+                var byteData = CompanyLogo;
+                var base64Data = btoa(String.fromCharCode.apply(null, byteData)); // Encode as Base64
+
+                    var data = { date: txtDate, companyCode: txtCompanyCode, companyName: txtCompanyName, plantCode: txtPlantCode, lineCode: txtLineCode, "StationCode": txtStationCode, "SQLConnectionString": txtSQLConnectionString, "CompanyLogobyte": base64Data };
+                    hideButton();
+                    $.ajax({
+                        url: apiURL + 'DownloadFilePath',
+                        data: JSON.stringify(data),
+                        type: 'POST',
+                        contentType: "application/json; charset=utf-8",
+                        beforeSend: function () { showLoader(); },
+                        success: function (data) {
+                            console.log(data);
+                            if (data) {
+                                if (data.status == true) {
+                                    var filename = filenameFromURL(data.data);
+                                    downloadFileFromName(data.data, filename);
+
+                                }
+                                else {
+
+                                    swal({
+                                        icon: "error",
+                                        title: data.message,
+                                        button: true,
+                                        timer: 4500
+                                    })
+
+                                }
+                            }
+                        },
+                        error: function (data) {
+                            if (data) {
+                                swal({
+                                    icon: "error",
+                                    title: data.message,
+                                    button: true,
+                                    timer: 4500
+                                })
+                            }
+                        },
+                        complete: function (data) {
+                            hideLoader();
+                            showButton();
+                        }
+                    });
+
+
+                });
+                });
+            });
+
+            $("#sendEmail").click(function () {
+
+                $('#emailListAlert').hide();
+
+                if (validateFormData() == false) {
+                    return false;
+                }
+
+                if (validateFormWebAPI() == false) {
+                    return false;
+                }
+
+
+
+                SQLConnectionString = "";
+                    validateFormSqlConnectionString(function (SQLConnectionString) {
+
+                    GetCompanyLogo(function (CompanyLogo) {
+
+                $('#emailListAlert').hide();
+
+                let txtDate = $("#Date").val();
+                let txtCompanyCode = '@Session["CompanyCode"]';
+                let txtCompanyName = '@Session["CompanyName"]';
+                let txtPlantCode = '@Session["PlantCode"]';
+                let txtLineCode = '@Session["LineCode"]';
+                let txtStationCode = $("#StationCode").val();
+                let txtSQLConnectionString = SQLConnectionString;
+
+                var byteData = CompanyLogo;
+                var base64Data = btoa(String.fromCharCode.apply(null, byteData)); // Encode as Base64
+
+                    var data = { date: txtDate, companyCode: txtCompanyCode, companyName: txtCompanyName, plantCode: txtPlantCode, lineCode: txtLineCode, StationCode: txtStationCode, "SQLConnectionString": txtSQLConnectionString, "CompanyLogobyte": base64Data };
+                hideButton();
+                $.ajax({
+                    async: true,
+                    url: apiURL + 'SendEmail',
+                    data: JSON.stringify(data),
+                    type: 'POST',
+                    contentType: contentType,
+                    beforeSend: function () { showLoader(); },
+                    success: function (data) {
+                        console.log(data);
+                        if (data) {
+
+                            if (!data.isSent) {
+                                swal({
+                                    icon: "error",
+                                    title: data.message,
+                                    button: true,
+                                    timer: 4500
+                                })
+                            }
+                            else if (data.isSent) {
+                                swal({
+                                    icon: "success",
+                                    title:"Email Sent" ,
+                                    //text: data.message,
+                                    button: true,
+                                    timer: 4500
+                                });
+                                var strToSent = '';
+                                if (data.toSent && data.toSent.length > 0) {
+                                    data.toSent.forEach(function (item, index) {
+                                        if (data.toSent.length - 1 == index)
+                                        {
+                                            strToSent = strToSent + item + '.<br>';
+                                        }
+                                        else
+                                        {
+                                            strToSent = strToSent + item + ',<br>&emsp;&emsp;';
+                                        }
+                                    });
+                                }
+
+                                var strCCSent = '';
+                                if (data.ccSent && data.ccSent.length > 0) {
+                                    data.ccSent.forEach(function (item, index) {
+                                        if (data.toSent.length - 1 == index)
+                                        {
+                                            strCCSent = strCCSent + item + '.<br>';
+                                        }
+                                        else
+                                        {
+                                            strCCSent = strCCSent + item + ',<br>&emsp;&emsp;';
+                                        }
+                                    });
+                                }
+                                //alert(strCCSent);
+
+                                var strBCCSent = '';
+                                if (data.bccSent && data.bccSent.length > 0) {
+                                    data.bccSent.forEach(function (item, index) {
+                                        if (data.toSent.length - 1 == index) {
+                                            strBCCSent = strBCCSent + item + '.<br>';
+                                        }
+                                        else
+                                        {
+                                            strBCCSent = strBCCSent + item + ',<br>&emsp;&emsp;&ensp;';
+                                        }
+
+                                    });
+                                }
+                                //alert(strBCCSent);
+
+                                if (data.toSent && data.toSent.length > 0 || data.ccSent && data.ccSent.length > 0 || data.bccSent && data.bccSent.length > 0) {
+                                    $('#emailListAlert').empty();
+                                    var alert1 = '<div class="alert alert-success">' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>' +
+                                        '<p><strong>Email Sent to</strong></p>' +
+                                        '<p>TO : ' + strToSent + '</p>' +
+                                        '<p>CC : ' + strCCSent + '</p>' +
+                                        '<p>BCC : ' + strBCCSent + '</p>';
+                                    '</div>'
+                                    $('#emailListAlert').append(alert1);
+                                    $('#emailListAlert').show();
+                                }
+                            }
+                        }
+                    },
+                    error: function (data) {
+                        if (data) {
+                            if (data.err) {
+
+                                swal({
+                                    icon: "error",
+                                    title: 'Something went wrong',
+                                    button: true,
+                                    timer: 4500
+                                })
+                            }
+                        }
+                    },
+                    complete: function () {
+                        hideLoader();
+                        showButton();
+                    }
+                });
+
+
+                    });
+
+
+                });
+
+
+
+
+            });
+
+            function downloadFileFromName(fullFilePath, fileName) {
+                SQLConnectionString = "";
+                validateFormSqlConnectionString(function (SQLConnectionString) {
+
+                    let txtDate = $("#Date").val();
+                    let txtCompanyCode = '@Session["CompanyCode"]';
+                    let txtCompanyName = '@Session["CompanyName"]';
+                    let txtPlantCode = '@Session["PlantCode"]';
+                    let txtLineCode = '@Session["LineCode"]';
+                    let txtStationCode = $("#StationCode").val();
+                    let txtSQLConnectionString = SQLConnectionString;
+
+                    var data = { fileName: fullFilePath, date: txtDate, companyCode: txtCompanyCode, companyName: txtCompanyName, plantCode: txtPlantCode, lineCode: txtLineCode, StationCode: txtStationCode, "SQLConnectionString": txtSQLConnectionString };
+
+
+                    $.ajax({
+                        async: true,
+                        url: apiURL + 'DownloadFileFromPath',
+                        data: JSON.stringify(data),
+                        type: 'POST',
+                        xhrFields: {
+                            responseType: 'blob'
+                        },
+                        contentType: "application/json; charset=utf-8",
+                        success: function (data, status, xhr) {
+                            if (xhr.status) {
+
+                                $('#emailListAlert').empty();
+                                var alert1 = '<div class="alert alert-success">' +
+                                    '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>' +
+                                    '<p><strong>File Downloaded</strong></p>' + fileName
+                                '</div>'
+                                $('#emailListAlert').append(alert1);
+                                $('#emailListAlert').show();
+                                var blob = data;
+                                var downloadUrl = URL.createObjectURL(blob);
+                                var a = document.createElement("a");
+                                a.href = downloadUrl;
+                                a.download = fileName;
+                                document.body.appendChild(a);
+                                a.click();
+                                }
+                              },
+                        error: function (response) {
+                            console.log(response);
+                            if (response) {
+                                debugger;
+                                swal({
+                                    icon: "error",
+                                    title: 'Error, File Not Downloded',
+                                    button: true,
+                                    timer: 4500
+                                })
+                            }
+                        },
+                        complete: function (data) {
+                            $("#Date").prop('disabled', false);
+                            $("#downloadReport").show();
+                            $("#sendEmail").show();
+                        }
+                    });
+                });
+            }
+
+        });
+
+
+        function ConnectionString() {
+
+            if (validateFormWebAPI() == false) {
+                return false;
+            }
+
+            $.ajax({
+                url: '@Url.Action("CheckSqlconnection", "MisReport")',
+                type: 'GET',
+                //data: { SQLConnectionString: txtSQLConnectionString },
+                contentType: "application/json; charset=utf-8",
+                beforeSend: function () { showLoader(); },
+                success: function (data) {
+                    //Sqlconnection If////
+                    if (!data.Status) {
+
+                        swal({
+                            icon: "error",
+                            title: 'SQL Connection String Not Connecting',
+                            button: true,
+                            timer: 4500
+                        })
+                    }
+                    else {
+                        console.log(data, "SQL Connection String Is Connected");
+                        //getCompanyCode();
+                        getStationCode();
+                    }
+                },
+                error: function (data) {
+                    if (data) {
+                        swal({
+                            icon: "error",
+                            title: 'SQL Connection String Not Connecting',
+                            button: true,
+                            timer: 4500
+                        })
+                    }
+                },
+                complete: function (data) {
+                    hideLoader();
+                }
+            });
+        }
+
+
+
+        @*function select_line() {
+
+
+            var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+            var LineCode = $('#LineCode').val();
+
+
+             var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Set_LineCode", "UserSettings")',
+                data: '{id: ' + JSON.stringify(LineCode) + '}',
+                 headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response)
+                {
+                    window.location.reload();
+                },
+                error: function (response) {
+                }
+            }).error(function (response) {
+                 swal({
+                     icon: "warning",
+                     title: "Session Timeout",
+                     button: true,
+                     closeModal: false
+                 })
+                 window.location = R_url;
+            });
+
+            $('#liline').show();
+        }*@
+
+        function getStationCode() {
+
+            if (validateFormWebAPI() == false) {
+                return false;
+            }
+
+                let txtCompanyCode = '@Session["CompanyCode"]';
+                let txtPlantCode = '@Session["PlantCode"]';
+                let txtLineCode = '@Session["LineCode"]';
+
+
+            var actionUrl = '@Url.Action("GetStationCodes", "MisReport")';
+
+            var myObject = { companyCode: txtCompanyCode, plantCode: txtPlantCode, lineCode: txtLineCode};
+
+            $.getJSON(actionUrl, myObject, function (data) {
+                if (data != null) {
+                    $("#StationCode").empty();
+                    $("#StationCode").append("<option value='Select Machine Name'>Select Machine Name</option>");
+                    for (var i = 0; i < data.length; i++) {
+                        $("#StationCode").append("<option value='" + data[i].Value + "'>" + data[i].Text + "</option>");
+                    }
+                }
+                else {
+                    swal({
+
+                        icon: "error",
+                        title: data.message,
+                        button: true,
+                        timer: 4500
+                    })
+                }
+            });
+            }
+
+
+        function showLoader() {
+           $('.loading').show();
+        }
+
+        function hideLoader() {
+            $('.loading').hide();
+        }
+
+        function hideButton() {
+
+            //$("#sendEmail").prop('disabled', true);
+            //$("#downloadReport").prop('disabled', true);
+            //$("#sendEmail").hide();
+            //$("#downloadReport").hide();
+            $("#Date").prop('disabled', true);
+            var $el = $('#reportFrm');
+            $el.trigger('loading-overlay:show');
+        }
+
+        function showButton() {
+            var $el = $('#reportFrm');
+            $el.trigger('loading-overlay:hide');
+            $("#sendEmail").show();
+            $("#downloadReport").show();
+            $("#Date").prop('disabled', false);
+            $("#sendEmail").prop('sendEmail', false);
+            $("#downloadReport").prop('downloadReport', false);
+                    }
+
+
+        function filenameFromURL(path) {
+            path = path.substring(path.lastIndexOf("/") + 1);
+            return (path.match(/[^.]+(\.[^?#]+)?/) || [])[0];
+        }
+
+        function validateFormData() {
+
+            let txtDate = $("#Date").val();
+            let txtCompanyCode = '@Session["CompanyCode"]';
+            let txtPlantCode = '@Session["PlantCode"]';
+            let txtLineCode = '@Session["LineCode"]';
+            let txtStationCode = $("#StationCode").val();
+
+            if (txtDate == null || txtDate == '') {
+                swal({
+                    icon: "error",
+                    title: 'Please Select Date',
+                    button: true,
+                    timer: 4500
+                })
+                return false;
+            }
+
+            if (txtCompanyCode == null || txtCompanyCode == '' || txtCompanyCode == 'Select Company Code') {
+                swal({
+                    icon: "error",
+                    title: 'Please Select Company Code',
+                    button: true,
+                    timer: 4500
+                })
+                return false;
+            }
+
+            if (txtPlantCode == null || txtPlantCode == '' || txtPlantCode == 'Select Plant Code') {
+                swal({
+                    icon: "error",
+                    title: 'Please Select Plant Code',
+                    button: true,
+                    timer: 4500
+                })
+                return false;
+            }
+
+            if (txtLineCode == null || txtLineCode == '' || txtLineCode == 'Select Line Code') {
+                swal({
+                    icon: "error",
+                    title: 'Please Select Line Code',
+                    button: true,
+                    timer: 4500
+                })
+                return false;
+            }
+
+            if (txtStationCode == null || txtStationCode == '' || txtStationCode == 'Select Machine Name') {
+                swal({
+                    icon: "error",
+                    title: 'Please Select Machine Name',
+                    button: true,
+                    timer: 4500
+                })
+                return false;
+            }
+        }
+
+
+        function validateFormWebAPI() {
+
+
+            $.ajax({
+                url: '@Url.Action("Checkconnection", "MisReport")',
+                type: 'GET',
+                contentType: "application/json; charset=utf-8",
+                async: false,
+                beforeSend: function () { showLoader(); },
+                success: function (data) {
+                    if (!data.Status) {
+                        swal({
+                            icon: "error",
+                            title: 'WebApi Not Connecting',
+                            button: true,
+                            timer: 4500
+                        })
+                        return false;
+                    }
+                    else {
+                        console.log(data, "WebAPI Is Connected");
+                        return true;
+                    }
+                },
+                error: function (data) {
+                    if (data) {
+                        swal({
+                            icon: "error",
+                            title: 'WebApi Not Connecting',
+                            button: true,
+                            timer: 4500
+                        })
+                        return false;
+                    }
+                },
+                complete: function (data) {
+                    hideLoader();
+                }
+            });
+        }
+
+        function validateFormSqlConnectionString(callback) {
+
+
+            if (validateFormData() == false) {
+                return false;
+            }
+
+            if (validateFormWebAPI() == false) {
+                return false;
+            }
+
+
+
+             let txtCompanyCode = '@Session["CompanyCode"]';
+             let txtPlantCode = '@Session["PlantCode"]';
+             let txtLineCode = '@Session["LineCode"]';
+
+
+            var actionUrl = '@Url.Action("GetSqlConnectionString", "MisReport")';
+
+            var myObject = { companyCode: txtCompanyCode, plantCode: txtPlantCode, lineCode: txtLineCode};
+
+             $.getJSON(actionUrl, myObject, function (data) {
+                 if (data != null) {
+
+                    for (var i = 0; i < data.length; i++)
+                    {
+                        callback(data[i].Value);
+                    }
+                }
+                else {
+                     swal({
+                         icon: "error",
+                         title: data.message,
+                         button: true,
+                         timer: 4500
+                     })
+                }
+            });
+        }
+
+
+      function GetCompanyLogo(callback) {
+
+
+            if (validateFormData() == false) {
+                return false;
+            }
+
+            if (validateFormWebAPI() == false) {
+                return false;
+            }
+
+
+
+             let txtCompanyCode = '@Session["CompanyCode"]';
+             let txtPlantCode = '@Session["PlantCode"]';
+             let txtLineCode = '@Session["LineCode"]';
+
+
+            var actionUrl = '@Url.Action("GetCompanyLogo", "MisReport")';
+
+            var myObject = { companyCode: txtCompanyCode, plantCode: txtPlantCode, lineCode: txtLineCode};
+
+             $.getJSON(actionUrl, myObject, function (data) {
+                 if (data != null) {
+
+                    for (var i = 0; i < data.length; i++)
+                    {
+                        callback(data[i].FileBytes);
+                    }
+                }
+                else {
+                     swal({
+                         icon: "error",
+                         title: data.message,
+                         button: true,
+                         timer: 4500
+                     })
+                }
+            });
+        }
+
+    </script>
+
+
+}
+
+
+
+
+
+
+

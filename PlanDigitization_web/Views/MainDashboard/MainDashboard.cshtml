@@ -1,0 +1,635 @@
+﻿
+@{
+    ViewBag.Title = "MainDashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@Styles.Render("~/assets/css")
+
+
+
+@*<link rel="stylesheet" href="~/assets1/vendor/owl-carousel/owl.carousel.css" />
+    <link rel="stylesheet" href="~/assets1/vendor/owl-carousel/owl.theme.css" />*@
+<link rel="stylesheet" href="~/assets1/stylesheets/MainDashboard/MainDashboard.css" />
+<link rel="stylesheet" href="~/StyleSheets/tooltip/leftTooltip.css" />
+
+
+<header class="page-header">
+    <h2>
+        Main Dashboard
+        <i class="glyphicon glyphicon-info-sign gi-8x titleTooltip">
+            <span class="tooltiptext2 fontSanserif" id="">
+                OEE - Overall Equipment Effectiveness<br />
+                A   - Availability<br />
+                P   - Performance<br />
+                Q   - Quality<br />
+                CT  - CycleTime<br />
+                TCT - Theoritical CycleTime<br />
+                MTTR - Mean Time To Repair<br />
+                MTBF - Mean Time Between Failure<br />
+                DLK - Data Logging Kit
+            </span>
+        </i>
+    </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <!--<li class="breadcrumb-item">-->
+            @*<a href="@Url.Action("FactoryKPIIndex", "FactoryKPI")">
+                    <div id="lefttooltip">
+                        <img class="breadcrum-icon" src="~/assets1/images/FactoryIcon.png" />
+                        <span class="tooltiptexts">
+                            <span class="name">FactoryKPI</span>
+                        </span>
+                    </div>
+                </a>*@
+            <!--</li>-->
+            @*commented for Standardisation on 26th April 2025*@
+
+            @*<li class="breadcrumb-item">
+                    <a href="@Url.Action("Production", "LineOverview")">
+                        <div id="lefttooltip">
+                            <img class="breadcrum-icon" src="~/Images/LineOverview/LOicon.png" />
+                            <span class="tooltiptexts">
+                                <span class="name">Production Dashboard</span>
+                            </span>
+                        </div>
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="@Url.Action("QualityDashboard", "LineOverView_Quality")" class="">
+                        <div id="lefttooltip">
+                            <i class="fa fa-check-square-o"></i>
+                            <span class="tooltiptexts">
+                                <span class="name">Quality Dashboard</span>
+                            </span>
+                        </div>
+                    </a>
+                </li>*@
+
+            @*commented for Standardisation on 26th April 2025*@
+
+            @*<li class="breadcrumb-item">
+                    <a href="@Url.Action("Maintenance", "LineOverview")">
+                        <div id="lefttooltip">
+                            <i class="fa  fa-wrench"></i>
+                            <span class="tooltiptexts">
+                                <span class="name">Maintenance Dashboard</span>
+                            </span>
+                        </div>
+                    </a>
+                </li>*@
+        </ol>
+    </div>
+
+</header>
+@if (((HttpContext.Current.Session["LineCode"] != null) && (HttpContext.Current.Session["LineCode"] != "")))
+{
+    <div class="modal" id="largeShoes" tabindex="-1" role="dialog" aria-labelledby="modalLabelLarge" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header bg-default">
+                    <button class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <div class="row">
+                        <div class="col-xs-7">
+                            <h4 class="modal-title" id="modalLabelLarge">Station Overview</h4>
+                        </div>
+                        <div class="col-xs-3 text-right" style="width:480px">
+                            <span class="updated_dashboard">
+                                Last update time:<span class="updated_maindashboardtime"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <p class="modal-title">Note : Hover on the bars to view details</p>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <section class="panel panel2">
+                                    <header class='panel-heading'>
+                                        <div class='row'>
+                                            <div class='col-md-12 fontSanserif '>
+                                                <div class='fontSanserif panel_title'>
+                                                    Key Performance Indicator
+                                                    <span class="glyphicon glyphicon-info-sign gi-8x titleTooltip pull-right">
+                                                        <span class="tooltiptext1 fontSanserif" id="popupKpiBatch"></span>
+                                                    </span>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </header>
+                                    <div class="panel-body pb_kpi_live">
+                                        <div class="row text-center data_kpi_live">
+                                            <div class="col-md-3 avail">
+                                                <div class='widget popupWidget'></div>
+                                            </div>
+                                            <div class="col-md-3 perf">
+                                                <div class='widget1 popupWidget'></div>
+                                            </div>
+                                            <div class="col-md-3 qual">
+                                                <div class='widget2 popupWidget'></div>
+                                            </div>
+                                            <div class="col-md-3 oee">
+                                                <div class='widget3 popupWidget'></div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                            <div class="col-md-4">
+                                <section class="panel panel2">
+                                    <header class='panel-heading'>
+                                        <div class='row'>
+                                            <div class='col-md-12 fontSanserif'>
+                                                <div class='fontSanserif panel_title'>
+                                                    Utilization
+                                                    <span class="glyphicon glyphicon-info-sign gi-8x titleTooltip pull-right">
+                                                        <span class="tooltiptext1 fontSanserif" id="popupUtilBatch"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </header>
+                                    <div class="panel-body util_panel_body">
+                                        <div id="utli_overview">
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <section class="panel panel2">
+                                    <header class='panel-heading'>
+                                        <div class='row'>
+                                            <div class='col-md-12 fontSanserif'>
+                                                <div class='fontSanserif panel_title'>
+                                                    Machine Status Timeline
+                                                    <span class="glyphicon glyphicon-info-sign gi-8x titleTooltip pull-right">
+                                                        <span class="tooltiptext1 fontSanserif" id="popupMachineStatusShift"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </header>
+                                    <div class="panel-body">
+                                        <div id="status_bar">
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <section class="panel panel2">
+                                    <header class='panel-heading'>
+                                        <div class='row'>
+                                            <div class='col-md-12 fontSanserif'>
+                                                <div class='fontSanserif panel_title'>
+                                                    MTTR
+                                                    <span class="glyphicon glyphicon-info-sign gi-8x titleTooltip pull-right">
+                                                        <span class="tooltiptext1 fontSanserif" id="popupMTTRDate"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </header>
+                                    <div class="panel-body">
+                                        <div class="mttr_graph" id='mttr_container'>
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                            <div class="col-md-4">
+                                <section class="panel panel2">
+                                    <header class='panel-heading'>
+                                        <div class='row'>
+                                            <div class='col-md-12 fontSanserif'>
+                                                <div class='fontSanserif panel_title'>
+                                                    MTBF
+                                                    <span class="glyphicon glyphicon-info-sign gi-8x titleTooltip pull-right">
+                                                        <span class="tooltiptext1 fontSanserif" id="popupMTBFDate"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </header>
+                                    <div class="panel-body">
+                                        <div class="mtbf_graph" id='mtbf_container'>
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                            <div class="col-md-4">
+                                <section class="panel panel2">
+                                    <header class='panel-heading'>
+                                        <div class='row'>
+                                            <div class='col-md-12 fontSanserif'>
+                                                <div class='fontSanserif panel_title'>
+                                                    DownTime Pareto
+                                                    <span class="glyphicon glyphicon-info-sign gi-8x titleTooltip pull-right">
+                                                        <span class="tooltiptext1 fontSanserif" id="popupDownDate"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </header>
+                                    <div class="panel-body">
+                                        <div class='custome_report'>
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <section class="panel panel2">
+                                    <header class='panel-heading'>
+                                        <div class='row'>
+                                            <div class='col-md-12 fontSanserif'>
+                                                <div class='fontSanserif panel_title'>
+                                                    Rejection Pareto
+                                                    <span class="glyphicon glyphicon-info-sign gi-8x titleTooltip pull-right">
+                                                        <span class="tooltiptext1 fontSanserif" id="popupRejDate"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </header>
+                                    <div class="panel-body">
+                                        <div class="rej_custom" id="container1">
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                            <div class="col-md-8">
+                                <section class="panel panel2">
+                                    <header class='panel-heading'>
+                                        <div class='row'>
+                                            <div class='col-md-12 fontSanserif'>
+                                                <div class='fontSanserif panel_title'>
+                                                    Rejection Heatmap (Daywise)
+                                                    <span class="glyphicon glyphicon-info-sign gi-8x titleTooltip pull-right">
+                                                        <span class="tooltiptext1 fontSanserif" id="popupRejHeatDate"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </header>
+                                    <div class="panel-body">
+                                        <div id="heatmap_customs"></div>
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <section class="panel panel2">
+                                    <header class='panel-heading'>
+                                        <div class='row'>
+                                            <div class='col-md-12 fontSanserif'>
+                                                <div class='fontSanserif panel_title'>
+                                                    Cycletime Distribution
+                                                    <span class="glyphicon glyphicon-info-sign gi-8x titleTooltip pull-right">
+                                                        <span class="tooltiptext1 fontSanserif" id="popupCTDate"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </header>
+                                    <div class="panel-body">
+                                        <div class='Range_chart_daywise'>
+                                            <div id="err_Range_chart_daywise"></div>
+                                            <svg></svg>
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                            <div class="col-md-6">
+                                <section class="panel panel2">
+                                    <header class='panel-heading'>
+                                        <div class='row'>
+                                            <div class='col-md-12 fontSanserif'>
+                                                <div class='fontSanserif panel_title'>
+                                                    Loss Distribution
+                                                    <span class="glyphicon glyphicon-info-sign gi-8x titleTooltip pull-right">
+                                                        <span class="tooltiptext1 fontSanserif" id="popupLossDate"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </header>
+                                    <div class="panel-body">
+                                        <div id='top_10_pareto_chart'>
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+    <div id="myModalLatestAlarm" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header bg-default">
+                    @*<button class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>*@
+                    <h4 class="modal-title" id="myModalLatestAlarmTitle">Alarm List</h4>
+                    <div class="panel-actions">
+                        <a href="#" class="fa fa-refresh titleTooltip" id="refreshModal"><span class="tooltiptext3">Refresh</span></a>
+                        <a href="#" class="fa fa-times" data-dismiss="modal"></a>
+                    </div>
+                </div>
+                <div class="modal-body" id="machine_status">
+                    <div>
+                        <table class="table table-bordered table-striped mb-none" id="datatable-default1">
+                            <thead>
+                                <tr>
+                                    <th class="centercls almlos_sno"> S.No </th>
+                                    @*<th>Machine</th>*@
+                                    <th class="almlos_id">Alarm ID </th>
+                                    <th class="almlos_desc">Alarm Description</th>
+                                    <th class="almlos_st">Start Time</th>
+                                    <th class="Live_Alarm_ID"> id </th>
+                                    <th class="alm_help"> Help</th>
+                                </tr>
+                            </thead>
+                            <tbody class="Historic_details">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="myModalLatestLoss" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header bg-default">
+                    <h4 class="modal-title" id="myModalLatestLossTitle">Loss List</h4>
+                    <div class="panel-actions">
+                        <a href="#" class="fa fa-refresh titleTooltip" id="refreshModal1"><span class="tooltiptext3">Refresh</span></a>
+                        <a href="#" class="fa fa-times" data-dismiss="modal"></a>
+                    </div>
+                </div>
+                <div class="modal-body" id="machine_status">
+                    <div>
+                        <table class="table table-bordered table-striped mb-none" id="datatable-default2">
+                            <thead>
+                                <tr>
+                                    <th class="centercls almlos_sno"> S.No </th>
+                                    @*<th>Machine</th>*@
+                                    <th class="almlos_id">Loss ID </th>
+                                    <th class="almlos_desc">Loss Description</th>
+                                    <th class="almlos_st">Start Time</th>
+                                </tr>
+                            </thead>
+                            <tbody class="Historic_detail_loss">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="myModalHourlyTracker" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header bg-default">
+                    <button class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <div class="row">
+                        <div class="col-xs-7">
+                            <h4 class="modal-title" id="myModalHourlyTrackerTitle">HourlyTracker</h4>
+                        </div>
+                        <div class="col-xs-3 text-right" style="width:480px">
+                            <span class="updated_dashboard">
+                                Last update time:<span class="updated_maindashboardtime"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <section class="panel panel2">
+                                <header class='panel-heading'>
+                                    <div class='row'>
+                                        <div class='col-md-12 fontSanserif'>
+                                            <div class='fontSanserif panel_title'>
+                                                Batchwise-Hourly OEE
+                                                <span class="glyphicon glyphicon-info-sign gi-8x titleTooltip pull-right">
+                                                    <span class="tooltiptext1 fontSanserif" id="popupHourlyDate"></span>
+                                                </span>
+                                                @*<span class="tooltiptext2" id="popupHourlyDate"></span>*@
+                                            </div>
+                                        </div>
+                                    </div>
+                                </header>
+                                <div class="panel-body">
+                                    <div class="Hourly_OEE" id='Hourly_OEE_container'>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <section class="panel panel2">
+                                <header class='panel-heading'>
+                                    <div class='row'>
+                                        <div class='col-md-12 fontSanserif'>
+                                            <div class='fontSanserif panel_title'>
+                                                Batchwise-Hourly Utilization
+                                                <span class="glyphicon glyphicon-info-sign gi-8x titleTooltip pull-right">
+                                                    <span class="tooltiptext1 fontSanserif" id="popupHourlyDate1"></span>
+                                                </span>
+                                                @*<span class="tooltiptext2" id="popupHourlyDate1"></span>*@
+                                            </div>
+                                        </div>
+                                    </div>
+                                </header>
+                                <div class="panel-body">
+                                    <div class="Hourly_Utilisation" id='Hourly_Utilisation_container'>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                        <div class="col-md-6">
+                            <section class="panel panel2">
+                                <header class='panel-heading'>
+                                    <div class='row'>
+                                        <div class='col-md-12 fontSanserif'>
+                                            <div class='fontSanserif panel_title'>
+                                                Batchwise-Hourly Downtime
+                                                <span class="glyphicon glyphicon-info-sign gi-8x titleTooltip pull-right">
+                                                    <span class="tooltiptext1 fontSanserif" id="popupHourlyDate2"></span>
+                                                </span>
+                                                @*<span class="tooltiptext2" id="popupHourlyDate2"></span>*@
+                                            </div>
+                                        </div>
+                                    </div>
+                                </header>
+                                <div class="panel-body">
+                                    <div class="Hourly_Downtime" id='Hourly_Downtime_container'>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <section class="panel panel2">
+                                <header class='panel-heading'>
+                                    <div class='row'>
+                                        <div class='col-md-12 fontSanserif'>
+                                            <div class='fontSanserif panel_title'>
+                                                Batchwise-Hourly Production Alignment
+                                                <span class="glyphicon glyphicon-info-sign gi-8x titleTooltip pull-right">
+                                                    <span class="tooltiptext1 fontSanserif" id="popupHourlyDate3"></span>
+                                                </span>
+                                                @*<span class="tooltiptext2" id="popupHourlyDate3"></span>*@
+                                            </div>
+                                        </div>
+                                    </div>
+                                </header>
+                                <div class="panel-body">
+                                    <div class="Hourly_Production_Alignment" id='Hourly_Production_Alignment_container'>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                        <div class="col-md-6">
+                            <section class="panel panel2">
+                                <header class='panel-heading'>
+                                    <div class='row'>
+                                        <div class='col-md-12 fontSanserif'>
+                                            <div class='fontSanserif panel_title'>
+                                                Batchwise-Hourly Production
+                                                <span class="glyphicon glyphicon-info-sign gi-8x titleTooltip pull-right">
+                                                    <span class="tooltiptext1 fontSanserif" id="popupHourlyDate4"></span>
+                                                </span>
+                                                @*<span class="tooltiptext2" id="popupHourlyDate4"></span>*@
+                                            </div>
+                                        </div>
+                                    </div>
+                                </header>
+                                <div class="panel-body">
+                                    <div class="Hourly_Production" id='Hourly_Production_container'>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12" id="oee">
+            <section class="panel  carousel_panel" style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;">
+                @*<header class="panel-heading" id="oeehead" style="padding:6px !important">
+                        <h2 class="panel-title">Stationwise KPI & Production Summary</h2>
+                    </header>*@
+                <div class="panel-body carousel_panel_body">
+                    <div class="statusbar_flex">
+                    </div>
+
+                    <div class="">
+
+
+                        <div id="myCarousel" class="carousel slide" data-ride="carousel">
+
+                            <!-- Wrapper for slides -->
+                            <div class="carousel-inner item_div" id="darkg" role="listbox">
+                                <div class="item active"></div>
+                            </div>
+                            <!-- Indicators -->
+                            <ol class="carousel-indicators" id="carousel_btn">
+                            </ol>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+    </div>
+    <div class="note_text">
+        NOTE: If page is idle for more than 5 minutes, Please refresh the page.
+    </div>
+
+
+
+
+
+
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+
+
+    @*@Scripts.Render("~/assets/firstscript")
+        @Scripts.Render("~/assets/secondscript")*@
+
+
+    <script src="~/assets1/javascripts/swal.js"></script>
+    <script src="~/assets1/javascripts/swal_alert.js"></script>
+    <script type="text/javascript" src="~/Scripts/MainDashboard/MainDashboard.js"></script>
+    @*<script type="text/javascript" src="~/Scripts/Common js/carousel.js"></script>*@
+
+    <script>
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+        var sURL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+        var company = '@Session["CompanyCode"]';
+        var plant = '@Session["PlantCode"]';
+        var line = '@Session["LineCode"]';
+        var R_url = '@Url.Action("Login", "Main")';
+        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+        MainDashboard(URL, sURL, company, plant, line, R_url, user1);
+    </script>
+}
+@if ((HttpContext.Current.Session["CompanyCode"] == null) || (HttpContext.Current.Session["CompanyCode"].ToString().Length == 0))
+{
+    <div>
+        <br /><br />
+        <label class="Selection_Condition">Select Company</label><br />
+        <b>NOTE:Choose "Select Customer" from Profile Dropdown on Top-Right corner</b>
+    </div>
+}
+@if ((HttpContext.Current.Session["PlantCode"] == null) || (HttpContext.Current.Session["PlantCode"].ToString().Length == 0))
+{
+    <div>
+        <br /><br />
+        <label class="Selection_Condition">Select Plant</label>
+    </div>
+}
+@if ((HttpContext.Current.Session["LineCode"] == null) || (HttpContext.Current.Session["LineCode"].ToString().Length == 0))
+{
+    <div>
+        <br /><br />
+        <label class="Selection_Condition">Select Line</label>
+    </div>
+}
+
+

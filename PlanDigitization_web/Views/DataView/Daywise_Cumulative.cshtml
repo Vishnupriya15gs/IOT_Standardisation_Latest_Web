@@ -1,0 +1,537 @@
+﻿
+
+@{
+    ViewBag.Title = "Daywise_Cumulative";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" type="text/css" href="~/assets1/datepicker_normal/jquery-ui-1.8.19.custom.css">
+<header class="page-header">
+    <h2> Daywise Cumulative Details </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                @Url.Action("MainDashboard","MainDashboard")">
+                <i class="fa fa-home"></i>
+                </a>
+            </li>
+
+            <li><span>Daywise Cumulative</span></li>
+        </ol>
+    </div>
+</header>
+<style type="text/css">
+
+    .Grid {
+        border: 1px solid #ccc;
+        border-collapse: collapse;
+        background-color: #fff;
+    }
+
+        .Grid th {
+            background-color: #B8DBFD;
+            color: #333;
+            font-weight: bold;
+        }
+
+    .ChildGrid th, .ChildGrid td {
+        padding: 5px;
+        border: 1px solid #ccc;
+    }
+
+    .Grid img {
+        cursor: pointer;
+    }
+
+    .ChildGrid {
+        width: 100%;
+    }
+
+        .ChildGrid th {
+            background-color: #6C6C6C;
+            color: #fff;
+            font-weight: bold;
+        }
+</style>
+
+<div class="row" id="Historic">
+
+    <div class="col-md-2"></div>
+    <div class="col-md-12">
+        <section class="panel">
+            <header class="panel-heading" style="background-color:teal;color:white;">
+                <div class="panel-actions">
+                </div>
+                <h2 class="panel-title" style="color:white;"> Cumulative </h2>
+            </header>
+            <div class="panel-body">
+
+                <div class="form-group" id="div_dates">
+                    <label class="col-sm-1 control-label" style="right: 10px;top: 3px;"> Machine  <span class="required"><span class="required">*</span></label>
+                    <div class="col-sm-2" style="right: 20px;">
+                        <select id="Machine" class="form-control">
+                        </select>
+                    </div>
+
+                    <label class="col-sm-1 control-label" style="top: 3px;"> Month  <span class="required">*</span></label>
+                    <div class="col-sm-2" style="right: 20px;">
+                        <input type="text" class="form-control month-own" id="Month" autocomplete="off" readonly />
+                    </div>
+
+                    <div class="col-sm-4" style="left: 98px;">
+                        @*<a style="float:right;" onclick="get_variantwise();" title="Variant wise">Click To View Variant wise  </a>*@
+                        <input type="button" class="btn btn-primary" onclick="location.href='/DataView/Daywise_Cumulative';" value="Click To View Variant wise " style="float:right;text-decoration:none;margin-right:2%;border-style:none;" />
+                    </div>
+                </div>
+            </div>
+
+            <footer class="panel-footer">
+                <div class="row">
+                    <div class="col-sm-9 col-sm-offset-3" style="text-align:right;">
+                        <button type="button" id="Search" class="btn btn-primary" onclick="get_data();">Search</button>
+                        <button id="cancel" class="btn btn-danger ">Reset</button>
+                    </div>
+                </div>
+            </footer>
+
+        </section>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <section class="panel">
+            <header class="panel-heading" style="background-color:teal;color:white;">
+                <h2 class="panel-title" style="color:white;">
+                    Table Details
+                    <span style="font-size:17px;float:right;">
+                        <span style="padding-left:500px;"> Total OK : <span id="tot_ok"></span>  </span>
+                        <span style="padding-left:70px;"> Total NOK : <span id="tot_nok"></span>  </span>
+                        <span style="padding-left:70px;"> Total Rework : <span id="tot_rework"></span> </span>
+                    </span>
+                    @*<span style="float:right;"> Variantwise :  </span>*@
+                </h2>
+            </header>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="panel-body">
+                        @*@if (ViewContext.Controller.HasPermission("AlarmHistoric-View"))
+                            {*@
+                        <table class="table table-bordered table-striped mb-none" id="datatable_default">
+                            <thead style="background-color:teal;color:white;">
+                                <tr>
+                                    <th class="centercls"> S.No </th>
+                                    <th> Date </th>
+                                    <th> Variant Description </th>
+                                    <th> OK Parts </th>
+                                    <th> NOK Parts </th>
+                                    <th> Rework Parts </th>
+                                </tr>
+                            </thead>
+                            <tbody class="details">
+                                <span class="error_msg" style="color:red;font-size:13px;font-weight:bold;"></span>
+                            </tbody>
+
+                        </table>
+                        @*}else
+                            {
+                            <h2>View Permission is denied</h2>}*@
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+
+<div id="myModal" class="modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <div class="modal-header" style="padding:0px !important;">
+            <span class="close" style="padding-right:20px;" onclick="close_modal();">&times;</span>
+            <h4 style="font-size:20px;">Variant wise Cumulative</h4>
+        </div>
+        <div class="modal-body" id="machine_status">
+            <div>
+                <table class="table table-bordered table-striped mb-none" id="datatable_default1">
+                    <thead style="background-color:teal;color:white;">
+                        <tr>
+                            <th class="centercls"> S.No </th>
+                            <th>Variant Code</th>
+                            <th> OK Parts </th>
+                            <th> NOK Parts</th>
+                            <th> Rework Parts</th>
+                        </tr>
+                    </thead>
+                    <tbody class="details1">
+                        <span class="variant_error" style="color:red;font-size:13px;font-weight:bold;"></span>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+<script src="~/assets1/datepicker_normal/datepicker_normal_jquery.min.js"></script>
+<script src="~/assets1/datepicker_normal/jquery-ui-1.8.19.custom.min.js"></script>
+<script src="~/Scripts/bootstrap-datepicker.js"></script>
+
+<script>
+    $('.month-own').datepicker({
+        format: "yyyy-mm",
+        viewMode: "months",
+        endDate: '+0m',
+        minViewMode: "months",
+        orientation: "bottom"
+    });
+</script>
+
+<script>
+
+    var r_url= '@Url.Action("Historic_alarm", "Live_Alarm")';
+
+    $("#cancel").click(function () {
+        $("#Month").val('');
+        $("#Machine").val('');
+        $(".error_msg").empty();
+        $(".tot_ok").empty();
+        $(".tot_nok").empty();
+        $(".tot_rework").empty();
+        $(".variant_error").empty();
+
+        $("#datatable_default1").dataTable().fnClearTable();
+        $("#datatable_default1").dataTable().fnDraw();
+        $("#datatable_default1").dataTable().fnDestroy();
+
+        $("#datatable_default").dataTable().fnClearTable();
+        $("#datatable_default").dataTable().fnDraw();
+        $("#datatable_default").dataTable().fnDestroy();
+    });
+
+    function get_data() {
+        var Month = $("#Month").val();
+        var Machine = $("#Machine").val();
+
+        if (Machine == '') {
+            swal({
+                icon: "error",
+                title: "Please Provide Machine details",
+                button: false,
+                timer: 4500
+            })
+        }
+        else if (Month == '') {
+            swal({
+                icon: "error",
+                title: "Please Select Month",
+                button: false,
+                timer: 4500
+            })
+        }
+        else {
+
+            var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+            var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+            var myData = {
+                "QueryType": "Daywise",
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]',
+                "Line_Code": '@Session["LineCode"]',
+                "LineCode": '@Session["LineCode"]',
+                "Machine": Machine,
+                "Month": Month
+            };
+
+
+
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/RawTable/Get_Cumulative_data',
+                data: myData,
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response)
+                {
+                    $(".error_msg").text('');
+
+                    var rowsCnt = document.getElementById("datatable_default").getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
+                    if (rowsCnt > 0) {
+                        for (var i = 0; i < rowsCnt; i++) {
+                            document.getElementById("datatable_default").deleteRow(1);
+                        }
+                    }
+                    if ($.fn.DataTable.isDataTable('#datatable_default')) {
+                        $('#datatable_default').DataTable().clear();
+                    }
+
+                    if ($.fn.DataTable.isDataTable('#datatable_default')) {
+                        $('#datatable_default').DataTable().destroy();
+                    }
+
+                    if (response.status != "Error")
+                    {
+                        var j = 1;
+
+
+                        $(".error_msg").empty();
+
+                        for (var i = 0; i < response.data.Table.length; i++)
+                        {
+                            var newRow = $("<tr>");
+                            var cols = '';
+
+                            cols += "<td> " + j + "</td> ";
+                            cols += "<td> " + response.data.Table[i].Date + "</td> ";
+                            cols += "<td> " + response.data.Table[i].Variantcode + "</td> ";
+                            cols += "<td> " + response.data.Table[i].OKParts + "</td> ";
+                            cols += "<td> " + response.data.Table[i].NokParts + "</td> ";
+                            cols += "<td> " + response.data.Table[i].ReworkParts + "</td> ";
+
+                            cols += "</tr>";
+                            newRow.append(cols);
+                            $(".details").append(newRow);
+                            j++;
+                        }
+
+                
+                        $('#datatable_default').DataTable({
+                            "responsive": true,
+                            "autoWidth": false,
+                        });
+
+
+                        if (response.data.Table1.length != 0) {
+                            $("#tot_ok").html(response.data.Table1[0].ok_parts);
+                            $("#tot_nok").html(response.data.Table1[0].nok_parts);
+                            $("#tot_rework").html(response.data.Table1[0].rework_parts);
+                        }
+
+                    }
+                    else
+                    {
+                        $(".error_msg").text(response.msg);
+                        $("#tot_ok").html('');
+                        $("#tot_nok").html('');
+                        $("#tot_rework").html('');
+                    }
+                },
+                error: function (response)
+                {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Expired",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+                    }
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                }
+            });
+
+        }
+    }
+
+</script>
+
+
+<script>
+    $(document).ready(function ()
+    {
+
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+        var data_machine = {
+            "Flag": "Subsystem",
+            "CompanyCode": '@Session["CompanyCode"]',
+            "PlantCode": '@Session["PlantCode"]',
+            "LineCode": '@Session["LineCode"]',
+        };
+
+        var url1 = '@Url.Action("GetSettingdatas1", "Main")';
+
+        $.ajax({
+            type: "POST",
+            data: data_machine,
+            headers: {
+                Authorization: 'Bearer ' + user1
+            },
+            url: url1,
+            dataType: "json",
+            success: function (response) {
+                var s = '<option value="">Select Machine</option>';
+                for (var i = 0; i < response.data.length; i++) {
+                    s += '<option value="' + response.data[i].Code + '">' + response.data[i].Name + '</option>';
+                }
+                $("#Machine").html(s);
+            }
+        })
+
+    });
+
+
+    function get_variantwise()
+    {
+        
+
+        var Month = $("#Month").val();
+        var Machine = $("#Machine").val();
+
+
+        if (Machine == '') {
+            swal({
+                icon: "error",
+                title: "Please Provide Machine details",
+                button: false,
+                timer: 4500
+            })
+        }
+        else if (Month == '') {
+            swal({
+                icon: "error",
+                title: "Please Select Month",
+                button: false,
+                timer: 4500
+            })
+        }
+        else {
+
+            $("#myModal").modal('show');
+            var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+            var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+            var myData = {
+                "QueryType": "Variantwise",
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]',
+                "Line_Code": '@Session["LineCode"]',
+                "LineCode": '@Session["LineCode"]',
+                "Machine": Machine,
+                "Month": Month
+            };
+
+
+
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/RawTable/Get_Cumulative_data',
+                data: myData,
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+                    console.log(response);
+                    var rowsCnt = document.getElementById("datatable_default1").getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
+                    if (rowsCnt > 0) {
+                        for (var i = 0; i < rowsCnt; i++) {
+                            document.getElementById("datatable_default1").deleteRow(1);
+                        }
+                    }
+                    if ($.fn.DataTable.isDataTable('#datatable_default1')) {
+                        $('#datatable_default1').DataTable().clear();
+                    }
+
+                    if ($.fn.DataTable.isDataTable('#datatable_default1')) {
+                        $('#datatable_default1').DataTable().destroy();
+                    }
+
+                    $(".variant_error").text('');
+
+                    if (response.status != "Error") {
+                        var j = 1;
+
+
+                        $(".variant_error").empty();
+
+                        for (var i = 0; i < response.data.Table.length; i++) {
+                            var newRow = $("<tr>");
+                            var cols = '';
+
+                            cols += "<td> " + j + "</td> ";
+                            cols += "<td> " + response.data.Table[i].Variantcode + "</td> ";
+                            cols += "<td> " + response.data.Table[i].ok_parts + "</td> ";
+                            cols += "<td> " + response.data.Table[i].nok_parts + "</td> ";
+                            cols += "<td> " + response.data.Table[i].rework_parts + "</td> ";
+                            cols += "</tr>";
+                            newRow.append(cols);
+                            $(".details1").append(newRow);
+                            j++;
+                        }
+
+                        $('#datatable_default1').DataTable({
+                            "responsive": true,
+                            "autoWidth": false,
+                        });
+
+                    }
+                    else {
+                        $(".variant_error").text(response.msg);
+                    }
+                },
+                error: function (response) {
+                    console.log(response);
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Expired",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+                    }
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                }
+            });
+        }
+
+    }
+
+
+
+    function close_modal() {
+        $("#myModal").modal('hide');
+    }
+
+</script>

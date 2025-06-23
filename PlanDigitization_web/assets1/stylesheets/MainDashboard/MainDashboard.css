@@ -1,0 +1,1125 @@
+﻿body {
+    background-color: white;
+    height: 100%;
+}
+/*.loading{
+    z-index: 9999;
+}*/
+.Selection_Condition {
+    font-weight: bolder;
+    text-align: center;
+}
+
+p.modal-title {
+    color: darkgray;
+}
+
+.modal-content {
+    width: auto;
+}
+
+#refreshModal,
+#refreshModal1 {
+    color: #0088cc;
+}
+
+#largeShoes .modal-dialog .modal-content .modal-header {
+    border-radius: 8px;
+}
+
+#myModalLatestAlarm .modal-dialog .modal-content .modal-header {
+    border-radius: 8px;
+}
+
+#myModalLatestLoss .modal-dialog .modal-content .modal-header {
+    border-radius: 8px;
+}
+
+#myModalHourlyTracker .modal-dialog .modal-content .modal-header {
+    border-radius: 8px;
+}
+
+#largeShoes .tooltiptext1,
+#myModalHourlyTracker .tooltiptext1 {
+    font-size: 12px;
+}
+
+#myModalLatestAlarm thead,
+#myModalLatestLoss thead {
+    background-color: teal;
+    color: white;
+}
+
+#myModalLatestAlarm .Live_Alarm_ID {
+    display: none;
+}
+
+#myModalLatestAlarm .alarm_error,
+#myModalLatestLoss .Loss_error {
+    color: red;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+#myModalHourlyTracker .Hourly_Utilisation,
+#myModalHourlyTracker .Hourly_Downtime,
+#myModalHourlyTracker .Hourly_Production_Alignment,
+#myModalHourlyTracker .Hourly_Production {
+    height: 230px;
+    width: 100%;
+    margin: auto;
+}
+
+#myModalHourlyTracker .Hourly_OEE {
+    height: 360px;
+    width: 100%;
+    margin: auto;
+}
+
+.carousel_panel {
+    margin-bottom: 0px;
+}
+
+.carousel_panel_body {
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.panel0 {
+    margin-bottom: 0px;
+}
+
+    .panel0 .panel-body {
+        padding-top: 5px;
+    }
+
+    .panel0 .row_slide {
+        color: white;
+    }
+
+.panel {
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.panel1 {
+    /*box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;*/
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+}
+
+.panel .panel-heading {
+    padding: 6px !important;
+    color: black;
+}
+
+.panel .pb_kpi_live {
+    height: 230px;
+    width: 100%;
+    margin: auto;
+}
+
+.panel-body .data_kpi_live .avail,
+.panel-body .data_kpi_live .perf,
+.panel-body .data_kpi_live .qual,
+.panel-body .data_kpi_live .oee {
+    margin: auto;
+}
+
+
+.panel1 fontSanserif {
+    color: black;
+    font-weight: bold;
+}
+
+.panel1 .panel-heading .fontSanserif {
+    color: black;
+    font-weight: bold;
+}
+
+.panel1 .panel-heading .titleTooltip {
+    margin-left: 3px;
+}
+
+.panel1 .panel-heading .machineBatchcode {
+    font-size: 9px;
+}
+
+.panel1 .panel-body {
+    color: black;
+}
+
+    .panel1 .panel-body .kpiCard .kpiCard_outer {
+        border-radius: 5px;
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+        margin-left: 0px;
+    }
+
+.float_left {
+    float: left;
+}
+
+
+.kpicard_Shift {
+    font-size: 9px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    color: grey;
+}
+
+.shift_label {
+    vertical-align: middle;
+}
+
+.shift_id {
+    font-size: 18px;
+    color: black;
+    vertical-align: middle;
+}
+
+.carousel_inner_padding {
+    padding: 6px;
+}
+
+.panel1 .row_apq {
+    font-size: 9px;
+    margin-bottom: 2px;
+}
+
+.apq_label {
+    font-size: 9px;
+    color: grey;
+    vertical-align: middle;
+}
+
+.panel1 .row_apq progress {
+    width: 7%;
+    vertical-align: middle;
+}
+
+.panel1 .kpicard_apq_value {
+    font-size: 12px;
+    color: black;
+    font-weight: bold;
+    vertical-align: middle;
+}
+
+.panel1 .productionCard .row_ProdCard {
+    font-size: 9px;
+    border-radius: 5px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    margin-right: 0px;
+}
+
+.carousel_Label {
+    color: grey;
+}
+
+.carousel_Value {
+    font-size: 15px;
+    color: black;
+}
+
+.carousel_Var {
+    font-size: 13px;
+    color: black;
+}
+
+.machine_status_bars {
+    margin: 5px;
+    height: 50px;
+    width: 88px !important;
+    text-align: center;
+    border-radius: 5px;
+    color: black;
+}
+
+#statusbar_hov {
+    font-weight: bold;
+}
+
+#slide_nav_button {
+    background-color: darkgrey;
+    color: darkgrey;
+}
+
+.machine_status_bars #okpart_id {
+    font-size: 19px;
+}
+
+.machine_status_bars #nok_id {
+}
+
+.panel1 .row_alarm .row_alarm_Min {
+    font-size: 9px;
+}
+
+.panel1 .row_alarm {
+    font-size: 9px;
+    margin-top: 1%;
+    border-radius: 5px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    margin-right: 0px;
+}
+
+.panel1 .row_util {
+    font-size: 9px;
+    margin-top: 1%;
+    border-radius: 5px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    margin-right: 0px;
+}
+
+    .panel1 .row_util .util_overview {
+        height: 101px;
+    }
+
+.panel2 .fontSanserif {
+    color: black;
+}
+
+    .panel2 .fontSanserif .titleTooltip, .panel_title {
+        color: black;
+        font-size: 20px;
+    }
+
+        .panel_title .titleTooltip {
+            color: grey !important;
+            font-size: 15px !important;
+            margin-top: 3px;
+        }
+
+.glyphicon .tooltiptext1 {
+    line-height: 1.5;
+}
+
+.glyphicon .tooltiptext2 {
+    line-height: 1.5;
+}
+
+.panel2 .util_panel_body {
+    height: 230px;
+    width: 100%;
+    margin: auto;
+}
+
+    .panel2 .util_panel_body #utli_overview {
+        height: 230px;
+        width: 100%;
+        margin: auto;
+    }
+
+.panel2 #status_bar {
+    width: 100%;
+    height: 115px;
+}
+
+.panel2 .mttr_graph {
+    height: 230px;
+    width: 330px;
+    margin: auto;
+}
+
+.panel2 .mtbf_graph,
+.panel2 .custome_report,
+.panel2 #container1 {
+    height: 230px;
+    width: 330px;
+    margin: auto;
+}
+
+.panel2 #heatmap_customs {
+    height: 230px;
+    width: 710px;
+}
+
+.panel2 .Range_chart_daywise {
+    height: 230px;
+    width: 530px;
+    margin: auto;
+}
+
+    .panel2 .Range_chart_daywise .err_Range_chart_daywise {
+        color: red;
+        font-weight: bold;
+    }
+
+    .panel2 .Range_chart_daywise svg {
+        height: 100%;
+        width: 100%;
+    }
+
+.panel2 #top_10_pareto_chart {
+    height: 230px;
+    width: 530px;
+    margin: auto;
+}
+
+.main_div .panel {
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+
+.dark-mode {
+    background-color: #1b1c1c;
+}
+
+.legend {
+    float: right;
+    margin-top: -200px;
+    font-size: 12px;
+    color: black;
+}
+
+.legend1 {
+    float: right;
+    margin-top: -200px;
+    font-size: 10px;
+    color: black;
+    margin-right: -30px;
+}
+
+
+
+.pie text {
+    font-family: "Verdana";
+    fill: #000;
+}
+
+.pie .name-text {
+    font-size: .8em;
+}
+
+.top_10_duration_table td {
+    font-size: 10px;
+}
+
+.toolTip {
+    position: absolute;
+    display: none;
+    min-width: 80px;
+    height: auto;
+    background: none repeat scroll 0 0 #ffffff;
+    padding: 14px;
+    text-align: center;
+}
+
+.modal {
+    padding: 0 !important;
+    /*override inline padding-right added from js*/
+}
+
+    .modal .modal-dialog {
+        width: 94%;
+        height: 95%;
+        margin-left: 3%;
+        padding: 0;
+    }
+
+/*Carousel Alarm Icon*/
+.alm i.fa {
+    display: inline-block;
+    border-radius: 60px;
+    padding: 0.5em 0.6em;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset;
+}
+
+.alm a {
+    color: grey;
+}
+/*Carousel inner cards styles*/
+.kpiCard, .productionCard {
+    height: 245px;
+}
+
+.prodCardMargin {
+    padding: 0 0 0 0;
+}
+/*Popup Live Symbol*/
+.dot_live {
+    height: 8px;
+    width: 8px;
+    background-color: #E74C3C;
+    border-radius: 50%;
+    display: inline-block;
+}
+/*Carousel Title*/
+.fontSanserif {
+    font-family: 'Open Sans', sans-serif;
+}
+
+/*Carousel Title Breadcrumbs*/
+section .panel-heading .row .right-wrapper .breadcrumb {
+    margin: 0 0 0 0;
+    padding-bottom: 0;
+    padding-top: 0;
+}
+
+/*Carousel Machine Batchcode*/
+section .panel-heading .row div .machineBatchcode {
+    margin: 0 0 0 0;
+}
+
+/*Centre Text*/
+.centreText {
+    text-align: center;
+}
+/*nopadding*/
+.nopadding {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.noRpadding {
+    padding: 0 0 0 10px !important;
+    margin: 0 !important;
+}
+/*Title attribute tooltip*/
+.titleTooltip {
+    position: relative;
+    display: inline-block;
+}
+
+h2 .titleTooltip {
+    font-size: 12px;
+}
+
+.titleTooltip_status {
+    position: relative;
+    display: inline-block;
+}
+
+.titleTooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: Grey;
+    color: white;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    top: 20px;
+    right: 105%;
+    font-weight: normal;
+    z-index: 1000;
+    font-size: 12px;
+}
+
+.titleTooltip:hover .tooltiptext,
+.titleTooltip:hover .tooltiptext1,
+.titleTooltip_status:hover .tooltiptext_status,
+.titleTooltip:hover .tooltiptext2,
+.titleTooltip:hover .tooltiptext3 {
+    visibility: visible;
+    display: block;
+}
+
+.titleTooltip .tooltiptext1 {
+    visibility: hidden;
+    width: 200px;
+    background-color: Grey;
+    color: white;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    top: 20px;
+    right: 105%;
+    font-weight: normal;
+    z-index: 1;
+}
+
+.titleTooltip .tooltiptext2 {
+    visibility: hidden;
+    width: 220px;
+    background-color: Grey;
+    color: white;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    top: 20px;
+    left: 105%;
+    font-weight: normal;
+    z-index: 1;
+    font-size: 12px;
+}
+
+.titleTooltip .tooltiptext3 {
+    visibility: hidden;
+    width: 120px;
+    background-color: Grey;
+    color: white;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    top: 20px;
+    right: 105%;
+    font-weight: normal;
+    font-family: sans-serif;
+    z-index: 1;
+    font-size: 12px;
+}
+
+.panel1 .breadcrumb .breadcrumb-item::before {
+    content: "";
+}
+/* Hover styles for the breadcrumb items */
+.panel1 .breadcrumb-item :hover {
+    transform: scale(1.2);
+}
+
+
+/*.titleTooltip_status .tooltiptext_status {
+    visibility: hidden;
+    background-color: Grey;
+    color: white;*/
+    /* text-align: center;*/
+    /*border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    top: 0px;
+    left: 105%;
+    font-weight: normal;
+    height: 50px;
+    width: 300px;
+    z-index: 1000;
+    line-height: 14px;
+    font-size: 12px;
+}*/
+
+.titleTooltip_status .tooltiptext_status {
+    visibility: hidden;
+    background-color: Grey;
+    color: white;
+    /* text-align: center;*/
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    top: 0px;
+    left: 105%;
+    font-weight: normal;
+    height: 50px;
+    width: auto;
+    z-index: 1000;
+    line-height: 14px;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+
+/* cicular progress bar chart*/
+#darkg center .carouselWidget {
+    width: auto;
+    height: auto;
+}
+
+    #darkg center .carouselWidget svg {
+        width: 119px !important;
+        height: 127px !important;
+        display: block;
+    }
+
+
+.popupWidget {
+    height: 100%;
+    width: 175px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.carouselWidget {
+    height: 30px;
+    width: 10px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.progress-bar {
+    fill: #2BAAB1;
+    stroke-width: 1;
+    stroke: #2BAAB1;
+}
+
+.oee svg .progress-bar {
+    fill: #7934A0;
+    stroke-width: 1;
+    stroke: #7934A0;
+}
+
+.avail svg .progress-bar {
+    fill: #607d8b !important;
+    stroke-width: 1;
+    stroke: #607d8b !important;
+}
+
+.perf svg .progress-bar {
+    fill: #CE93D8 !important;
+    stroke-width: 1;
+    stroke: #CE93D8 !important;
+}
+
+.qual svg .progress-bar {
+    fill: #3D85C6;
+    stroke-width: 1;
+    stroke: #3D85C6;
+}
+
+
+
+.progress-bar1 {
+    fill: #2BAAB1;
+    stroke-width: 1;
+    stroke: #2BAAB1;
+}
+
+
+/*#2BAAB1*/
+.progress-bar-bg {
+    fill: #ddd;
+    stroke-width: 1;
+    stroke: #ddd;
+}
+
+.progress-label {
+    fill: #aaa;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 20px;
+    text-anchor: middle;
+    font-weight: bolder;
+    dominant-baseline: central;
+}
+
+.progress-label1 {
+    fill: #aaa;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 12px;
+    text-anchor: middle;
+}
+
+.avail, .perf, .qual, .oee {
+    padding: 0;
+    margin: auto;
+    height: 100%;
+}
+
+#darkg .panel-body .col-md-4 .col-md-12 {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.statusbar_flex div {
+    width: 50px;
+    height: 50px;
+}
+
+.modal .modal-content {
+}
+
+.pie .value-text {
+    font-size: 3em;
+}
+
+svg rect.bar, .custome_report rect, .Range_chart_daywise rect, #err_Range_chart_daywise rect {
+    opacity: 0.5;
+    stroke-width: 0;
+    stroke: #0069bf;
+}
+
+.rej_custom rect, #top_10_pareto_chart rect {
+    opacity: 0.5;
+    stroke-width: 0;
+    stroke: #0069bf;
+}
+
+line {
+    shape-rendering: crispEdges;
+}
+
+.axis path, .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+.line {
+    fill: none;
+    stroke: #5F6A6A;
+    stroke-width: 2px;
+}
+
+.grid .tick {
+    stroke: lightgrey;
+    opacity: 0.7;
+}
+
+.grid path {
+    stroke-width: 0;
+}
+
+.x_label {
+    border: solid;
+    background-color: cornflowerblue;
+}
+
+.main_div {
+    display: flex;
+}
+
+/*#myCarousel {*/
+/*padding-top: 20px;*/
+/*width: 1220px;
+    height: 350px;
+}*/
+
+.statusbar_flex {
+    display: flex;
+    padding-left: 12px;
+    padding-top: 12px;
+    padding-right: 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.Flex-item-status {
+    /*border: 1px solid #c3c3c3;*/
+    margin: 5px;
+    height: 50px;
+    max-width: 62px;
+    width: 100%;
+    text-align: center;
+    border-radius: 5px;
+    background-color: #f02416;
+    color: black;
+}
+
+.flex-item-status_bar_box {
+    /*border: 1px solid #c3c3c3;*/
+    margin: 5px;
+    height: 50px;
+    min-width: 88px;
+    width: fit-content !important;
+    text-align: center;
+    border-radius: 5px;
+    color: black;
+}
+
+.carousel-indicators {
+    /*z-index: 15;*/
+    list-style: none;
+    display: flex;
+    justify-content: center;
+}
+
+.Hourly_Production_Alignment .line {
+    fill: none;
+    stroke-width: 2px;
+}
+
+.Hourly_Production_Alignment .circle {
+    fill: steelblue;
+    stroke: #fff;
+}
+
+.Hourly_Production_Alignment .circle1 {
+    fill: steelblue;
+    stroke: #fff;
+}
+
+.Hourly_Production_Alignment .tooltipHourly {
+    position: absolute;
+    pointer-events: none;
+    background-color: rgb(88, 88, 88);
+    color: #fff;
+    padding: 8px;
+    border-radius: 4px;
+    margin-top: -310px;
+    margin-left: -30px;
+    font-size: 12px;
+    z-index: 1000; /*Increase the z-index value */
+}
+
+.Hourly_OEE .tooltipHourlyOEE {
+    position: absolute;
+    pointer-events: none;
+    background-color: rgb(88, 88, 88);
+    color: #fff;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 1000; /*Increase the z-index value */
+}
+
+
+.Hourly_Production .line {
+    fill: none;
+    stroke-width: 2px;
+}
+
+.Hourly_Production .circle {
+    fill: #3D85C6;
+    stroke: #fff;
+}
+
+.Hourly_Production .x-axis .tick {
+    font-size: 12px;
+}
+
+.Hourly_Production .y-axis .tick {
+    font-size: 12px;
+}
+
+.Hourly_Production .tooltipHourlyProd {
+    position: absolute;
+    pointer-events: none;
+    background-color: rgb(88, 88, 88);
+    color: #fff;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 1000; /*Increase the z-index value */
+}
+
+.Hourly_Production .bar-group-0 { /*uptime*/
+    fill: #4CAF50 !important;
+    /*opacity: 0.8;*/
+}
+
+.Hourly_Production .bar-group-1 { /*downtime*/
+    fill: #F44336 !important;
+    /*opacity: 0.8;*/
+}
+
+
+.Hourly_Utilisation .tooltipHourlyUtil {
+    position: absolute;
+    pointer-events: none;
+    background-color: rgb(88, 88, 88);
+    color: #fff;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 1000; /*Increase the z-index value */
+}
+
+
+.Hourly_Utilisation .bar-group-0 { /*uptime*/
+    fill: #4CAF50 !important;
+    /*opacity: 0.8;*/
+}
+
+.Hourly_Utilisation .bar-group-1 { /*losstime*/
+    fill: #F3E03A !important;
+    /*opacity: 0.8;*/
+}
+
+.Hourly_Utilisation .bar-group-2 { /*downtime*/
+    fill: #F44336 !important;
+    /*opacity: 0.8;*/
+}
+
+.Hourly_Utilisation .bar-group-3 { /*breaktime*/
+    fill: #3d85c6 !important;
+    /*opacity: 0.8;*/
+}
+
+.Hourly_Utilisation .bar-group-4 { /*breaktime*/
+    fill: #BBBBBB !important;
+    /*opacity: 0.8;*/
+}
+
+#Hourly_Downtime_container .circle {
+    fill: #3D85C6;
+    stroke: #fff;
+}
+
+#Hourly_Downtime_container .line {
+    fill: none;
+    stroke-width: 2px;
+}
+
+#Hourly_Downtime_container .bar {
+    fill: #F44336;
+    opacity: 1 !important;
+}
+
+
+#Hourly_Downtime_container .axis path,
+#Hourly_Downtime_container .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+#Hourly_Downtime_container .tooltip {
+    position: absolute;
+    padding: 8px;
+    background-color: rgb(88, 88, 88);
+    color: #fff;
+    border-radius: 4px;
+    pointer-events: none;
+    font-size: 12px;
+}
+
+.Hourly_OEE .bar1 {
+    fill: #4CAF50;
+    stroke: none !important;
+    /*opacity: 0.5;*/
+}
+
+.Hourly_OEE .bar2 {
+    fill: #BBBBBB;
+    stroke: none !important;
+    /*opacity: 0.6;*/
+}
+
+.Hourly_OEE .bar3 {
+    fill: #3D85C6;
+    stroke: none !important;
+    /*opacity: 0.7;*/
+}
+
+.Hourly_OEE .bar4 {
+    fill: #7934A0;
+    stroke: none !important;
+    /*opacity: 0.8;*/
+}
+
+.item_div_nodata {
+    color: grey;
+    font-weight: bold;
+    font-size: larger;
+    text-align: center;
+}
+
+.Hourly_Downtime .bar {
+    fill: steelblue;
+    stroke: none !important;
+    opacity: 0.5;
+}
+
+.Hourly_OEE .bar {
+    fill: steelblue;
+    stroke: none !important;
+    opacity: 0.5;
+}
+
+.Hourly_Downtime .tooltipDown {
+    position: absolute;
+    pointer-events: none;
+    background-color: rgb(88, 88, 88);
+    color: #fff;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 1000; /*Increase the z-index value */
+}
+
+.tooltip-arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 8px;
+    border-color: transparent transparent rgb(88, 88, 88) transparent;
+}
+
+.tooltip-rotate {
+    transform: translate(-150%, -250%) rotate(270deg);
+}
+
+.no_hand_cursor {
+    cursor: default;
+}
+
+.note_text {
+    font-size: 10px;
+    font-weight: bold;
+}
+
+div.dataTables_length select {
+    width: auto;
+    height: 30px;
+    padding: 1px;
+}
+
+.flex-item-status_bar_box {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.progress .prog_avail {
+    background-color:#607d8b !important;
+}
+
+.progress .prog_perf {
+    background-color: #CE93D8 !important;
+ 
+}
+
+.progress .prog_qual {
+    background-color: #3D85C6 !important;
+}
+
+.progress.light {
+    background: #ddd !important;
+    box-shadow: none !important;
+}
+
+.progress {
+    width: 50%;
+    display: inline-block;
+    margin-right: 5px !important;
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+}
+
+.progress-labels {
+    display: inline;
+}
+
+.Historic_details td,
+.Historic_detail_loss td {
+    text-align: center;
+    vertical-align: middle !important;
+}
+
+#myModalLatestAlarm th,
+#myModalLatestLoss th {
+    text-align: center;
+}
+
+.Historic_details .btn {
+    vertical-align: middle !important;
+}
+
+.almlos_sno {
+    width: 6% !important;
+}
+
+.almlos_id {
+    width: 20% !important;
+}
+
+.almlos_desc {
+    width: 44% !important;
+}
+
+.almlos_st {
+    width: 20% !important;
+}
+
+.alm_help {
+    width: 10% !important;
+}
+
+.breadcrumb-item .breadcrum-icon {
+    width: 16px;
+}
+
+
+@media screen and (min-width: 768px) {
+    .carousel-indicators {
+        bottom: 10px;
+    }
+}

@@ -1,0 +1,525 @@
+﻿@model IEnumerable<PlanDigitization_web.Models.Subassembly>
+@{ ViewBag.Title = "Subassembly_settings";
+    Layout = "~/Views/Shared/_Layout.cshtml"; }
+
+
+<header class="page-header">
+    <h2> Subassembly Details </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("NewDash","Main")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li><span>Settings</span></li>
+            <li><span>Subassembly</span></li>
+        </ol>
+    </div>
+</header>
+
+<!-- Add New Area-->
+<div class="row" id="divnew" style="display:none;">
+    <div class="col-md-2"></div>
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Add_Subassembly","UserSettings")" method="post">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Add New Subassembly</h2>
+                </header>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Machine Code <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control Machine" name="MachineCode" id="Machine" title="Select Machine" required>
+                                <option value="">Select Line First</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Subassembly ID <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="Subassembly_id" class="form-control space" title="Enter ID" placeholder="Subassembly ID" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Subassembly Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="Subassembly_name" class="form-control space" title="Enter Name" placeholder="Subassembly Name" required />
+                        </div>
+                    </div>
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+<!-- Area Details-->
+<div class="row" id="divdetails">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <section class="panel">
+            <header class="panel-heading" style="background-color:teal;color:white;">
+                @if (ViewContext.Controller.HasPermission("SubassemblySetting-Add"))
+                {
+                    <div class="panel-actions">
+                        <button class="btn btn-primary" id="add"><i class="fa fa-plus" aria-hidden="true"> Add New</i></button>
+                    </div>}
+                <h2 class="panel-title" style="color:white;">List of Subassemblies : </h2>
+            </header>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="panel-body">
+                        @if (ViewContext.Controller.HasPermission("SubassemblySetting-View"))
+                        {
+                            <table class="table table-bordered table-striped mb-none" id="datatable-default">
+                                <thead style="background-color:teal;color:white;">
+                                    <tr>
+                                        <th class="centercls"> S.No </th>
+                                        <th style="display:none;"></th>
+                                        <th> Subassembly ID </th>
+                                        <th> Subassembly Name </th>
+                                        <th>Parent Machine</th>
+                                        <th style="text-align:center;width:150px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{int RowNo = 0;}
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr class="gradeX">
+                                            <td>
+                                                @{RowNo++;}@RowNo
+                                            </td>
+                                            <td class="ID" style="display:none;">
+                                                <span>@Html.Encode(item.Unique_id)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.Subassembly_id)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.Subassembly_name)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.MachineCode)</span>
+                                            </td>
+                                            <td style="text-align:center;">
+                                                @if (ViewContext.Controller.HasPermission("Subassembly-Edit"))
+                                                {
+                                                    <button class="btn btn-primary" style="margin-top: 10px" id="edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>}
+                                                @if (ViewContext.Controller.HasPermission("Subassembly-Delete"))
+                                                {
+                                                    <button class="btn btn-danger" style="margin-top: 10px" id="delete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>}
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table> }
+                        else
+                        {
+                            <h2>View permission is denied</h2>}
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!--Edit Department Details-->
+<div class="row" id="divedit" style="display:none;">
+    <div class="col-md-2"></div>
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Update_Subassembly","UserSettings")" method="post">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Update Subassembly</h2>
+                </header>
+                <div class="panel-body">
+                    <input type="hidden" id="eUnique_id" name="Unique_id" />
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Machine Code <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control MachineCode" name="MachineCode" id="eMachine" title="Select Machine" required></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Subassembly ID<span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="eSubassembly_id" name="Subassembly_id" class="form-control space" title="Enter ID" placeholder="Subassembly ID" required readonly />
+                        </div>
+                        <label class="col-sm-2 control-label"> Subassembly Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="eSubassembly_name" name="Subassembly_name" class="form-control space" title="Enter Name" placeholder="Subassembly Name" required />
+                        </div>
+                    </div>
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+@if (@TempData["message"] != null)
+{
+    <script type="text/javascript">
+    $(function () {
+        var msg = '@TempData["message"]';
+        if (msg == "Inserted") {
+            swal({
+                icon: "success",
+                title: "Details Added Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Updated") {
+            swal({
+                icon: "success",
+                title: "Details Updated Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Already Subassembly_id") {
+            swal({
+                icon: "error",
+                title: "Failed to Add.Subassembly ID already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Already Subassembly_name") {
+            swal({
+                icon: "error",
+                title: "Failed to Add.Subassembly name already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+
+        else if (msg == "Already Subassembly") {
+            swal({
+                icon: "error",
+                title: "Failed to Update.Subassembly name already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+        else {
+            swal({
+                icon: "error",
+                title: "Failed to Add",
+                button: true,
+                timer: 4500
+            })
+        }
+    });
+    </script>
+}
+
+<script type="text/javascript">
+    $("#add").click(function () {
+        $("#divnew").show();
+        $("#divdetails").hide();
+        $("#divedit").hide();
+    });
+
+    $(".cancel").click(function () {
+        $("#divnew").hide();
+        $("#divdetails").show();
+        $("#divedit").hide();
+    });</script>
+
+<script type="text/javascript">
+    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+    $("body").on("click", "#edit", function () {
+        var row = $(this).closest("tr");
+        var ID = row.find(".ID span").html();
+
+        var myData = {
+            "QueryType": "Edit_Subassembly",
+            "Parameter": ID,
+            "CompanyCode": '@Session["CompanyCode"]',
+            "PlantCode": '@Session["PlantCode"]',
+            "LineCode": '@Session["LineCode"]'
+        };
+
+        $("#divedit").show();
+        $("#divnew").hide();
+        $("#divdetails").hide();
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+        $.ajax({
+            type: "POST",
+            url: URL + 'api/Values/User_settings_details',
+            data: myData,
+             headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+            dataType: "json",
+            beforeSend: function () {
+                $('.loading').show();
+            },
+            complete: function () {
+                $('.loading').hide();
+            },
+            success: function (response) {
+                $('#eSubassembly_id').val(response.data.Table[0].SubassemblyID);
+                $('#eSubassembly_name').val(response.data.Table[0].SubassemblyName);
+                $('#eUnique_id').val(response.data.Table[0].Unique_id);
+
+                var myDatas1 = {
+                            "QueryType": "Assets",
+                            "Parameter": '@Session["PlantCode"]',
+                            "Parameter1": '@Session["CompanyCode"]',
+                            "Parameter2": '@Session["LineCode"]',
+                            "CompanyCode": '@Session["CompanyCode"]',
+                            "PlantCode": '@Session["PlantCode"]',
+                             "LineCode": '@Session["LineCode"]'
+                        };
+
+                        $.ajax({
+                            type: "POST",
+                            data: myDatas1,
+                            headers: {
+                                 Authorization: 'Bearer ' + user1
+                             },
+                            url: URL + 'api/Values/User_settings_details',
+                            dataType: "json",
+                            success: function (response2) {
+                               // alert(response.data.Table[0].Machine_Code)
+                                var s = '<option value="" disabled>Please Select</option>';
+                                for (var i = 0; i < response2.data.Table.length; i++) {
+                                    if (response2.data.Table[i].FunctionName == response.data.Table[0].Line_Code) {
+                                        s += '<option value="' + response2.data.Table[i].AssetID + '" selected=selected>' + response2.data.Table[i].AssetName + '</option>';
+                                    }
+                                    else {
+                                        s += '<option value="' + response2.data.Table[i].AssetID + '">' + response2.data.Table[i].AssetName + '</option>';
+                                    }
+                                }
+                                $("#eMachine").html(s);
+                            }
+                        }).error(function (response2) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+                            }
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        });
+
+
+            }
+            , error: function (response) {
+
+            }
+        }).error(function (response) {
+            if (response.status == "401") {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            }
+            else {
+                swal({
+                    icon: "warning",
+                    title: response.responseText,
+                    button: true,
+                    closeModal: false
+                })
+
+            }
+             });
+    });
+
+    $("body").on("click", "#delete", function () {
+        if (confirm("Do you want to Delete this?")) {
+            var row = $(this).closest("tr");
+            var ID = row.find(".ID span").html();
+
+            var myData = {
+                "QueryType": "Delete_Subassembly",
+                "Parameter": ID,
+                "CompanyCode": '@Session["CompanyCode"]',
+                            "PlantCode": '@Session["PlantCode"]',
+                             "LineCode": '@Session["LineCode"]'
+            };
+             var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/Values/delete_User_settings_details',
+                data: myData,
+                headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+                    swal({
+                        icon: "success",
+                        title: "Details Deleted Successfully...!",
+                        showConfirmButton: false,
+                        timer: 4500
+                    })
+                    window.location = '@Url.Action("Subassembly_settings", "UserSettings")';
+                }
+            }).error(function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+             });
+        }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+
+        $(document).on("keydown", ".space", function (evt) {
+
+            var caretPos = $(this)[0].selectionStart
+            if (evt.keyCode == 32 && caretPos == 0) {
+                return false;
+            }
+        });
+        $('.updated_time').text("N/A");
+        $('.shift').text("N/A");
+
+        if ($.fn.DataTable.isDataTable('#datatable-default')) {
+            $('#datatable-default').DataTable().destroy();
+        }
+
+        $('#datatable-default').DataTable({
+
+            "responsive": true,
+            "autoWidth": false,
+            scrollY: true,
+            scrollX: true,
+            scroller: true
+        });
+
+
+    });</script>
+
+<script>
+    $(function () {
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+          var myData = {
+                        "Flag": "Subsystem",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+                        "LineCode":'@Session["LineCode"]',
+                    };
+                    var R_url = '@Url.Action("Login", "Main")';
+                   var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetSettingdatas1", "Main")',
+            data: myData,
+            dataType: "json",
+            success: function (response) {
+                var s = '<option value="">Select Machine</option>';
+                for (var i = 0; i < response.data.length; i++) {
+                    s += '<option value="' + response.data[i].Code + '">' + response.data[i].Name + '</option>';
+                }
+                $(".Machine").html(s);
+            },
+            error: function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+            }
+        });
+
+    })
+</script>

@@ -1,0 +1,642 @@
+﻿@model IEnumerable<PlanDigitization_web.Models.VariableSetting>
+@{
+    ViewBag.Title = "Variable_settings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<header class="page-header">
+    <h2> Variable Setting Details </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("NewDash","Main")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li><span>Settings</span></li>
+            <li><span>Variable Setting</span></li>
+        </ol>
+    </div>
+</header>
+
+<!-- Add New variable-->
+<div class="row" id="divnew" style="display:none;">
+    <div class="col-md-2"></div>
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Add_Variable","AlertSetting")" method="post">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Add New Variable</h2>
+                </header>
+                <div class="panel-body">
+
+
+                    <div class="form-group">
+
+                        <label class="col-sm-2 control-label"> Variable Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="varname" id="var_name" class="form-control" title="Enter Variable Name" placeholder="Variable Name" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Property Group <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control PG_group" name="groupp" id="group" title="Select Property Group" required></select>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="col-sm-2 control-label"> Property Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="propname" id="prop_name" class="form-control" title="Enter Property Name" placeholder="Property Name" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Value </label>
+                        <div class="col-sm-4">
+                            <input type="text" name="value" id="value" class="form-control" title="Enter Value" placeholder="Value" required />
+                        </div>
+
+
+                    </div>
+
+                    @*<div class="form-group">
+
+                            <label class="col-sm-2 control-label"> Unit <span class="required">*</span></label>
+                            <div class="col-sm-4">
+                                <input type="text" name="unit" id="unit" class="form-control" title="Enter Unit" placeholder="Unit" required />
+                            </div>
+                            <label class="col-sm-2 control-label"> Type <span class="required">*</span></label>
+                            <div class="col-sm-4">
+                                <input type="text" name="type" id="type" class="form-control" title="Enter Type" placeholder="Type" required />
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label class="col-sm-2 control-label"> Description </label>
+                            <div class="col-sm-4">
+                                <textarea type="text" cols="5" rows="4" name="desc" id="e_desc" class="form-control" title="Enter Description" placeholder="Description"></textarea>
+                            </div>
+
+                        </div>*@
+
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+
+<!-- variable Details-->
+<div class="row" id="divdetails">
+    <div class="col-md-12">
+        <section class="panel">
+
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="panel-body">
+
+                        <header class="panel-heading" style="background-color:teal;color:white;">
+
+                            <div class="panel-actions">
+                                <button class="btn btn-primary" id="add"><i class="fa fa-plus" aria-hidden="true"> Add New</i></button>
+                            </div>
+
+                            <h2 class="panel-title" style="color:white;">List of Variables : </h2>
+                        </header>
+
+                        <table class="table table-bordered table-striped mb-none" id="datatable-default1">
+                            <thead style="background-color:teal;color:white;">
+                                <tr>
+                                    <th>Variable Name</th>
+                                    <th>Property Group</th>
+                                    <th>Parameter Name</th>
+                                    <th>Value</th>
+                                    @*<th>Unit</th>
+                                            <th>type</th>
+                                        <th>Description</th>*@
+                                    <th class="ID" style="display:none;">UniqueID</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody class="custom_preventive"></tbody>
+
+
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!--Edit variable Details-->
+<div class="row" id="divedit" style="display:none;">
+    <div class="col-md-2"></div>
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Update_Variable","AlertSetting")" method="post">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Update Mail ID</h2>
+                </header>
+                <div class="panel-body">
+                    <input type="hidden" id="e_uniqueid" name="Unique_id" />
+
+                    <div class="form-group">
+
+                        <label class="col-sm-2 control-label"> Variable Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="varname" id="e_var_name" class="form-control" title="Enter Variable Name" placeholder="Variable Name" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Property Group <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control" name="groupp" id="e_group" title="Select Property Group" required></select>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="col-sm-2 control-label"> Property Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="propname" id="e_prop_name" class="form-control" title="Enter Property Name" placeholder="Property Name" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Value <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="value" id="e_value" class="form-control" title="Enter Value" placeholder="Value" required />
+                        </div>
+
+
+                    </div>
+
+                    @*<div class="form-group">
+
+                            <label class="col-sm-2 control-label"> Type <span class="required">*</span></label>
+                            <div class="col-sm-4">
+                                <input type="text" name="type" id="e_type" class="form-control" title="Enter Type" placeholder="Type" required />
+                            </div>
+                            <label class="col-sm-2 control-label"> Unit <span class="required">*</span></label>
+                            <div class="col-sm-4">
+                                <input type="text" name="unit" id="e_unit" class="form-control" title="Enter Unit" placeholder="Unit" required />
+                            </div>
+
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label class="col-sm-2 control-label"> Description </label>
+                            <div class="col-sm-4">
+                                <textarea type="text" cols="5" rows="4" name="desc" id="e_desc" class="form-control" title="Enter Description" placeholder="Description"></textarea>
+                            </div>
+
+                        </div>*@
+
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+@if (@TempData["message"] != null)
+{
+    <script type="text/javascript">
+    $(function () {
+        var msg = '@TempData["message"]';
+        if (msg == "Inserted") {
+            swal({
+                icon: "success",
+                title: "Details Added Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Updated") {
+            swal({
+                icon: "success",
+                title: "Details Updated Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Already VariableID") {
+            swal({
+                icon: "error",
+                title: "Failed to Add and Variable already mapped",
+                button: true,
+                timer: 4500
+            })
+        }
+
+        else {
+            swal({
+                icon: "error",
+                title: "Failed to Add",
+                button: true,
+                timer: 4500
+            })
+        }
+    });
+    </script>
+}
+
+<script type="text/javascript">
+    $("#add").click(function () {
+        $("#divnew").show();
+        $("#divdetails").hide();
+        $("#divedit").hide();
+    });
+
+    $(".cancel").click(function () {
+        $("#divnew").hide();
+        $("#divdetails").show();
+        $("#divedit").hide();
+    });
+
+</script>
+
+<script type="text/javascript">
+    $(function () {
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+        var myDatas = {
+            "QueryType": "PropertyGroup",
+            "Parameter": '@Session["PlantCode"]',
+            "Parameter1": '@Session["CompanyCode"]',
+            "Parameter2": '@Session["LineCode"]'
+        };
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+        $.ajax({
+            type: "POST",
+            data: myDatas,
+             headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+            url: URL + 'api/UserSettings/User_settings_details',
+            dataType: "json",
+            success: function (response) {
+
+                //alert(JSON.stringify(response))
+                var s = '<option value="">Please Select</option>';
+                for (var i = 0; i < response.data.Table.length; i++) {
+                    s += '<option value="' + response.data.Table[i].GroupID + '">' + response.data.Table[i].GroupName + '</option>';
+                }
+                $(".PG_group").html(s);
+            }
+        }).error(function (response1) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+                    }
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                });
+
+
+    });
+</script>
+
+
+
+<script type="text/javascript">
+    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+    $(function () {
+
+        var active_tab = $('ul .active').attr("id");
+        var linename = '@Session["LineCode"]';
+
+
+        $(".custom_pre_error").text('');
+
+        var preData = {
+                "linecode": linename,
+                "QueryType": "Details",
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]'
+            };
+            var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/UserSettings/Variable_details',
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                data: preData,
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+
+                    //$("#machinename").text(response.data[0].toolname);
+                    //$("#stockno").text("2015/234");
+
+                    var rowsCnt = document.getElementById("datatable-default1").getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
+                    if (rowsCnt > 0) {
+                        for (var i = 0; i < rowsCnt; i++) {
+                            document.getElementById("datatable-default1").deleteRow(1);
+                        }
+                    }
+
+                    if ($.fn.DataTable.isDataTable('#datatable-default1')) {
+                        $('#datatable-default1').DataTable().destroy();
+                    }
+
+
+                    $(".custom_preventive").html("");
+
+                    if (response.data.length != 0) {
+
+                        var j = 1;
+                        for (var i = 0; i < response.data.length; i++) {
+                            var newRow = $("<tr>");
+                            var cols = '';
+                            cols += "<td> " + response.data[i].varname + "</td> ";
+                            cols += "<td> " + response.data[i].groupp + "</td> ";
+                            cols += "<td> " + response.data[i].propname + "</td> ";
+                            cols += "<td> " + response.data[i].value + "</td> ";
+                            cols += "<td class='ID' style='display:none;'><span> " + response.data[i].Unique_id + "</span></td> ";
+                            cols += "<td style='text - align: center'>" +
+                                "<a class='btn btn-info btn-xs btn-edit' id='edit' title='edit'><i class='fa fa-pencil'></i></a>" + " " +
+                                "<a class='btn btn-danger btn-xs btn-delete' id='delete' title='delete'><i class='fa fa-trash-o'></i></a></td >";
+                            cols += "</tr>";
+                            newRow.append(cols);
+                            $(".custom_preventive").append(newRow);
+                            j++;
+                        }
+
+
+
+                        $('#datatable-default1').DataTable({
+
+                            "responsive": true,
+                            "autoWidth": false,
+                            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]]
+
+                        });
+
+
+
+                    }
+                    else {
+
+                        //$(".custom_pre_error").text(response.msg);
+                        var newRow = $("<tr>");
+                        var cols = '';
+                        cols += "<td colspan='6' style='text-align:center'> No Data Available </td> ";
+                        cols += "</tr>";
+                        newRow.append(cols);
+                        $(".custom_preventive").append(newRow);
+                        $('.shift').text("N/A");
+                        $('#maccode').text("N/A");
+                        $('.updated_time').text(new Date().toLocaleString());
+                    }
+
+                }
+            }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+    });
+
+
+
+</script>
+
+
+
+<script type="text/javascript">
+    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+    $("body").on("click", "#edit", function () {
+        var row = $(this).closest("tr");
+        var ID = row.find(".ID span").html();
+
+         var preData = {
+
+             "QueryType": "edit_Details",
+             "Unique_id":ID,
+                    "CompanyCode": '@Session["CompanyCode"]',
+                    "PlantCode": '@Session["PlantCode"]'
+                 };
+
+        $("#divedit").show();
+        $("#divnew").hide();
+        $("#divdetails").hide();
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+        $.ajax({
+            type: "POST",
+            url: URL + 'api/UserSettings/Variable_details',
+            data: preData,
+             headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+            dataType: "json",
+            beforeSend: function () {
+                $('.loading').show();
+            },
+            complete: function () {
+                $('.loading').hide();
+            },
+            success: function (response) {
+
+                $('#e_var_name').val(response.data[0].varname);
+                $('#e_uniqueid').val(response.data[0].Unique_id);
+                $('#e_prop_name').val(response.data[0].propname);
+                $('#e_value').val(response.data[0].value);
+
+                var groupid=response.data[0].groupid;
+
+                 var myData = {
+                    "QueryType": "PropertyGroup",
+                    "Parameter": '@Session["PlantCode"]',
+                    "Parameter1": '@Session["CompanyCode"]',
+                    "Parameter2": '@Session["LineCode"]'
+                };
+
+                 var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+                $.ajax({
+                    type: "POST",
+                    data: myData,
+                     headers: {
+                         Authorization: 'Bearer ' + user1
+                     },
+                    url: URL + 'api/UserSettings/User_settings_details',
+                    dataType: "json",
+                    success: function (response1) {
+                        var s = '<option value="">Please Select</option>';
+
+                        for (var i = 0; i < response1.data.Table.length; i++) {
+
+
+                            if (response1.data.Table[i].GroupID == groupid) {
+                                s += '<option value="' + response1.data.Table[i].GroupID + '" selected=selected>' + response1.data.Table[i].GroupName + '</option>';
+                            }
+                            else {
+                                s += '<option value="' + response1.data.Table[i].GroupID + '">' + response1.data.Table[i].GroupName + '</option>';
+                            }
+                        }
+                        $("#e_group").html(s);
+                    }
+                }).error(function (response1) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+                    }
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                });
+
+
+            }
+            , error: function (response) {
+
+            }
+        }).error(function (response) {
+                 swal({
+                     icon: "warning",
+                     title: "Session Timeout",
+                     button: true,
+                     closeModal: false
+                 })
+                 window.location = R_url;
+             });
+    });
+
+    $("body").on("click", "#delete", function () {
+        if (confirm("Do you want to Delete this?")) {
+            var row = $(this).closest("tr");
+            var ID = row.find(".ID span").html();
+
+            var preData = {
+
+             "QueryType": "Delete",
+             "Unique_id":ID,
+                    "CompanyCode": '@Session["CompanyCode"]',
+                    "PlantCode": '@Session["PlantCode"]'
+                 };
+             var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/UserSettings/edit_delete_variablesetting_details',
+                data: preData,
+                headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+                    swal({
+                        icon: "success",
+                        title: "Details Deleted Successfully...!",
+                        showConfirmButton: false,
+                        timer: 4500
+                    })
+                    window.location = '@Url.Action("Variable_settings", "AlertSetting")';
+                }
+            }).error(function (response) {
+                 swal({
+                     icon: "warning",
+                     title: "Session Timeout",
+                     button: true,
+                     closeModal: false
+                 })
+                 window.location = R_url;
+             });
+        }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('.updated_time').text("N/A");
+        $('.shift').text("N/A");
+    });
+</script>

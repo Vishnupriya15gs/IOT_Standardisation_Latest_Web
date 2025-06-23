@@ -1,0 +1,14 @@
+﻿body {
+}
+
+.tooltip {
+    position: absolute;
+    background-color: var(--bargraph-tooltip-bg) !important;
+    color: var(--bargraph-tooltip-text) !important;
+    border-radius: 5px;
+    border: none;
+    padding: 10px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 9999;
+}

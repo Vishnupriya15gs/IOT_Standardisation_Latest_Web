@@ -1,0 +1,924 @@
+﻿@model IEnumerable<PlanDigitization_web.Models.users>
+@{
+    ViewBag.Title = "Users_settings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="page-header">
+    <h2> Users Details </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("MainDashboard","MainDashboard")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li><span>Settings</span></li>
+            <li><span>Users</span></li>
+        </ol>
+    </div>
+</header>
+
+<!-- Add New Plant-->
+<div class="row" id="divnew" style="display:none;">
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Insert_users","UserSettings")" method="post" autocomplete="off">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Add New User</h2>
+                </header>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> User ID <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="UserID" name="UserID" onkeypress="allowAlphaNumericSpace(event)" class="form-control space" title="User ID" placeholder="UserID" autocomplete="off" required />
+                        </div>
+                        @*<label class="col-sm-2 control-label"> User Name <span class="required">*</span></label>
+                            <div class="col-sm-4">
+                                <input type="text" id="UserName" name="UserName" class="form-control" title="User Name" onkeypress="return alphaOnly(event)" placeholder="User Name" autocomplete="off" required />
+                            </div>*@
+                        <label class="col-sm-2 control-label"> Password <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="password" id="Password" name="Password" onkeyup="validatePassword(this.value);" class="form-control" title="Password" placeholder="Password" minlength="8" maxlength="10" autocomplete="off" required /><span id="msg"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+
+                        <label class="col-sm-2 control-label"> First Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="FirstName" name="FirstName" onkeypress="return alphaOnly(event)" class="form-control" title="First Name" autocomplete="off" placeholder="First Name" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Last Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="LastName" name="LastName" class="form-control" title="Last Name" onkeypress="return alphaOnly(event)" autocomplete="off" placeholder="Last Name" required />
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:12px">
+                        <label class="col-sm-2 control-label"> Email <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="Email" name="Email" class="form-control space" title="Email ID" autocomplete="off" placeholder="Email ID" required />
+                            <span style="color:red">* username will be email-id</span>
+                        </div>
+                        <label class="col-sm-2 control-label"> Phone No <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="PhoneNo" name="PhoneNo" class="form-control" title="Phone No" onkeypress="return isNumberKey(event)" minlength="10" maxlength="10" placeholder="Phone No" autocomplete="off" required />
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:12px">
+
+                        <label class="col-sm-2 control-label"> Role <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control Role" name="RoleID" id="Role" title="Select Role" required></select>
+                        </div>
+
+
+                        @*<label class="col-sm-2 control-label"> Skill <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control Skill" name="SkillSet" id="Skill" title="Select Skill" required></select>
+                        </div>*@
+                    </div>
+                    <div class="form-group" style="margin-top:12px">
+                        <label class="col-sm-2 control-label"> Line Role <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control LineRole" name="LineRoleID" id="LineRole" title="Select Line Role" required></select>
+                        </div>
+                    </div>
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+<!-- Plant Details-->
+<div class="row" id="divdetails">
+    <div class="col-md-12">
+        <section class="panel">
+            <header class="panel-heading" style="background-color:teal;color:white;">
+                @if (ViewContext.Controller.HasPermission("UserSetting-Add"))
+                {
+                    <div class="panel-actions">
+                        <button class="btn btn-primary" id="add"><i class="fa fa-plus" aria-hidden="true"> Add New</i></button>
+                    </div>
+                }
+                <h2 class="panel-title" style="color:white;">List of Users : </h2>
+            </header>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="panel-body">
+                        @if (ViewContext.Controller.HasPermission("UserSetting-View"))
+                        {
+                            <table class="table table-bordered table-striped mb-none" id="datatable-default">
+                                <thead style="background-color:teal;color:white;">
+                                    <tr>
+                                        <th class="centercls"> S.No </th>
+                                        <th style="display:none;"> User ID</th>
+                                        <th> User Name </th>
+                                        <th> Name </th>
+                                        <th> Phone No </th>
+                                        <th>Email ID</th>
+                                        @*<th>Skill</th>*@
+                                        <th>Role</th>
+                                        <th>Line Role</th>
+                                        <th style="text-align:center;width:150px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @{int RowNo = 0;}
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr class="gradeX">
+                                            <td>
+                                                @{RowNo++;}@RowNo
+                                            </td>
+                                            <td class="UserID" style="display:none;">
+                                                <span>@Html.Encode(item.UserID)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.UserName)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.FirstName) @Html.Encode(item.LastName)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.PhoneNo)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.Email)</span>
+                                            </td>
+                                            @*<td>
+                                                <span>@Html.Encode(item.SkillName)</span>
+                                            </td>*@
+                                            <td>
+                                                <span>@Html.Encode(item.RoleName)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.LineRoleID)</span>
+                                            </td>
+                                            <td style="text-align:center;">
+                                                @if (ViewContext.Controller.HasPermission("UserSetting-Edit"))
+                                                {
+                                                    <button class="btn btn-primary" style="margin-top: 10px" id="edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
+                                                }
+                                                @if (ViewContext.Controller.HasPermission("UserSetting-Delete"))
+                                                {
+                                                    <button class="btn btn-danger" style="margin-top: 10px" id="delete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        @*else
+                            {
+                                <h2>View permission is denied</h2>
+                            }*@
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!--Edit Plant Details-->
+<div class="row" id="divedit" style="display:none;">
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Update_users","UserSettings")" method="post">
+            <section class="panel">
+                <header class="panel-heading" st
+                        yle="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Update User</h2>
+                </header>
+                <div class="panel-body">
+                    <input type="hidden" id="eUnique_id" name="Unique_id" />
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> User ID <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="eUserID" name="UserID" class="form-control space" title="User ID" readonly placeholder="User ID" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> User Name<span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="eUserName" name="UserName" class="form-control" title="User Name" readonly placeholder="User Name" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @*<label class="col-sm-2 control-label"> Password <span class="required">*</span></label>
+                            <div class="col-sm-4">
+                                <input type="text" id="ePassword" name="Password" class="form-control" title="Password" placeholder="Password" required />
+                            </div>*@
+                        <input type="hidden" id="ePassword" name="Password" class="form-control" title="Password" placeholder="Password" required />
+                        <label class="col-sm-2 control-label"> First Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="eFirstName" name="FirstName" onkeypress="return alphaOnly(event)" class="form-control" title="First Name" placeholder="First Name" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Last Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="eLastName" name="LastName" onkeypress="return alphaOnly(event)" class="form-control" title="Last Name" placeholder="Last Name" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Phone No <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="ePhoneNo" name="PhoneNo" class="form-control" onkeypress="return isNumberKey(event)" minlength="10" maxlength="10" title="Phone No" placeholder="Phone No" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Email <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="eEmail" name="Email" class="form-control space" title="Email ID" placeholder="Email ID" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Role <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control Role" name="RoleID" id="eRole" title="Select Role" required></select>
+                        </div>
+                        @*<label class="col-sm-2 control-label"> Skill <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control Skill" name="SkillSet" id="eSkill" title="Select Skill" required></select>
+                        </div>*@
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Line Role <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control LineRole" name="LineRoleID" id="eLineRole" title="Select Line Role" required></select>
+                        </div>
+                    </div>
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+
+@if (@TempData["message"] != null)
+{
+    <script type="text/javascript">
+    $(function () {
+        var msg = '@TempData["message"]';
+        if (msg == "Inserted") {
+            swal({
+                icon: "success",
+                title: "Details Added Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Updated") {
+            swal({
+                icon: "success",
+                title: "Details Updated Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Already PhoneNo") {
+            swal({
+                icon: "error",
+                title: "Failed to Add.Phone Number already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+       else if (msg == "Already Email") {
+            swal({
+                icon: "error",
+                title: "Failed to Add.Email ID already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+       else if (msg == "Already UserID") {
+            swal({
+                icon: "error",
+                title: "Failed to Add.User ID already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+        else {
+            swal({
+                icon: "error",
+                title: "Failed to Add",
+                button: true,
+                timer: 4500
+            })
+        }
+    });
+    </script>
+}
+
+<script type="text/javascript">
+    $("#add").click(function () {
+        $("#divnew").show();
+        $("#divdetails").hide();
+        $("#divedit").hide();
+    });
+
+    $(".cancel").click(function () {
+        $("#divnew").hide();
+        $("#divdetails").show();
+        $("#divedit").hide();
+    });
+
+</script>
+
+<script type="text/javascript">
+
+    function validatePassword(password) {
+
+        // Do not show anything when the length of password is zero.
+        if (password.length === 0) {
+            document.getElementById("msg").innerHTML = "";
+            return;
+        }
+        // Create an array and push all possible values that you want in password
+        var matchedCase = new Array();
+        // Special Charector
+        matchedCase.push("[A-Z]");      // Uppercase Alpabates
+        matchedCase.push("[0-9]");      // Numbers
+        matchedCase.push("[a-z]");     // Lowercase Alphabates
+        matchedCase.push("[$$!%*#?&@@]");
+        // Check the conditions
+        var ctr = 0;
+        for (var i = 0; i < matchedCase.length; i++) {
+            if (new RegExp(matchedCase[i]).test(password)) {
+                ctr++;
+            }
+        }
+        if (ctr > 2 && password.length > 8) {
+            ctr++;
+        }
+        // Display it
+        var color = "";
+        var strength = "";
+        switch (ctr) {
+            case 0:
+            case 1:
+            case 2:
+                strength = "Very Weak";
+                color = "red";
+                break;
+            case 3:
+                strength = "Medium";
+                color = "orange";
+                break;
+            case 4:
+                strength = "Strong";
+                color = "green";
+                break;
+        }
+        document.getElementById("msg").innerHTML = strength;
+        document.getElementById("msg").style.color = color;
+    }
+    $(document).on("keydown", ".space", function (evt) {
+
+        var caretPos = $(this)[0].selectionStart
+        if (evt.keyCode == 32 && caretPos == 0) {
+            return false;
+        }
+    });
+
+    function allowAlphaNumericSpace(e) {
+        var code = ('charCode' in e) ? e.charCode : e.keyCode;
+        if (!(code == 32) && // space
+            !(code > 47 && code < 58) && // numeric (0-9)
+            !(code > 64 && code < 91) && // upper alpha (A-Z)
+            !(code > 96 && code < 123)) { // lower alpha (a-z)
+            e.preventDefault();
+        }
+    }
+
+
+
+</script>
+
+
+<script type="text/javascript">
+
+
+
+    $(function () {
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+        var data2 = {
+            "QueryType": "Roles",
+            "Parameter1": '@Session["CompanyCode"]',
+            "Parameter": '@Session["PlantCode"]',
+            "Parameter2": '@Session["LineCode"]',
+           "CompanyCode": '@Session["CompanyCode"]',
+                            "PlantCode": '@Session["PlantCode"]'
+
+        };
+        var data3 = {
+            "QueryType": "SkillsForUserSettings",
+            "Parameter1": '@Session["CompanyCode"]'
+        };
+        var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+        $.ajax({
+            type: "POST",
+            data: data2,
+             headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+            url: URL + 'api/UserSettings/User_settings_details',
+            dataType: "json",
+            success: function (response) {
+
+                var s = '<option value="">Please Select</option>';
+                for (var i = 0; i < response.data.Table.length; i++) {
+                    s += '<option value="' + response.data.Table[i].RoleID + '">' + response.data.Table[i].RoleName + '</option>';
+                }
+                $(".Role").html(s);
+            }
+        }).error(function (response) {
+            if (response.status == "401") {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            }
+            else {
+                swal({
+                    icon: "warning",
+                    title: response.responseText,
+                    button: true,
+                    closeModal: false
+                })
+
+            }
+        });
+
+
+        var data_linerole = {
+            "QueryType": "LineRoles",
+            "Parameter1": '@Session["CompanyCode"]',
+            "Parameter": '@Session["PlantCode"]',
+            "Parameter2": '@Session["LineCode"]',
+           "CompanyCode": '@Session["CompanyCode"]',
+                            "PlantCode": '@Session["PlantCode"]'
+
+        };
+
+        $.ajax({
+            type: "POST",
+            data: data_linerole,
+            headers: {
+                Authorization: 'Bearer ' + user1
+            },
+            url: URL + 'api/UserSettings/User_settings_details',
+            dataType: "json",
+            success: function (response) {
+
+                var s = '<option value="">Please Select</option>';
+                for (var i = 0; i < response.data.Table.length; i++) {
+
+                    s += '<option value="' + response.data.Table[i].roleid + '">' + response.data.Table[i].RoleName + '</option>';
+                }
+                $(".LineRole").html(s);
+            }
+        }).error(function (response) {
+            if (response.status == "401") {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            }
+            else {
+                swal({
+                    icon: "warning",
+                    title: response.responseText,
+                    button: true,
+                    closeModal: false
+                })
+
+            }
+        });
+
+
+
+        
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+        $.ajax({
+            type: "POST",
+            data: data3,
+             headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+            url: URL + 'api/UserSettings/User_settings_details',
+            dataType: "json",
+            success: function (response) {
+
+                var s = '<option value="">Please Select</option>';
+                for (var i = 0; i < response.data.Table.length; i++) {
+                    s += '<option value="' + response.data.Table[i].Skill_ID + '">' + response.data.Table[i].SkillName + '</option>';
+                }
+                $(".Skill").html(s);
+            }
+        }).error(function (response) {
+            if (response.status == "401") {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            }
+            else {
+                swal({
+                    icon: "warning",
+                    title: response.responseText,
+                    button: true,
+                    closeModal: false
+                })
+
+            }
+             });
+    });
+</script>
+
+<script type="text/javascript">
+
+
+    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+    $("body").on("click", "#edit", function () {
+        var row = $(this).closest("tr");
+        var UserID = row.find(".UserID span").html();
+        var myData = {
+            "QueryType": "Edit_User",
+            "Parameter": UserID,
+            "Parameter1" : '@Session["CompanyCode"]'
+        };
+
+        $("#divedit").show();
+        $("#divnew").hide();
+        $("#divdetails").hide();
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+        $.ajax({
+            type: "POST",
+            url: URL + 'api/UserSettings/User_settings_details',
+            data: myData,
+             headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+            dataType: "json",
+            beforeSend: function () {
+                $('.loading').show();
+            },
+            complete: function () {
+                $('.loading').hide();
+            },
+            success: function (response) {
+                $('#eUnique_id').val(response.data.Table[0].Unique_id);
+                $('#eUserID').val(response.data.Table[0].UserID);
+                $('#ePassword').val(response.data.Table[0].Password)
+                $('#eUserName').val(response.data.Table[0].UserName);
+                $('#eFirstName').val(response.data.Table[0].FirstName);
+                $('#eLastName').val(response.data.Table[0].LastName);
+                $('#ePhoneNo').val(response.data.Table[0].PhoneNo);
+                $('#eEmail').val(response.data.Table[0].Email);
+
+                var data2 = {
+                    "QueryType": "Roles",
+                    "Parameter1": '@Session["CompanyCode"]',
+                    "Parameter": '@Session["PlantCode"]',
+                    "Parameter2": '@Session["LineCode"]',
+                    "CompanyCode": '@Session["CompanyCode"]',
+                            "PlantCode": '@Session["PlantCode"]',
+                            "LineCode": '@Session["LineCode"]'
+                };
+                var data3 = {
+                    "QueryType": "Skills",
+                    "Parameter1": '@Session["CompanyCode"]',
+                    "Parameter": '@Session["LineCode"]',
+                    "CompanyCode": '@Session["CompanyCode"]',
+                      "PlantCode": '@Session["PlantCode"]',
+                     "LineCode": '@Session["LineCode"]'
+                };
+                //string encode = HttpUtility.UrlEncode(URL + 'api/UserSettings/User_settings_details');
+                 var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+
+                $.ajax({
+                    type: "POST",
+                    data: data2,
+                      headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                    url: URL + 'api/UserSettings/User_settings_details',
+                    dataType: "json",
+                    success: function (response2) {
+                        var s = '<option value="">Please Select</option>';
+                        for (var i = 0; i < response2.data.Table.length; i++) {
+                            if (response2.data.Table[i].RoleID == response.data.Table[0].RoleID) {
+                                s += '<option value="' + response2.data.Table[i].RoleID + '" selected=selected>' + response2.data.Table[i].RoleName + '</option>';
+                            }
+                            else {
+                                s += '<option value="' + response2.data.Table[i].RoleID + '">' + response2.data.Table[i].RoleName + '</option>';
+                            }
+                        }
+                        $("#eRole").html(s);
+                    }
+                }).error(function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+                    }
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                });
+
+
+                 var dataline = {
+                    "QueryType": "LineRoles",
+                    "Parameter1": '@Session["CompanyCode"]',
+                    "Parameter": '@Session["PlantCode"]',
+                    "Parameter2": '@Session["LineCode"]',
+                    "CompanyCode": '@Session["CompanyCode"]',
+                            "PlantCode": '@Session["PlantCode"]',
+                            "LineCode": '@Session["LineCode"]'
+                };
+
+
+                $.ajax({
+                    type: "POST",
+                    data: dataline,
+                    headers: {
+                        Authorization: 'Bearer ' + user1
+                    },
+                    url: URL + 'api/UserSettings/User_settings_details',
+                    dataType: "json",
+                    success: function (response2) {
+                        var s = '<option value="">Please Select</option>';
+                        for (var i = 0; i < response2.data.Table.length; i++) {
+                            if (response2.data.Table[i].roleid == response.data.Table[0].LineRoleID) {
+                                s += '<option value="' + response2.data.Table[i].roleid + '" selected=selected>' + response2.data.Table[i].RoleName + '</option>';
+                            }
+                            else {
+                                s += '<option value="' + response2.data.Table[i].roleid + '">' + response2.data.Table[i].RoleName + '</option>';
+                            }
+                        }
+                        $("#eLineRole").html(s);
+                    }
+                }).error(function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+                    }
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                });
+
+
+
+
+             var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+
+
+
+
+                $.ajax({
+                    type: "POST",
+                    data: data3,
+                      headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                    url: URL + 'api/Values/User_settings_details',
+                    dataType: "json",
+                    success: function (response3) {
+                        var s = '<option value="">Please Select</option>';
+                        for (var i = 0; i < response3.data.Table.length; i++) {
+                            if (response3.data.Table[i].Skill_ID == response.data.Table[0].SkillSet) {
+                                s += '<option value="' + response3.data.Table[i].Skill_ID + '" selected=selected>' + response3.data.Table[i].SkillName + '</option>';
+                            }
+                            else {
+                                s += '<option value="' + response3.data.Table[i].Skill_ID + '">' + response3.data.Table[i].SkillName + '</option>';
+                            }
+                        }
+                        $("#eSkill").html(s);
+                    }
+                }).error(function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+                    }
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+             });
+            }
+            , error: function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+            }
+        });
+             //}).error(function (response) {
+             //    swal({
+             //        icon: "warning",
+             //        title: "Session Timeout",
+             //        button: true,
+             //        closeModal: false
+             //    })
+             //    window.location = R_url;
+             //});
+    });
+
+    $("body").on("click", "#delete", function () {
+        if (confirm("Do you want to Delete this User?")) {
+            var row = $(this).closest("tr");
+            var UserID = row.find(".UserID span").html();
+            var myData = {
+                "QueryType": "Delete_User",
+                "Parameter": UserID,
+                "Parameter1" : '@Session["CompanyCode"]'
+            };
+             var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/UserSettings/delete_User_settings_details',
+                data: myData,
+                   headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+                    swal({
+                        icon: "success",
+                        title: "User Details Deleted Successfully...!",
+                        button: true,
+                        timer: 4500
+                    })
+                   window.location = '@Url.Action("Users_settings", "UserSettings")';
+                }
+            }).error(function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+             });
+        }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('.updated_time').text("N/A");
+        $('.shift').text("N/A");
+        //$('#datatable-default').DataTable();
+
+        if ($.fn.DataTable.isDataTable('#datatable-default')) {
+            $('#datatable-default').DataTable().destroy();
+        }
+
+
+        $('#datatable-default').DataTable({
+
+            "responsive": true,
+            "autoWidth": false,
+            scrollY: true,
+            scrollX: true,
+            scroller: true
+        });
+
+
+    });
+</script>

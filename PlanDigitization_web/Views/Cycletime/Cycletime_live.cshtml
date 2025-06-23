@@ -1,0 +1,601 @@
+﻿
+@{ ViewBag.Title = "Cycletime_live";
+    Layout = "~/Views/Shared/_Layout.cshtml"; }
+
+<header class="page-header">
+    <h2> Cycle Time - Live </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("MainDashboard","MainDashboard")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+        </ol>
+    </div>
+</header>
+
+
+<div class="row" id="Historic" style="display:block;">
+    <div class="col-md-2"></div>
+    <div class="col-md-12">
+        <section class="panel">
+            <header class="panel-heading" style="background-color:teal;color:white;">
+                <div class="panel-actions">
+                </div>
+                <h2 class="panel-title" style="color:white;"> Cycle Time Live </h2>
+            </header>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label" style="right: 10px;top: 5px;"> Select Machine  <span class="required">*</span></label>
+                    <div class="col-sm-2" style="right: 87px;">
+                        <select class="form-control" id="Machine" onchange="select_machine()">
+                            <option value="">Select</option>
+                        </select>
+                    </div>
+
+                    <label class="col-sm-2 control-label" style="right: 80px;top: 5px;"> No of Records  <span class="required">*</span></label>
+                    <div class="col-sm-2" style="right: 160px;">
+                        <input type="text" value="100" id="records" class="form-control" />
+                    </div>
+
+                    <div class="col-sm-4" style="text-align: right; width: 170px;right: 100px;">
+                        <button type="button" id="Search_live" class="btn btn-primary">Search</button>
+                        <button type="reset" id="btn_cancel" class="btn btn-danger cancel">Reset</button>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+
+<div class="row" id="">
+    <div class="col-md-2"></div>
+    <div class="col-md-12">
+        <section class="panel">
+            <header class="panel-heading" style="background-color:teal;color:white;">
+                <div class="panel-actions">
+                </div>
+                <h2 class="panel-title" style="color:white;"> Variant : <span id="variant_id"></span> </h2>
+            </header>
+            <div class="panel-body">
+                <div class="form-group" id="tbl_live">
+                    <h3 id="error_msg" style="color:red;"></h3>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('.updated_time').text(new Date().toLocaleString());
+        $('.shift').text('@Session["ShiftID"]');
+
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+        var data_machine = {
+                        "Flag": "Subsystem",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+                        "LineCode":'@Session["LineCode"]',
+                    };
+
+        $.ajax({
+            type: "POST",
+            data: data_machine,
+            headers: {
+                Authorization: 'Bearer ' + user1
+            },
+            url: '@Url.Action("GetSettingdatas1", "Main")',
+            dataType: "json",
+
+            success: function (response)
+            {
+                var s = '<option value="">Select Machine</option>';
+                for (var i = 0; i < response.data.length; i++) {
+                    s += '<option value="' + response.data[i].Code + '">' + response.data[i].Code + "-" + response.data[i].Name + '</option>';
+                }
+                $("#Machine").html(s);
+            }
+        })
+
+    });
+
+    function select_machine()
+    {
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+        var Machine = $("#Machine").val();
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("Set_Mc_Code", "CycleTime")',
+            data: '{id: ' + JSON.stringify(Machine) + '}',
+            headers: {
+                Authorization: 'Bearer ' + user1
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response)
+            {
+
+            },
+            error: function (response) {
+            }
+        });
+    }
+
+
+</script>
+
+<script>
+    window.machinecode = ''
+
+    document.getElementById("btn_cancel").addEventListener("click", function () {
+        $("#Machine").val('');
+        $("#tbl_live").html('');
+        $("#variant_id").html('');
+    });
+    document.getElementById("Search_live").addEventListener("click", function () {
+
+        getcycletime();
+
+    });
+
+    function getcycletime() {
+
+        $('.updated_time').text(new Date().toLocaleString());
+        $('.shift').text('@Session["ShiftID"]');
+
+
+        $("#tbl_live").html('');
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+        var Machine = $("#Machine").val();
+        var records = $("#records").val();
+
+        if (Machine == "") {
+            swal({
+                icon: "error",
+                title: "Please Select Machine...!",
+                button: true,
+                timer: 4500
+            })
+            return;
+        }
+        else
+            if (records == "") {
+                swal({
+                    icon: "error",
+                    title: "Enter No Of Records",
+                    button: true,
+                    timer: 4500
+                })
+                return;
+            }
+
+        window.machinecode = $("#Machine").val();
+        var myData = {
+            "QueryType": "Cycletime_Live",
+            "CompanyCode": '@Session["CompanyCode"]',
+            "PlantCode": '@Session["PlantCode"]',
+            "line": '@Session["LineCode"]',
+            "Machine": Machine,
+            "records": records
+        };
+        $.ajax({
+            type: "POST",
+            url: URL + 'api/CycleTime/Get_Cycletime_Live',
+            data: myData,
+            headers: {
+                Authorization: 'Bearer ' + user1
+            },
+            dataType: "json",
+            beforeSend: function () {
+                $('.loading').show();
+            },
+            complete: function () {
+                $('.loading').hide();
+            },
+            success: function (response)
+            {
+                $("#error_msg").html('');
+                if (response.status != "Error") {
+                    $("#error_msg").html('');
+                    var deviation = '';
+                    var cycle_time_details = new Array();
+                    var myData = {
+                        "QueryType": "Deviation_cycle",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+                        "line": '@Session["LineCode"]',
+                        "Machine": Machine,
+                    };
+                    $.ajax({
+                        type: "POST",
+                        url: URL + 'api/CycleTime/Get_Cycletime_Live',
+                        data: myData,
+                        headers: {
+                            Authorization: 'Bearer ' + user1
+                        },
+                        dataType: "json",
+                        success: function (result) {
+
+                            var Live_data = response.data.Table;
+
+                            var col = [];
+                            for (var i = 0; i < Live_data.length; i++) {
+                                for (var key in Live_data[i]) {
+                                    if (col.indexOf(key) === -1) {
+                                        col.push(key);
+                                    }
+                                }
+                            }
+
+                            var table = document.createElement("table");
+
+                            table.setAttribute('class', 'table table-bordered table-striped mb-none');
+                            table.setAttribute('id', 'datatable-default');
+
+
+                            var tr = table.insertRow();
+
+                            for (var i = 1; i < col.length; i++) {
+                                var th = document.createElement("th");
+
+                                if (col[i] == 'Auto_cycle') {
+                                    th.innerText = 'Others Auto Cycletime';
+                                }
+                                else if (col[i] == 'Manual_cycle') {
+                                    th.innerText = 'Others Manual Cycletime';
+                                }
+                                else if (col[i] == 'Total_cycle') {
+                                    th.innerText = 'Total Cycletime';
+                                }
+                                else {
+                                    th.innerText = col[i];
+                                }
+
+                                tr.appendChild(th);
+                            }
+
+
+                            for (var i = 0; i < Live_data.length; i++) {
+
+                                tr = table.insertRow(-1);
+
+                                var tot_cycle = 0;
+
+                                for (var j = 1; j < col.length; j++) {
+
+                                    var tabCell = tr.insertCell(-1);
+
+
+
+                                    var count = 0;
+                                    for (var ii = 0; ii < result.data.Table.length; ii++) {
+
+                                        if (count == 0) {
+                                            if (result.data.Table[ii].Operations == col[j])
+                                            {
+                                                if (result.data.Table[ii].cycle != null && result.data.Table[ii].cycle != '' && result.data.Table[ii].cycle != '0') {
+                                                    tabCell.innerText = Live_data[i][col[j]] + " / " + (Live_data[i][col[j]] - result.data.Table[ii].cycle);
+
+                                                }
+                                                else {
+                                                    tabCell.innerText = Live_data[i][col[j]] + " / " + (result.data.Table[ii].cycle);
+                                                    //tot_cycle += (Live_data[i][col[j]]);
+                                                }
+                                                count += 1;
+
+
+
+                                            }
+                                            else {
+                                                tabCell.innerText = Live_data[i][col[j]];
+                                              //tot_cycle += (Live_data[i][col[j]]);
+                                            }
+                                            //tot_cycle = tot_cycle+ parseFloat(Live_data[i][col[j]]);
+                                            //console.log('total cycle'+tot_cycle)
+
+                                        }
+
+                                    }
+
+                                    //console.log(tot_cycle);
+
+                                    //if (col[j] == 'Total_cycle') {
+                                    //    tabCell.innerHTML = tot_cycle;
+                                    //}
+
+
+                                }
+
+                                $("#variant_id").text(Live_data[i][col[0]]);
+                            }
+
+                            var divContainer = document.getElementById("tbl_live");
+                            divContainer.innerText = "";
+                            divContainer.appendChild(table);
+
+                        }, error: function (result) {
+
+                        }
+                    });
+                }
+                else
+                {
+                    $("#error_msg").text(response.msg);
+                }
+            },
+
+            error: function (response)
+            {
+
+            }
+        });
+        //setTimeout(getcycletime, 10000);
+    }
+
+    function set_machine() {
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+        var session_McCode = '@Session["McCode"]';
+
+
+        var data_machine = {
+            "QueryType": "Get_machine",
+            "Parameter": '@Session["CompanyCode"]',
+            "Parameter1": '@Session["PlantCode"]',
+            "Parameter2": '@Session["LineCode"]',
+             "CompanyCode": '@Session["CompanyCode"]',
+                    "PlantCode": '@Session["PlantCode"]',
+                    "LineCode": '@Session["LineCode"]'
+        };
+
+        $.ajax({
+            type: "POST",
+            data: data_machine,
+            headers: {
+                Authorization: 'Bearer ' + user1
+            },
+            url: URL + "api/Values/User_settings_details",
+            dataType: "json",
+
+            success: function (response) {
+
+                var s = '<option value="">Select Machine</option>';
+                for (var i = 0; i < response.data.Table.length; i++) {
+
+                    if (response.data.Table[i].AssetID == session_McCode) {
+                        s += '<option value="' + response.data.Table[i].AssetID + '" selected=selected>' + response.data.Table[i].AssetName + '</option>';
+                    }
+                    else {
+                        s += '<option value="' + response.data.Table[i].AssetID + '">' + response.data.Table[i].AssetName + '</option>';
+                    }
+                }
+                $("#Machine").html(s);
+            }
+        });
+    }
+
+
+    function fetch_live_details()
+    {
+        //set_machine();
+
+        $("#error_msg").text('');
+        $("#tbl_live").html('');
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+        var Machine = $("#Machine").val();
+        var records = $("#records").val();
+
+        if (Machine == "") {
+            swal({
+                icon: "error",
+                title: "Please Select Machine...!",
+                button: true,
+                timer: 4500
+            })
+            return;
+        }
+        else
+            if (records == "") {
+                swal({
+                    icon: "error",
+                    title: "Enter No Of Records",
+                    button: true,
+                    timer: 4500
+                })
+                return;
+            }
+        var myData = {
+            "QueryType": "Cycletime_Live",
+            "CompanyCode": '@Session["CompanyCode"]',
+            "PlantCode": '@Session["PlantCode"]',
+            "line": '@Session["LineCode"]',
+            "Machine": Machine,
+        };
+        $.ajax({
+            type: "POST",
+            url: URL + 'api/CycleTime/Get_Cycletime_Live',
+            data: myData,
+            headers: {
+                Authorization: 'Bearer ' + user1
+            },
+            dataType: "json",
+            beforeSend: function () {
+                $('.loading').show();
+            },
+            complete: function () {
+                $('.loading').hide();
+            },
+            success: function (response)
+            {
+                if (response.status != "Error")
+                {
+                    $("#error_msg").text("");
+
+                    var deviation = '';
+                    var cycle_time_details = new Array();
+                    var myData = {
+                        "QueryType": "Deviation_cycle",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+                        "line": '@Session["LineCode"]',
+                        "Machine": Machine,
+                    };
+                    $.ajax({
+                        type: "POST",
+                        url: URL + 'api/CycleTime/Get_Cycletime_Live',
+                        data: myData,
+                        headers: {
+                            Authorization: 'Bearer ' + user1
+                        },
+                        dataType: "json",
+                        success: function (result) {
+                            $("#Machine").val()=window.machinecode
+                            var Live_data = response.data.Table;
+
+                            var col = [];
+                            for (var i = 0; i < Live_data.length; i++) {
+                                for (var key in Live_data[i]) {
+                                    if (col.indexOf(key) === -1) {
+                                        col.push(key);
+                                    }
+                                }
+                            }
+
+                            var table = document.createElement("table");
+
+                            table.setAttribute('class', 'table table-bordered table-striped mb-none');
+                            table.setAttribute('id', 'datatable-default');
+
+
+                            var tr = table.insertRow();
+
+                            for (var i = 1; i < col.length; i++) {
+                                var th = document.createElement("th");
+
+                                if (col[i] == 'Auto_cycle') {
+                                    th.innerText = 'Others Auto Cycletime';
+                                }
+                                else if (col[i] == 'Manual_cycle') {
+                                    th.innerText = 'Others Manual Cycletime';
+                                }
+                                else if (col[i] == 'Total_cycle') {
+                                    th.innerText = 'Total Cycletime';
+                                }
+                                else {
+                                    th.innerText = col[i];
+                                }
+
+                                tr.appendChild(th);
+                            }
+
+                            for (var i = 0; i < Live_data.length; i++) {
+
+                                tr = table.insertRow(-1);
+
+                                var tot_cycle = 0;
+
+                                for (var j = 1; j < col.length; j++) {
+
+                                    var tabCell = tr.insertCell(-1);
+
+                                    var count = 0;
+                                    for (var ii = 0; ii < result.data.Table.length; ii++) {
+
+                                        if (count == 0) {
+                                            if (result.data.Table[ii].Operations == col[j])
+                                            {
+                                                if (result.data.Table[ii].cycle != null && result.data.Table[ii].cycle != '') {
+                                                    tabCell.innerText = Live_data[i][col[j]] + " / " + (Live_data[i][col[j]] - result.data.Table[ii].cycle);
+                                                    //tot_cycle += parseFloat(Live_data[i][col[j]]);
+                                                }
+                                                else {
+                                                    tabCell.innerText = Live_data[i][col[j]] + " / " + (result.data.Table[ii].cycle);
+                                                   // tot_cycle += (Live_data[i][col[j]]);
+                                                }
+                                                count += 1;
+                                            }
+                                            else {
+                                                tabCell.innerText = Live_data[i][col[j]];
+                                               // tot_cycle += (Live_data[i][col[j]]);
+                                            }
+
+                                        }
+                                    }
+
+                                    //console.log(tot_cycle);
+
+                                    //if (col[j] == 'Total_cycle') {
+                                    //    tabCell.innerHTML = tot_cycle;
+                                    //}
+
+                                }
+
+                                $("#variant_id").text(Live_data[i][col[0]]);
+                            }
+
+                            var divContainer = document.getElementById("tbl_live");
+                            divContainer.innerText = "";
+                            divContainer.appendChild(table);
+
+
+                        }, error: function (result) {
+
+                        }
+                    });
+                }
+                else
+                {
+                     $("#error_msg").text(response.msg);
+
+                }
+            },
+
+            error: function (response)
+            {
+
+            }
+        });
+
+        //setTimeout(fetch_live_details, 10000);
+    }
+
+    document.getElementById("Search_live").addEventListener("click", function ()
+    {
+       // set_machine();
+        $('.updated_time').text(new Date().toLocaleString());
+        //$('.shift').text("N/A");
+
+        $('.shift_n').show();
+        $('.updated_time_n').show();
+        fetch_live_details();
+
+    });
+
+
+</script>
+
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+
+
+

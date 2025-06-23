@@ -1,0 +1,545 @@
+﻿@model PlanDigitization_web.Models.MailModel
+@{
+    ViewBag.Title = "Feedback";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<style>
+
+
+    .popup {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 20%;
+        top: 20%;
+        width: 70%;
+        height: 70%;
+        overflow: auto;
+        background-color: rgb(0,0,0);
+        background-color: rgb(179 168 168 / 90%);
+    }
+
+    #popup-image {
+        display:flex;
+        position:relative;
+        left:3%;
+        top:9%;
+        max-width: 95%;
+        max-height: 95%;
+        background-color: black;
+
+        overflow:unset;
+       
+      
+    }
+
+    .close {
+        color: #000000;
+        position: absolute;
+        font-size: 24px;
+        font-weight: bold;
+        top: 15px;
+        right: 15px;
+        display: block;
+        cursor: pointer;
+        opacity:1;
+    }
+
+
+
+</style>
+
+
+<header class="page-header">
+    <h2>Feedback </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("MainDashboard","MainDashboard")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+
+        </ol>
+    </div>
+</header>
+
+<div class="row" id="">
+    <div class="col-md-12">
+        <section class="panel">
+            <header class="panel-heading">
+
+                <h2 class="panel-title">Your Feedback </h2>
+            </header>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="panel-body">
+                        @using (@Html.BeginForm("Feedback", "Feedbac", FormMethod.Post, new { @id = "form1", @enctype = "multipart/form-data" }))
+                        {
+                            @Html.ValidationSummary()
+
+
+                            <table class="table-condensed">
+                                <tbody>
+                                    <tr>
+                                        <td>User Name</td>
+                                        <td id="username">@Session["UserName"]</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Feedback Topic :<span class="required">*</span></td>
+                                        <td><input type="text" class="form-control" id="Feedback" name="Subject" required /></td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>Upload :<span class="required">*</span></td>
+                                        <td>
+                                            <input name="fileUploader" id="fileview" type="file" class="btn btn-primary" required onchange="return funvalidationfile(this);" />
+                                            <span style="color:red">* png, jpg, txt, jpeg extensions only less than 3mb</span>
+                                            <button class="btn btn-primary" style="margin-left:20px;display:none" id="download"></button>
+                                            @*<img id="myImg" style="display:none" src="" width="107" height="98">*@
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Comments :<span class="required">*</span></td>
+                                        <td><input type="text" id="comments" class="form-control" name="Body" required /></td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div style="display:flex">
+                                <input type="submit" class="btn btn-success" onclick="return check()" style="margin-left:500px" value="Send" />
+                                <input type="reset" id="cancel1" class="btn btn-danger" style="margin-left:30px" value="Cancel" />
+                            </div>
+                            <br />
+                        }
+
+                    </div>
+
+                </div>
+
+
+                @if (ViewContext.Controller.IsSuperAdmin())
+                {
+                    <button type="button" class="btn btn-info" style="color:black;" id="show" onclick="variantsummary()">Feedback list</button>
+                }
+            </div>
+        </section>
+    </div>
+</div>
+
+<div id="popup" class="popup">
+    <span class="close" onclick="closePopup()">&times;</span>
+    <img id="popup-image" src="" alt="Popup Image">
+</div>
+
+
+<div class="row" id="divdetails" style="display:none;">
+    <div class="col-md-12">
+        <section class="panel">
+            <header class="panel-heading">
+                <h2 class="panel-title">List of Feedback : </h2>
+            </header>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="panel-body">
+                        <table class="table table-bordered table-striped mb-none" id="datatable-default1">
+                            <thead>
+                                <tr>
+                                    <th class="centercls"> S.No </th>
+                                    <th style="display:none;"></th>
+                                    <th> Feedback </th>
+                                    <th> Comments </th>
+                                    <th> Given By </th>
+                                    <th> Date </th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="tabledata">
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <footer class="panel-footer">
+                        <div class="row">
+                            <div class="col-sm-6 col-sm-3">
+
+                                <button type="reset" id="cancel" class="btn btn-danger cancel">Back</button>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+@if (@TempData["message"] != null)
+{
+    <script type="text/javascript">
+    $(function () {
+        var msg = '@TempData["message"]';
+        //alert(msg)
+        //console.log(msg)
+
+        if (msg =="Mail sent") {
+            swal({
+                icon: "success",
+                title: "Mail Sent Successfully...!",
+                button: true,
+                timer: 4500
+            }).then(function (result) {
+                    window.location = '@Url.Action("Feedback", "Feedbac")';
+             })
+            msg = "";
+        }
+        else if (msg == "File extension not supported") {
+            swal({
+                icon: "error",
+                title: "File extension not supported...!",
+                button: true,
+                timer: 4500
+            }).then(function (result) {
+                    window.location = '@Url.Action("Feedback", "Feedbac")';
+             })
+            msg = "";
+        }
+
+            else if (msg == "Already") {
+            swal({
+                icon: "error",
+                title: "Feedback topic already exist...!",
+                button: true,
+                timer: 4500
+            }).then(function (result) {
+                    window.location = '@Url.Action("Feedback", "Feedbac")';
+             })
+            msg = "";
+        }
+        else {
+
+            swal({
+                icon: "error",
+                title: "Error sending mail",
+                button: true,
+                timer: 4500
+            }).then(function (result) {
+                    window.location = '@Url.Action("Feedback", "Feedbac")';
+             })
+             msg = "";
+        }
+
+    });
+    </script>
+}
+
+<script type="text/javascript">
+    $("#show").click(function () {
+        $("#divnew").hide();
+        $("#divdetails").show();
+    });
+
+    $(".cancel").click(function () {
+        $("#divnew").show();
+        $("#divdetails").hide();
+    });
+    $("#cancel1").click(function () {
+        $("#Feedback").val("");
+        $("#comments").val("");
+        $("#download").hide();
+        $("#myImg").hide();
+
+    });
+
+
+</script>
+
+<script type="text/javascript">
+
+    function check()
+    {
+        var plant = '@Session["PlantCode"]';
+
+        var company = '@Session["CompanyCode"]';
+
+        if (plant = "" || company == "" || plant == null || company == null) {
+             swal({
+                    icon: "warning",
+                    title: "Company And Plant Code needed",
+                    button: true,
+                    closeModal: false
+                })
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
+
+
+    function funvalidationfile(ctrl) {
+            for (var i = 0; i < ctrl.files.length; i++) {
+                var file = ctrl.files[i];
+                var iSize = (ctrl.files[i].size / 1024 / 1024);
+                var FileName = file.name;
+                var FileExt = FileName.substr(FileName.lastIndexOf('.') + 1);
+                //if (FileExt.toUpperCase() != "jpg" || FileExt.toUpperCase() != "png" || FileExt.toUpperCase() != "jpeg" || FileExt.toUpperCase() != "txt") {
+                //    $(ctrl).val("");
+                //    alert("Please upload files having extensions: .jpg .png .jpeg .txt only");
+                //    return false;
+                //}
+                 if (FileExt.toUpperCase() != "JPG")
+                {
+                    if (FileExt.toUpperCase() != "PNG")
+                    {
+                        if (FileExt.toUpperCase() != "JPEG")
+                        {
+                            if (FileExt.toUpperCase() != "TXT")
+                            {
+                                $(ctrl).val("");
+                                alert("Please upload files having extensions: .jpg .png .jpeg .txt only");
+                                return false;
+                            }
+                         return true;
+                        }
+                    return true;
+                    }
+                return true;
+                }
+                if (iSize > 3) {
+                    $(ctrl).val("");
+                    alert("File size should be less than 3 MB");
+                    return false;
+                }
+            }
+            return true;
+        }
+
+    function variantsummary() {
+
+        var HURL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+        $(".tabledata").html('');
+         var cols = '';
+        var myData = {
+                "Parameter1": '@Session["CompanyCode"]',
+            "Parameter": '@Session["PlantCode"]',
+                "Parameter2": '@Session["LineCode"]',
+                "QueryType":'Feedback_details',
+         };
+         //alert(dateTime)
+          var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+            $.ajax({
+                type: 'Get',
+                url: HURL + 'api/UserSettings/GetEmployee',
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                dataType: 'json'
+            }).success(function (response) {
+         $.ajax({
+             type: 'POST',
+             url: HURL + 'api/UserSettings/list_feedback_details',
+             data: myData,
+             dataType: 'json'
+         }).success(function (response) {
+             //console.log(response)
+
+
+               var rowsCnt = document.getElementById("datatable-default1").getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
+                    if (rowsCnt > 0) {
+                        for (var i = 0; i < rowsCnt; i++) {
+                            document.getElementById("datatable-default1").deleteRow(1);
+                        }
+                    }
+
+                    if ($.fn.DataTable.isDataTable('#datatable-default1')) {
+                        $('#datatable-default1').DataTable().destroy();
+                    }
+
+             $(".tabledata").html('');
+
+             if (response != 0) {
+
+                 //if (response.data.Table.length != 0) {
+
+                 for (var i = 0; i < response.length; i++) {
+                     var num=i+1
+                    var newRow = $("<tr>");
+                    var cols = '';
+                    var sc = '';
+                    //var cols = $("<tr>");
+
+                    cols += "<td> " + num + "</td> ";
+                     cols += "<td style='display:none;class=ID'> " + response[i].FB_ID + "</td> ";
+                     cols += "<td><input style='display:none' id='feed' value='" + response[i].Feedback + "' class='form-control feedbac'/><span>" + response[i].Feedback + "</span></td>";
+                     cols += "<td> " + response[i].FB_Comments + "</td> ";
+                     cols += "<td> " + response[i].UserName + "</td> ";
+                     cols += "<td> " + response[i].FB_Date.split('T')[0] + "</td> ";
+                     cols += "<td><button class='btn btn-primary editfeedback' onclick='edit_feed("+ response[i].FB_ID +")' style='margin-top: 10px' id='edit'>view</button></td> ";
+
+                    cols += "</tr>"
+                    //cols += "</tr>";
+                     newRow.append(cols);
+                     $(".tabledata").append(newRow);
+                 }
+
+
+                   $('#datatable-default1').DataTable({
+
+                            "responsive": true,
+                            "autoWidth": false,
+                            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]]
+
+                        });
+
+
+
+             }
+             else {
+                 //alert(response.status)
+                 var newRow = $("<tr>");
+                    var cols = '';
+                    var sc = '';
+                    //var cols = $("<tr>");
+
+                    cols += "<td colspan='6' style='text-align:center;align-content:center;'>No data available</td> ";
+
+                    cols += "</tr>"
+                    //cols += "</tr>";
+                     newRow.append(cols);
+                     $(".tabledata").append(newRow);
+             }
+
+
+         }).error(function (response) {
+            // alert(response.status)
+             var newRow = $("<tr>");
+                    var cols = '';
+                    var sc = '';
+                    //var cols = $("<tr>");
+
+                    cols += "<td colspan='6' style='text-align:center;align-content:center;'>No data available</td> ";
+
+                    cols += "</tr>"
+                    //cols += "</tr>";
+                     newRow.append(cols);
+                     $(".tabledata").append(newRow);
+         });
+            }).error(function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+            });
+            }
+
+
+
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        $('.updated_time').text("N/A");
+        $('.shift').text("N/A");
+    });
+
+
+
+    //$("body").on("click", "#datatable-default1 .editfeedback", function () {
+    function edit_feed(id) {
+
+
+
+        var row = $(this).closest("tr");
+        var Feedback_id = id;
+
+         var HURL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+
+
+        var myData = {
+                "Parameter1": '@Session["CompanyCode"]',
+            "Parameter": '@Session["PlantCode"]',
+                "Parameter2": '@Session["LineCode"]',
+            "QueryType": 'Edit_feedback',
+            "Parameter3": Feedback_id
+         };
+         //alert(dateTime)
+          var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+
+
+            $.ajax({
+                type: 'Get',
+                url: HURL + 'api/UserSettings/GetEmployee',
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                dataType: 'json'
+            }).success(function (response) {
+            }).success(function (response) {
+                $.ajax({
+                    type: 'POST',
+                    url: HURL + 'api/UserSettings/list_feedback_details',
+                    data: myData,
+                    dataType: 'json'
+                }).success(function (response) {
+                    //console.log(response)
+                    $("#download").show();
+                    $("#myImg").show();
+                    $('#comments').val(response[0].FB_Comments);
+                    $('#Feedback').val(response[0].Feedback);
+                    $('#download').html(response[0].FB_Document);
+                    var popup = document.getElementById('popup');
+                    popup.style.display = 'block';
+                    document.getElementById("popup-image").src = "../Feedbackimage/" + response[0].FB_Document;
+
+                   
+                })
+            });
+
+
+
+    }
+
+
+
+    function closePopup() {
+        var popup = document.getElementById('popup');
+        popup.style.display = 'none';
+    }
+
+
+
+
+
+
+</script>
+
+

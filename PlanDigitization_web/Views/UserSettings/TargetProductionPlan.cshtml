@@ -1,0 +1,375 @@
+﻿
+@{
+    ViewBag.Title = "TargetProductionPlan";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+
+<link rel="stylesheet" type="text/css" href="~/assets1/datepicker_normal/jquery-ui-1.8.19.custom.css">
+<script type="text/javascript" src="~/Scripts/Common js/validation.js"></script>
+
+<header class="page-header">
+    <h2>Target  Production Plan</h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("NewDash","Main")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+        </ol>
+    </div>
+</header>
+
+
+
+
+
+
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+    }
+
+    .firstdiv > select {
+        width: 200px
+    }
+
+    .seconddiv > input {
+        width: 100px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .seconddiv {
+        margin-top: 30px;
+    }
+
+    .inline-group {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+        .inline-group label {
+            margin-left: 30px;
+        }
+
+    select, input {
+        height: 35px;
+        padding: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    button {
+        margin-top: 50px;
+        padding: 8px 16px;
+        margin-right: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border: none;
+        border-radius: 4px;
+        background-color: #007BFF;
+        color: white;
+        cursor: pointer;
+    }
+
+        button[type="button"] {
+            background-color: #FF3341;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button[type="button"]:hover {
+            background-color: #CC0411;
+        }
+</style>
+
+@if (ViewContext.Controller.HasPermission("TargetProductionPlan-View"))
+{
+
+    <div class="row">
+        <div class="col-md-12">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;margin-right:50px;">
+
+                    <h2 class="panel-title" style="color:white;"> Target  Production Plan  </h2>
+
+                </header>
+                <div class="panel-body" style="margin-right: 50px;">
+                    <form id="optionsForm" action="@Url.Action("Insert_Production","UserSettings")" method="post">
+                        <div class="form-group inline-group firstdiv">
+                            <label for="year">Year:</label>
+                            <select id="year" name="year"></select>
+                            <label for="month">Month:</label>
+                            <select id="month" name="Month">
+                                <option value="1">January</option>
+                                <option value="2">February</option>
+                                <option value="3">March</option>
+                                <option value="4">April</option>
+                                <option value="5">May</option>
+                                <option value="6">June</option>
+                                <option value="7">July</option>
+                                <option value="8">August</option>
+                                <option value="9">September</option>
+                                <option value="10">October</option>
+                                <option value="11">November</option>
+                                <option value="12">December</option>
+                            </select>
+                            <label for="shift">Shift<span class="required">*</span>:</label>
+                            <select id="shift" name="shift" required>
+                                <option>Select Shift </option>
+                                <option value="S1">S1 - 7:00-15:30</option>
+                                <option value="S2">S2 - 15:30-00:00</option>
+                                <option value="S3">S3 - 00:00-07:00</option>
+                            </select>
+                        </div>
+                        <div class="form-group inline-group seconddiv">
+                            <label for="hour1">Hour 1<span class="required">*</span>:</label>
+                            <input type="number" id="hour1" name="FirstHr" min="5" max="15" oninput="TargetProduction(this)" required>
+                            <label for="hour2">Hour 2<span class="required">*</span>:</label>
+                            <input type="number" id="hour2" name="SecondHr" min="5" max="15" oninput="TargetProduction(this)" required>
+                            <label for="hour3">Hour 3<span class="required">*</span>:</label>
+                            <input type="number" id="hour3" name="ThirdHr" min="5" max="15" oninput="TargetProduction(this)" required>
+                            <label for="hour3">Hour 4<span class="required">*</span>:</label>
+                            <input type="number" id="hour4" name="FourthHr" min="5" max="15" oninput="TargetProduction(this)" required>
+                        </div>
+                        <div class="form-group inline-group seconddiv">
+                            <label for="hour5">Hour 5<span class="required">*</span>:</label>
+                            <input type="number" id="hour5" name="FifthHr" min="5" max="15" oninput="TargetProduction(this)" required>
+                            <label for="hour6">Hour 6<span class="required">*</span>:</label>
+                            <input type="number" id="hour6" name="SixthHr" min="5" max="15" oninput="TargetProduction(this)" required>
+                            <label for="hour7">Hour 7<span class="required">*</span>:</label>
+                            <input type="number" id="hour7" name="SeventhHr" min="5" max="15" oninput="TargetProduction(this)" required>
+                            <label for="hour8">Hour 8<span class="required">*</span>:</label>
+                            <input type="number" id="hour8" name="EightthHr" min="5" max="15" oninput="TargetProduction(this)" required>
+
+                        </div>
+
+
+
+
+
+                        <div class="form-group" style="text-align:center;margin-right:80px;">
+                            <button type="submit">Submit</button>
+                            <button type="button" id="reset">Reset</button>
+                            @*<button type="button" onclick="window.location.reload();">Cancel</button>*@
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </div>
+
+}
+else
+{
+    <div class="row">
+        <h2 class="panel-title">View Permission is denied</h2>
+    </div>
+}
+
+
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+
+
+<script>
+    // Populate the year dropdown
+    $(function ()
+    {
+        console.log('@TempData["message"]');
+        var msg = '@TempData["message"]';
+
+        if (msg == "Inserted") {
+            document.getElementById("shift").value = '@TempData["SelectedShift"]';
+            shiftChange();
+            swal({
+                icon: "success",
+                title: "Details Added Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else
+            if (msg == "Updated") {
+                document.getElementById("shift").value = '@TempData["SelectedShift"]';
+                shiftChange();
+                swal({
+                    icon: "success",
+                    title: "Details Updated Successfully...!",
+                    button: true,
+                    timer: 4500
+                })
+            }
+            else { return;}
+    })
+    const yearSelect = document.getElementById('year');
+    const currentYear = new Date().getFullYear();
+    for (let i = 0; i <= 6; i++) {
+        const option = document.createElement('option');
+        option.value = currentYear + i;
+        option.textContent = currentYear + i;
+        yearSelect.appendChild(option);
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const selectElement = document.getElementById("month");
+        const currentMonth = new Date().getMonth() + 1; // getMonth() returns month index from 0-11, so we add 1
+        selectElement.value = currentMonth; // Set the current month as selected
+    });
+
+
+    $('#shift').on('change', () => {
+
+        shiftChange();
+
+    });
+
+    $('#month').on('change', () => {
+
+        shiftChange();
+
+    });
+    $('#year').on('change', () => {
+
+        shiftChange();
+
+    });
+    $('#reset').on('click', () => {
+
+        reset();
+
+    });
+
+    function reset()
+    {
+        var inputIds = ["hour1", "hour2", "hour3", "hour4", "hour5", "hour6", "hour7", "hour8"];
+
+
+        for (var i = 0; i < inputIds.length; i++) {
+            document.getElementById(inputIds[i]).value = '';
+        }
+
+    }
+
+
+
+   function shiftChange(){
+
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+        var User_Role = '@Session["Role"]';
+        var Year = $('#year').val();
+        var Month = $('#month').val();
+       var Shift = $('#shift').val();
+
+       if (Year == '') {
+           swal({
+               icon: "error",
+               title: "Please Select Year",
+               button: false,
+               timer: 4500
+           })
+       }
+       else if (Month == '') {
+           swal({
+               icon: "error",
+               title: "Please Select Month",
+               button: false,
+               timer: 4500
+           })
+       }
+
+       else if (Shift == '') {
+           swal({
+               icon: "error",
+               title: "Please Select Shift",
+               button: false,
+               timer: 4500
+           })
+       }
+
+
+
+        var myData = {
+            "QueryType": "View",
+            "CompanyCode": '@Session["CompanyCode"]',
+            "PlantCode": '@Session["PlantCode"]',
+            "Line_Code": '@Session["LineCode"]',
+            "Year": Year,
+            "Month": Month,
+            "Shift": Shift
+
+        };
+        var R_url = '@Url.Action("Login", "Main")';
+        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+        $.ajax({
+            type: "POST",
+            url: URL + 'api/UserSettings/Target_Production_View',
+            headers: {
+                Authorization: 'Bearer ' + user1
+            },
+            data: myData,
+            dataType: "json",
+            complete: function () {
+                $('.loading').hide();
+            },
+            success: function (response) {
+
+                reset();
+
+            if (response.status != "Error")
+             {
+           document.getElementById("hour1").value = parseInt(response.data.Table[0].FirstHr);
+           document.getElementById("hour2").value = parseInt(response.data.Table[0].SecondHr);
+           document.getElementById("hour3").value = parseInt(response.data.Table[0].ThirdHr);
+           document.getElementById("hour4").value = parseInt(response.data.Table[0].FourthHr);
+           document.getElementById("hour5").value = parseInt(response.data.Table[0].FifthHr);
+           document.getElementById("hour6").value = parseInt(response.data.Table[0].SixthHr);
+           document.getElementById("hour7").value = parseInt(response.data.Table[0].SeventhHr);
+           document.getElementById("hour8").value = parseInt(response.data.Table[0].EightthHr);
+           }
+
+            },
+            error: function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+            }
+        });
+
+        }
+
+
+</script>
+
+
+
+
+

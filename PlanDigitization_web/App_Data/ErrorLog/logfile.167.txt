@@ -1,0 +1,8 @@
+------Warn(2025-06-23 13:54:03.2079)DESKTOP-P0SA13C------
+                       Exception Type:System.ArgumentOutOfRangeException |                       Exception Message:Index was out of range. Must be non-negative and less than the size of the collection.
+Parameter name: index |                       Stack Trace: |                       Additional Info:System.ArgumentOutOfRangeException: Index was out of range. Must be non-negative and less than the size of the collection.
+Parameter name: index
+   at System.ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument argument, ExceptionResource resource)
+   at System.Collections.Generic.List`1.get_Item(Int32 index)
+   at PlanDigitization_web.Controllers.UserSettingsController.<Set_LineCode>d__33.MoveNext() in C:\Users\COE\Documents\new  code_20250521\latest one\TVS_frontend_std-master\TVS_frontend_std-master\PlanDigitization_web\Controllers\UserSettingsController.cs:line 1987
+

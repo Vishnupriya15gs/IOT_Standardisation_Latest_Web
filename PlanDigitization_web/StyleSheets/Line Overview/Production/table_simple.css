@@ -1,0 +1,31 @@
+﻿.table-simple {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.table-simple td, .table-simple th {
+    border: 1px solid var(--table-td-border);
+    text-align: center;
+    padding:2px;
+}
+
+.table-simple th {
+    font-size: 12px;
+   
+}
+
+.table-simple tr:nth-child(even) {
+}
+
+.table-simple tbody {
+    margin: 8px;
+    padding: 8px;
+}
+
+.table-simple caption {
+    margin: 8px;
+    padding: 8px;
+    text-align: center;
+    font-size: 20px;
+}

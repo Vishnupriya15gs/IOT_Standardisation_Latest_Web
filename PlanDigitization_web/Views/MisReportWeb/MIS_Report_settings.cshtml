@@ -1,0 +1,834 @@
+﻿<!--To display Tab title as MIS_Report_settings -->
+<!--To include layout to page-->
+@model IEnumerable<PlanDigitization_web.Models.mis_report>
+@{
+    ViewBag.Title = "MIS_Report_settings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!--Header in left side and home button for dashboard page -->
+<header class="page-header">
+    <h2> MIS Report Group Settings </h2>
+    <!--Home button and path display as /Settings/User Groups in right side-->
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("NewDash","Main")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li><span>Settings</span></li>
+            <li><span>MIS Report Groups</span></li>
+        </ol>
+    </div>
+</header>
+<!-- Add New group-->
+<div class="row" id="divnew" style="display:none;">
+    <div class="col-md-12">
+        <section class="panel form-wizard" id="w1">
+            <header class="panel-heading" style="background-color:teal;color:white;">
+                <h2 class="panel-title" style="color:white;">MIS Group & Report</h2>
+            </header>
+            <div class="panel-body panel-body-nopadding">
+                <div class="wizard-tabs">
+                    @*<ul class="wizard-steps">
+                            <li class="active">
+                                <a href="#w1-account" data-toggle="tab" class="text-center">
+                                    MIS Report Group
+                                </a>
+                            </li>
+                        </ul>*@
+                </div>
+                <!--Check Permission for viewing setting page and display group list html elements-->
+                @if (ViewContext.Controller.HasPermission("PermissionSetting-View"))
+                {
+                    <form class="form-horizontal">
+                        <div class="tab-content">
+                            <div id="w1-account" class="tab-pane active">
+                                <div class="form-group">
+                                    <input type="hidden" name="ReportID" id="ReportID" />
+                                    <input type="hidden" id="UniqueId" />
+                                    <label class="col-sm-2 control-label"> Group Name <span class="required">*</span></label>
+                                    <div class="col-sm-4">
+                                        <select class="form-control" name="GroupID" id="GroupID" required>
+                                            <option value="">Select</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="panel-body">
+                                    <table id="permission_details" class="table table-bordered table-striped mb-none" style="text-align:center;">
+                                        <thead>
+                                            <tr>
+                                                <th style="text-align:center;">
+                                                    Select All<br />
+                                                    <input type="checkbox" class="all" onclick="checkAll()" />
+                                                </th>
+                                                <th style="text-align:center;"> Report Name </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="details"></tbody>
+                                    </table>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="col-sm-3">
+                                        <label class="control-label"> Shift 1 </label>
+                                        <input type="checkbox" class="optionalcheck" name="Shift1" id="Shift1" />
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <label class="control-label"> Shift 2 </label>
+                                        <input type="checkbox" class="optionalcheck" name="Shift2" id="Shift2" />
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <label class="control-label"> Shift 3 </label>
+                                        <input type="checkbox" class="optionalcheck" name="Shift3" id="Shift3" />
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <label class="control-label">Day </label>
+                                        <input type="checkbox" class="optionalcheck" name="Day" id="Day" />
+                                    </div>
+                                </div>
+                                <footer class="panel-footer">
+                                    <div class="row">
+                                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                                            <button type="button" class="btn btn-primary submit">Submit</button>
+                                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                                        </div>
+                                    </div>
+                                </footer>
+                            </div>
+                        </div>
+                    </form>
+                }
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- Group Details-->
+<div class="row" id="divdetails">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <section class="panel">
+            <header class="panel-heading" style="background-color:teal;color:white;">
+                <!--Displaying add button when -->
+                @if (ViewContext.Controller.HasPermission("PermissionSetting-Add"))
+                {
+                    <div class="panel-actions">
+                        <button class="btn btn-primary" id="add"><i class="fa fa-plus" aria-hidden="true"> Add New</i></button>
+                    </div>
+                }
+                <h2 class="panel-title" style="color:white;">List of MIS Report Groups : </h2>
+            </header>
+            <!--Displaying Group lists already available-->
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="panel-body">
+                        @if (ViewContext.Controller.HasPermission("PermissionSetting-View"))
+                        {
+                            <table class="table table-bordered table-striped mb-none" id="datatable-default">
+                                <thead style="background-color:teal;color:white;">
+                                    <tr>
+                                        <th class="centercls"> S.No </th>
+                                        <th style="display:none;">Group ID</th>
+                                        <th> Group Name </th>
+                                        <th> Report ID</th>
+                                        <th style="text-align:center;width:150px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{int RowNo = 0;}
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr class="gradeX">
+                                            <td>
+                                                @{RowNo++;}@RowNo
+                                            </td>
+                                            <td style="display:none;">
+                                                <span>@Html.Encode(item.GroupID)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.groupname)</span>
+                                            </td>
+                                            <td class="ReportID">
+                                                <span>@Html.Encode(item.ReportID)</span>
+                                            </td>
+                                            <td style="text-align:center;">
+                                                @if (ViewContext.Controller.HasPermission("PermissionSetting-Edit"))
+                                                {
+                                                    <button class="btn btn-primary" style="margin-top: 10px" id="edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
+                                                }
+                                                @if (ViewContext.Controller.HasPermission("PermissionSetting-Delete"))
+                                                {
+                                                    <button class="btn btn-danger" style="margin-top: 10px" id="delete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <h2>View permission is denied</h2>
+                        }
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+
+<script type="text/javascript">
+    function sanitize(string12) {
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#x27;',
+            "/": '&#x2F;',
+        };
+        const reg = /[&<>"'/]/ig;
+        return string12.replace(reg, (match) => (map[match]));
+    }
+</script>
+
+
+<script type="text/javascript">
+    $("#add").click(function () {
+
+       
+        $('#Shift1').html("");
+        $('#Shift2').html("");
+        $('#Shift3').html("");
+        $('#Day').html("");
+        $('.submit').text('Submit');
+
+
+        $("#permission_details TBODY TR").each(function () {
+            var row = $(this);
+            row.find("#Add_form").prop("checked", false);
+            row.find("#View_form").prop("checked", false);
+            row.find("#Edit_form").prop("checked", false);
+            row.find("#Delete_form").prop("checked", false);
+        });
+
+         $('#GroupID').val('');
+        $("#divnew").show();
+        $("#divdetails").hide();
+    });
+    // to hide add new div content when cancel is clicked
+    $(".cancel").click(function () {
+        $("#divnew").hide();
+        $("#divdetails").show();
+    });
+
+</script>
+@if (@TempData["message"] != null)
+{
+    <script type="text/javascript">
+
+    $(function () {
+        var msg = '@TempData["message"]';
+        if (msg == "Inserted") {
+            swal({
+                icon: "success",
+                title: "Details Added Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Updated") {
+            swal({
+                icon: "success",
+                title: "Details Updated Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Alreadyy") {
+            swal({
+                icon: "error",
+                title: "Failed to Add.GroupId ID already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Already GroupID") {
+            swal({
+                icon: "error",
+                title: "Failed to Add.GroupId ID already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Already GroupName") {
+            swal({
+                icon: "error",
+                title: "Failed to Add.Group Name already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+            else if (msg == "deleted") {
+            swal({
+                icon: "error",
+                title: "Role details deleted successfully",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "failed") {
+            swal({
+                icon: "error",
+                title: "Failed to delete role",
+                button: true,
+                timer: 4500
+            })
+        }
+        else {
+            swal({
+                icon: "error",
+                title: "Failed to Add",
+                button: true,
+                timer: 4500
+            })
+        }
+    });
+    </script>
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        //Ajax call to list users
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+        var data_user = {
+            "QueryType": "Get_Reports",
+            "Parameter":'@Session["PlantCode"]' ,
+            "Parameter1": '@Session["CompanyCode"]',
+            "Parameter2": '@Session["LineCode"]',
+            "CompanyCode": '@Session["CompanyCode"]',
+            "PlantCode": '@Session["PlantCode"]',
+            "LineCode": '@Session["LineCode"]',
+        };
+         $.ajax({
+             type: "POST",
+             data: data_user,
+             headers: {
+                 Authorization: 'Bearer ' + user1
+             },
+             url: URL + "api/Values/User_settings_details",
+             dataType: "json",
+
+             success: function (response) {
+                for (var i = 0; i < response.data.Table.length; i++) {
+                    var newRow = $("<tr>");
+                    var cols = '';
+                    var sc = '';
+
+                    cols += "<td><input type='checkbox'  class='compulsorycheck' id='check1' onclick='chk_function(" + response.data.Table[i].Unique_id + ")' /> </td > ";
+                    cols += "<td> <input type='hidden' name='ReportName' id='ReportName' value='" + response.data.Table[i].Report_name + "' /> " + response.data.Table[i].Report_name + "</td> ";
+                    cols += "</tr>"
+
+                    newRow.append(cols);
+                    $("#permission_details").append(newRow);
+
+
+                }
+            },//If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                            //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+        }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+
+        var datas = {
+            "QueryType": "Get_MISGroup",
+            "Parameter": '@Session["PlantCode"]',
+            "Parameter1": '@Session["CompanyCode"]',
+            "Parameter2": '@Session["LineCode"]',
+            "CompanyCode": '@Session["CompanyCode"]',
+            "PlantCode": '@Session["PlantCode"]',
+            "LineCode": '@Session["LineCode"]',
+        };
+        $.ajax({
+            type: "POST",
+            data: datas,
+            headers: {
+                Authorization: 'Bearer ' + user1
+            },
+            url: URL + "api/Values/User_settings_details",
+            dataType: "json",
+
+            success: function (response) {
+                var s = '<option value="">Select Group</option>';
+                for (var i = 0; i < response.data.Table.length; i++) {
+                    s += '<option value="' + response.data.Table[i].GroupID + '">' + response.data.Table[i].GroupName + '</option>';
+                }
+                $("#GroupID").html(s);
+            },//If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                            //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+        }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+        //function to call when submit click is executed
+       $(".submit").click(function (event) {
+            var permission = new Array();
+            var role = new Array();
+            var roles = {};
+            //Getting groupid and descirption from text box
+            roles.GroupID = $('#GroupID').val();
+           // Sanity check for Group details
+            if (roles.GroupID == "") {
+                swal({
+                    icon: "error",
+                    title: "Please Select GroupName!",
+                    button: true,
+                    timer: 4500
+                })
+                return;
+            }
+
+            if ($('.submit').text() == "Update") {
+                roles.QueryType = "Update";
+            }
+            else {
+                roles.QueryType = "Insert";
+            }
+
+
+
+            roles.ReportID = $('#ReportID').val();
+
+            if ($("#Shift1").is(":checked")) {
+                roles.Shift1 = "1";
+            }
+            else {
+                roles.Shift1 = "0";
+            }
+            if ($("#Shift2").is(":checked")) {
+                roles.Shift2 = "1";
+            }
+            else {
+                roles.Shift2 = "0";
+            }
+            if ($("#Shift3").is(":checked")) {
+                roles.Shift3 = "1";
+            }
+            else {
+                roles.Shift3 = "0";
+            }
+            if ($("#Day").is(":checked")) {
+                roles.Day = "1";
+            }
+            else {
+                roles.Day = "0";
+            }
+            role.push(roles);
+
+            $("#permission_details TBODY TR").each(function () {
+                var row = $(this);
+                if (row.find("#check1").is(":checked")) {
+
+                    var permissions = {};
+                    permissions.ReportName = row.find("#ReportName").val();
+
+                    permissions.GroupID = $('#GroupID').val();
+
+                    if ($('.submit').text() == "Update") {
+                        permissions.QueryType = "Update";
+                    }
+                    else {
+                        permissions.QueryType = "Insert";
+                    }
+                    permission.push(permissions);
+                }
+            });
+
+            if (permission.length != 0) {
+                var R_url = '@Url.Action("Login", "Main")';
+                var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+                $.ajax({
+                    type: "POST",
+                    url: "/MisReportWeb/Add_Group_Report",
+                    data: '{permissions: ' + JSON.stringify(permission) + ',grp: ' + JSON.stringify(role) + '}',
+
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    beforeSend: function () {
+                        $('.loading').show();
+                    },
+                    complete: function () {
+                        $('.loading').hide();
+                    },
+                    success: function (response) {
+
+                        $('.submit').text('Submit');
+                        window.location = '@Url.Action("MIS_Report_settings", "MisReportWeb")';
+                    }
+                })
+            }
+            else {
+                swal({
+                    icon: "error",
+                    title: "Please Select Anyone Report...!",
+                    button: true,
+                    timer: 4500
+                })
+            }
+        });
+
+        $('.updated_time').text("N/A");
+        $('.shift').text("N/A");
+
+    });
+
+</script>
+
+
+
+
+<script type="text/javascript">
+    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+    //Function call when edit option in group list is selected
+    $("body").on("click", "#edit", function () {
+        var row = $(this).closest("tr");
+        var ReportID = row.find(".ReportID span").html();
+
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+        //json object containing group id
+        var myData12 = {
+            "QueryType": "Edit_ReportGroup",
+            "Parameter": ReportID,
+            "Parameter1": '@Session["CompanyCode"]',
+            "Parameter2": '@Session["LineCode"]',
+            "CompanyCode": '@Session["CompanyCode"]',
+            "PlantCode": '@Session["PlantCode"]',
+            "LineCode": '@Session["LineCode"]',
+        };
+        $("#divnew").show();
+        $("#divdetails").hide();
+        $('.submit').text('Update');
+        $.ajax({
+            type: "POST",
+            url: URL + 'api/Values/User_settings_details',
+            data: myData12,
+            headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+            dataType: "json",
+            //function to show loading till api returns value
+            beforeSend: function () {
+                $('.loading').show();
+            },
+            //function to hide loading once api call returns response
+            complete: function () {
+                $('.loading').hide();
+            },
+
+            success: function (response)
+            {
+                if (response.data.Table[0].Shift1 == "1") {
+                    $("#Shift1").prop("checked", true);
+                }
+                if (response.data.Table[0].Shift2 == "1") {
+                    $("#Shift2").prop("checked", true);
+                }
+                if (response.data.Table[0].Shift3 == "1") {
+                    $("#Shift3").prop("checked", true);
+                }
+                if (response.data.Table[0].Days == "1") {
+                    $("#Day").prop("checked", true);
+                }
+                var datas = {
+                    "QueryType": "Get_MISGroup",
+                    "Parameter": '@Session["PlantCode"]',
+                    "Parameter1": '@Session["CompanyCode"]',
+                    "Parameter2": '@Session["LineCode"]',
+                     "CompanyCode": '@Session["CompanyCode"]',
+                    "PlantCode": '@Session["PlantCode"]',
+                    "LineCode": '@Session["LineCode"]',
+                };
+                $.ajax({
+                    type: "POST",
+                    data: datas,
+                    headers: {
+                        Authorization: 'Bearer ' + user1
+                    },
+                    url: URL + "api/Values/User_settings_details",
+                    dataType: "json",
+
+                    success: function (response1) {
+                        var s = '<option value="">Select Group</option>';
+                        for (var i = 0; i < response1.data.Table.length; i++) {
+                            if (response1.data.Table[i].GroupID == response.data.Table[0].GroupID) {
+                                s += '<option value="' + response1.data.Table[i].GroupID + '" selected=selected>' + response1.data.Table[i].GroupName + '</option>';
+                            }
+                            else {
+                                s += '<option value="' + response1.data.Table[i].GroupID + '">' + response1.data.Table[i].GroupName + '</option>';
+                            }
+                        }
+                        $("#GroupID").html(s);
+                    },//If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                            //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+
+                $('#ReportID').val(response.data.Table[0].ReportID);
+                $('#UniqueId').val(response.data.Table[0].Unique_id);
+
+
+                //Assigning already available user details for editing
+                for (var i = 0; i < response.data.Table1.length; i++)
+                {
+                    $("#permission_details TBODY TR").each(function () {
+                        var row = $(this);
+                        var permissions = {};
+                        var ReportName = row.find("#ReportName").val();
+                        //alert(userid);
+
+                        permissions.Group_id = $('#Group_id').val();
+                        // checkbox value to check if user is allocated to group
+                        if (ReportName == response.data.Table1[i].ReportName) {
+                            row.find("#check1").prop("checked", true);
+                        }
+
+                    });
+                }
+            }
+             //If token expired /invalid page will be redirected to login
+            , error: function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                //if error other than token, notification will display the actual error message
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+            }
+        }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+    });
+    //function to call when delete button is clicked
+    $("body").on("click", "#delete", function () {
+        if (confirm("Do you want to proceed?")) {
+            var row = $(this).closest("tr");
+            var ReportID = row.find(".ReportID span").html();
+            var companycode = '@Session["CompanyCode"]';
+            var PlantCode = '@Session["PlantCode"]';
+
+            //json data with groupid to be deleted
+            var myData = {
+                "QueryType": "Delete_ReportGroup",
+                "Parameter": ReportID,
+                 "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]',
+                "LineCode": '@Session["LineCode"]',
+
+            };
+
+            var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+            //ajax call to delete group
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/Values/User_settings_details',
+                data: myData,
+                   headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+                    swal({
+                        icon: "success",
+                        title: "Group details deleted Successfully...!",
+                        button: true,
+                        timer: 4500
+                    })
+
+                   window.location = '@Url.Action("MIS_Report_settings", "MisReportWeb")';
+                },//If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                            //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+            })
+                 //If token expired /invalid page will be redirected to login
+                .error(function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                     //if error other than token, notification will display the actual error message
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+             });
+        }
+    });
+</script>
+<script>
+    function chk_function(val) {
+        var isChecked = $('.' + val + '').prop("checked");
+        $('#permission_details tr:has(td)').find('input[class="' + val + '"]').prop('checked', isChecked);
+    }
+    //function to check all when select all option is selected
+    function checkAll() {
+        var checkboxes = document.getElementsByTagName('input'), val = null;
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].type == 'checkbox') {
+                if (val === null) val = checkboxes[i].checked;
+                checkboxes[i].checked = val;
+            }
+        }
+    }
+</script>
+

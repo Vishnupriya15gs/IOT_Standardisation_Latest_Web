@@ -1,0 +1,561 @@
+﻿@model IEnumerable<PlanDigitization_web.Models.Skill>
+@{
+    ViewBag.Title = "Skill_settings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<header class="page-header">
+    <h2> Skill Details </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("MainDashboard","MainDashboard")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li><span>Settings</span></li>
+            <li><span>Skill Details</span></li>
+        </ol>
+    </div>
+</header>
+
+<!-- Add New Skill-->
+<div class="row" id="divnew" style="display:none;">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <form class="form" action="@Url.Action("Insert_Skillset","UserSettings")" method="post">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Add New Skill</h2>
+                </header>
+                <div class="panel-body">
+                    @*<div class="form-group">
+                            <label class="col-sm-2 control-label"> Line <span class="required">*</span></label>
+                            <div class="col-sm-6">
+                                <select id="linecode" class="form-control" name="Line_Code" title="*"></select>
+                            </div>
+
+                        </div>*@
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Skill ID <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="SkillID" name="Skill_ID" class="form-control space" title="Enter ID" placeholder="ID" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Skill <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="Skill" name="SkillName" class="form-control space" title="Enter Skill" placeholder="Skill" required />
+                        </div>
+                    </div>
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+<!-- Skills Details-->
+<div class="row" id="divdetails">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <section class="panel">
+            <header class="panel-heading" style="background-color:teal;color:white;">
+                @if (ViewContext.Controller.HasPermission("SkillSetting-Add"))
+                {
+                    <div class="panel-actions">
+                        <button class="btn btn-primary" id="add"><i class="fa fa-plus" aria-hidden="true"> Add New</i></button>
+                    </div>
+                }
+                <h2 class="panel-title" style="color:white;">List of Skills : </h2>
+            </header>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="panel-body">
+                        @if (ViewContext.Controller.HasPermission("SkillSetting-View"))
+                        {
+                            <table class="table table-bordered table-striped mb-none" id="datatable-default" data-swf-path="assets1/vendor/jquery-datatables/extras/TableTools/swf/copy_csv_xls_pdf.swf">
+                                <thead style="background-color:teal;color:white;">
+                                    <tr>
+                                        <th class="centercls"> S.No </th>
+                                        <th style="display:none;">Skill ID</th>
+                                        <th> Skill </th>
+                                        <th style="text-align:center;width:150px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{int RowNo = 0;}
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr class="gradeX">
+                                            <td>
+                                                @{RowNo++;}@RowNo
+                                            </td>
+                                            <td class="SkillID" style="display:none;">
+                                                <span>@Html.Encode(item.Unique_id)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.SkillName)</span>
+                                            </td>
+
+                                            <td style="text-align:center;">
+                                                @if (ViewContext.Controller.HasPermission("SkillSetting-Edit"))
+                                                {
+                                                    <button class="btn btn-primary" style="margin-top: 10px" id="edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
+                                                }
+                                                @if (ViewContext.Controller.HasPermission("SkillSetting-Delete"))
+                                                {
+                                                    <button class="btn btn-danger" style="margin-top: 10px" id="delete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <h2>View permission is denied</h2>
+                        }
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!--Edit Skill Details-->
+<div class="row" id="divedit" style="display:none;">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <form class="form" action="@Url.Action("Update_Skillset","UserSettings")" method="post">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Update Skill</h2>
+                </header>
+                <div class="panel-body">
+                    <input type="hidden" id="eUnique_id" name="Unique_id" />
+                    @*<div class="form-group">
+                            <label class="col-sm-2 control-label"> Line <span class="required">*</span></label>
+                            <div class="col-sm-6">
+                                <select id="linecodeedit" class="form-control" name="Line_Code" title="*"></select>
+                            </div>
+
+                        </div>*@
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Skill ID <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="eSkillID" name="Skill_ID" class="form-control space" readonly title="Enter ID" placeholder="ID" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Skill <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="eSkill" name="SkillName" class="form-control space" title="Enter Skill" placeholder="Skill" required />
+                        </div>
+                    </div>
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+@if (@TempData["message"] != null)
+{
+    <script type="text/javascript">
+    $(function () {
+        var msg = '@TempData["message"]';
+        if (msg == "Inserted") {
+            swal({
+                icon: "success",
+                title: "Details Added Successfully...!",
+                button: true,
+                timer: 4500
+            })
+            msg = "";
+        }
+        else if (msg == "Updated") {
+            swal({
+                icon: "success",
+                title: "Details Updated Successfully...!",
+                button: true,
+                timer: 4500
+            })
+             msg = "";
+        }
+         else if (msg == "Already Skill_ID") {
+            swal({
+                icon: "error",
+                title: "Failed to Add.Skill ID already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Already SkillName") {
+            swal({
+                icon: "error",
+                title: "Failed to Add.Skill Name already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+        else {
+            swal({
+                icon: "error",
+                title: "Failed to Add",
+                button: true,
+                timer: 4500
+            })
+             msg = "";
+        }
+    });
+    </script>
+}
+<script type="text/javascript">
+    $("#add").click(function () {
+        $("#divnew").show();
+        $("#divdetails").hide();
+        $("#divedit").hide();
+    });
+
+    $(".cancel").click(function () {
+        $("#divnew").hide();
+        $("#divdetails").show();
+        $("#divedit").hide();
+    });
+</script>
+<script type="text/javascript">
+    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+    $("body").on("click", "#edit", function () {
+        var row = $(this).closest("tr");
+        var SkillID = row.find(".SkillID span").html();
+
+        var myData = {
+            "QueryType": "Edit_Skill",
+            "Parameter": SkillID,
+            "CompanyCode": '@Session["CompanyCode"]',
+                            "PlantCode": '@Session["PlantCode"]',
+                            "LineCode": '@Session["LineCode"]'
+
+        };
+
+        $("#divedit").show();
+        $("#divnew").hide();
+        $("#divdetails").hide();
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+        $.ajax({
+            type: "POST",
+            url: URL + 'api/Values/User_settings_details',
+            data: myData,
+            headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+            dataType: "json",
+            beforeSend: function () {
+                $('.loading').show();
+            },
+            complete: function () {
+                $('.loading').hide();
+            },
+            success: function (response) {
+                $('#eUnique_id').val(response.data.Table[0].Unique_id);
+                $('#eSkill').val(response.data.Table[0].SkillName);
+               // $('#linecodeedit').val(response.data.Table[0].Line_Code);
+                $('#eSkillID').val(response.data.Table[0].Skill_ID);
+
+
+                @*var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+                  var myData1 = {
+                        "Flag": "LineCode",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+                    };
+
+                //$.ajax({
+                //    type: 'Get',
+                //    url: URL + 'api/UserSettings/GetEmployee',
+                //    headers: {
+                //        Authorization: 'Bearer ' + user1
+                //    },
+                //    dataType: 'json'
+                //}).success(function (response3) {
+                    $.ajax({
+                        type: "POST",
+                        url: '/Main/GetSettingdatas1',
+                        data: myData1,
+
+                        dataType: "json",
+                        success: function (response2) {
+                            //alert(response2)
+                            var s = '<option value="">Please Select</option>';
+
+                            for (var i = 0; i < response2.data.length; i++) {
+
+                                if (response2.data[i].Code == response.data.Table[0].Line_Code) {
+
+                                    s += '<option value="' + response2.data[i].Code + '" selected=selected>' + response2.data[i].Name + '</option>';
+                                }
+                                else {
+                                    s += '<option value="' + response2.data[i].Code + '">' + response2.data[i].Name + '</option>';
+                                }
+                            }
+                            $("#linecodeedit").html(s);
+                        },
+                        error: function (response2) {
+
+                        }
+                    }).error(function (response2) {
+                        if (response.status == "401") {
+                            swal({
+                                icon: "warning",
+                                title: "Session Timeout",
+                                button: true,
+                                closeModal: false
+                            })
+                            window.location = R_url;
+                        }
+                        else {
+                            swal({
+                                icon: "warning",
+                                title: response.responseText,
+                                button: true,
+                                closeModal: false
+                            })
+
+                        }
+                });*@
+
+
+
+            }
+            , error: function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+            }
+        });
+             //}).error(function (response) {
+             //    swal({
+             //        icon: "warning",
+             //        title: "Session Timeout",
+             //        button: true,
+             //        closeModal: false
+             //    })
+             //    window.location = R_url;
+             //});
+
+
+
+
+    });
+
+    $("body").on("click", "#delete", function () {
+        if (confirm("Do you want to Delete this Skill?")) {
+            var row = $(this).closest("tr");
+            var SkillID = row.find(".SkillID span").html();
+
+            var myData = {
+                "QueryType": "Delete_Skill",
+                "Parameter": SkillID,
+                "CompanyCode": '@Session["CompanyCode"]',
+                         "PlantCode": '@Session["PlantCode"]',
+                         "LineCode": '@Session["LineCode"]'
+            };
+             var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/Values/delete_User_settings_details',
+                data: myData,
+                 headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+                    swal({
+                        icon: "success",
+                        title: "Skill Details Deleted Successfully...!",
+                        button: true,
+                        timer: 4500
+                    })
+                    window.location = '@Url.Action("Skill_settings", "UserSettings")';
+                }
+            }).error(function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+             });
+        }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+
+        $(document).on("keydown", ".space", function (evt) {
+
+            var caretPos = $(this)[0].selectionStart
+            if (evt.keyCode == 32 && caretPos == 0) {
+                return false;
+            }
+        });
+
+        $('.updated_time').text("N/A");
+        $('.shift').text("N/A");
+
+        if ($.fn.DataTable.isDataTable('#datatable-default')) {
+            $('#datatable-default').DataTable().destroy();
+        }
+
+
+        $('#datatable-default').DataTable({
+
+            "responsive": true,
+            "autoWidth": false,
+            scrollY: true,
+            scrollX: true,
+            scroller: true
+        });
+
+
+    });
+</script>
+
+<script type="text/javascript">
+    @*$(function () {
+
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+                    var myData = {
+                        "Flag": "LineCode",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+                    };
+                     var R_url = '@Url.Action("Login", "Main")';
+                        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+                    //$.ajax({
+                    //     type: 'Get',
+                    //        url: URL + 'api/UserSettings/GetEmployee',
+                    //         headers: {
+                    //         Authorization: 'Bearer ' + user1
+                    //        },
+                    //     dataType: 'json'
+                    //}).success(function (response) {
+                    $.ajax({
+                        type: "POST",
+                        url: '/Main/GetSettingdatas1',
+                        data: myData,
+
+                        dataType: "json",
+                        success: function (response) {
+                            var s = '<option value="">Select Line</option>';
+                            for (var i = 0; i < response.data.length; i++) {
+                                s += '<option value="' + response.data[i].Code + '">' + response.data[i].Name + '</option>';
+                            }
+                            $("#linecode").html(s);
+                        },
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+                            }
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                    });
+                    //}).error(function (response) {
+                    //    swal({
+                    //        icon: "warning",
+                    //        title: "Session Timeout",
+                    //        button: true,
+                    //        closeModal: false
+                    //    })
+                    //    window.location = R_url;
+                    //});
+
+    });*@
+</script>
+
+

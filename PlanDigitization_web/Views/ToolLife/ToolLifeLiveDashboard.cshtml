@@ -1,0 +1,481 @@
+﻿@{ ViewBag.Title = "ToolLifeLiveDashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml"; }
+
+<style>
+    #datatable-live-toollife thead th {
+        background-color: teal;
+        color: white;
+    }
+
+    .dataTables_filter {
+        float: right;
+    }
+
+    .table {
+        white-space: nowrap;
+    }
+
+
+    .bold-row {
+        font-weight: bold;
+        font-size: 15px;
+        background-color: lightgray;
+    }
+
+    .lagend {
+        fill: yellow;
+        stroke-width: 3;
+        stroke: rgb(0,0,0);
+        display: inline-block;
+    }
+
+    .lagend2 {
+        fill: #f5837a;
+        stroke-width: 3;
+        stroke: rgb(0,0,0);
+        display: inline-block;
+    }
+
+
+
+    .svg {
+        height: 20px;
+        width: 20px;
+    }
+</style>
+<header class="page-header">
+    <h2> Critical Element Life</h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("MainDashboard","MainDashboard")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            @*<li><span>Maintenance</span></li>
+                <li><span>RealTime Dashboard</span></li>
+                <li><span>Tool Life Monitoring</span></li>*@
+        </ol>
+    </div>
+</header>
+
+
+@if (ViewContext.Controller.HasPermission("ToolLifeLive-View"))
+{
+    <div class="row">
+        @*<button type="button" style="float:right;margin-left:2%" class="btn btn-default">OEE Historic<span class="shift"></span></button>*@
+        @*<input type="button" class="btn btn-primary" onclick="location.href='../ToolLife/ToolLifeHistoricDashboard';" value="Historic-ToolLife Monitoring" style="float:right;text-decoration:none;margin-right:2%;border-style:none;" />
+            <input type="button" class="btn btn-primary" onclick="location.href='../ToolLife/NewMaintanenceDash';" value="Historic-Preventive Maintenance" style="float:right;text-decoration:none;margin-right:2%;border-style:none;" />*@
+        <header class="panel-heading" style="background-color: white; color: black; font-size: 15px; margin:15px; border-color:teal; " id="TBM">
+            <h3 style="text-align: center; margin-top: 2px;">Element Life Summary</h3>
+        </header>
+
+
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+
+                    @*<h4 class="panel-title" style="color:white;">
+                        Asset : <span id="maccode"></span>*@
+                    Go to preventive maintenance for acknowledgement of repair, rework and replacement issue
+                    @*</h4>*@
+
+                </header>
+                <div class="panel-body">
+
+
+                    <div class="table-responsive">
+
+
+                        <table class="table table-bordered table-striped mb-none " id="datatable-live-toollife">
+                            <thead style="background-color: teal; color: white; ">
+                                <tr>
+                                    <th class="text-center">S.NO</th>
+                                    <th class="text-center">Subsystem</th>
+                                    <th class="text-center">Element</th>
+                                    <th class="text-center">Make</th>
+                                    <th class="text-center">Part Number</th>
+                                    <th class="text-center">Classification</th>
+                                    <th class="text-center">Conversion Parameter</th>
+                                    <th class="text-center">Current Life Cycles</th>
+                                    <th class="text-center">PM - Rated Life Cycles</th>
+                                    <th class="text-center">PM - Recommendation Text</th>
+                                    <th class="text-center">UOM</th>
+                                    <th class="hidden-phone">
+                                        %Usage
+
+                                        <span class="glyphicon glyphicon-info-sign gi-8x titleTooltip">
+                                            <span class="tooltiptext1 fontSanserif" id="popupLegend"></span>
+                                        </span>
+
+                                    </th>
+                                    <th class="hidden-phone">Last PM</th>
+                                    @*<th>Status</th>
+                                        <th>Next PM</th>*@
+                                </tr>
+                            </thead>
+                            <tbody class="details" style="width:100%;">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div> }
+else
+{
+    <div class="row">
+        <h2 class="panel-title">View Permission is denied</h2>
+    </div>}
+<!-- end: page -->
+<script src="~/assets1/javascripts/swal.js"></script>
+<script type="text/javascript">
+    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+    //$.getScript(URL + 'Scripts/jquery.signalR-2.4.1.min.js', function () {
+    //    $.getScript(URL + 'signalr/hubs/', function () {
+    //        // Declare a proxy to reference the hub.
+    //        $.connection.hub.url = URL + 'signalr';
+    //        var notifications = $.connection.PlantDigitizationhub;
+    //        //debugger;
+    //        // Create sssa function that the hub can call to broadcast messages.
+    //        notifications.client.updateDatas = function () {
+    //            gettoollivedata()
+    //        };
+    //        // Start the connection.
+    //        $.connection.hub.start().done(function () {
+    //            gettoollivedata();
+    //        }).fail(function (e) {
+    //            console.log(e);
+    //        });
+    //    });
+
+    function gettoollivedata() {
+        //var vars = [], hash;
+        //var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+        //for (var i = 0; i < hashes.length; i++) {
+        //    hash = hashes[i].split('?');
+        //    vars.push(hash[0]);
+        //    vars[hash[0]] = hash[1];
+        //}
+        $('.updated_time').text('');
+        var myData = {
+            "CompanyCode": '@Session["CompanyCode"]',
+            "PlantCode": '@Session["PlantCode"]',
+            "Line_code": '@Session["LineCode"]',
+        };
+        var R_url = '@Url.Action("Login", "Main")';
+        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+        $.ajax({
+            type: 'Post',
+            url: URL + 'api/OEE/check_holiday',
+            data: myData,
+            headers: {
+                Authorization: 'Bearer ' + user1
+            },
+
+            dataType: 'json'
+        }).success(function (response) {
+
+            if (response.data.length == 0) {
+                $.ajax({
+                    type: 'POST',
+                    url: URL + 'api/Toollife/GetToollivelivedatas',
+                    headers: {
+                        Authorization: 'Bearer ' + user1
+                    },
+                    data: myData,
+                    dataType: 'json'
+                }).success(function (response) {
+                    var rowsCnt = document.getElementById("datatable-live-toollife").getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
+                    if (rowsCnt > 0) {
+                        for (var i = 0; i < rowsCnt; i++) {
+                            document.getElementById("datatable-live-toollife").deleteRow(1);
+                        }
+                    }
+
+                    if ($.fn.DataTable.isDataTable('#datatable-live-toollife')) {
+                        $('#datatable-live-toollife').DataTable().clear();
+                    }
+
+                    if ($.fn.DataTable.isDataTable('#datatable-live-toollife')) {
+                        $('#datatable-live-toollife').DataTable().destroy();
+                    }
+
+                    if (response.data.length != 0) {
+
+                        var j = 1;
+                        for (var i = 0; i < response.data.length; i++) {
+                            if (response.data[i].usage > 100) {
+                                var newRow = $("<tr>");
+                                var cols = '';
+                                cols += "<td class='text - center'> " + j + "</td> ";
+                                cols += "<td class='text - center'> " + response.data[i].line_name + "</br>" + response.data[i].Machine_code + "</td> ";
+                                cols += "<td class='text - center' > " + response.data[i].ToolName + "</td> ";
+                                cols += "<td class='text - center'> " + response.data[i].Make + "</td> ";
+                                cols += "<td class='text - center'> " + response.data[i].Part_number + "</td> ";
+                                cols += "<td class='text - center'> " + response.data[i].Classification + "</td> ";
+                                cols += "<td class='text - center'> " + response.data[i].Conversion_parameter + "</td> ";
+                                cols += "<td class='text - center'> " + response.data[i].currentlifecle + "</td> ";
+                                cols += "<td class='text - center'> " + response.data[i].ratedlifecle + "</td> ";
+                                cols += "<td class='text - center'> " + response.data[i].RecText + "</td> ";
+                                cols += "<td class='text - center'> " + response.data[i].UOM + "</td> ";
+                                cols += "<td class='text - center' style='background-color:#f5837a;color: black;'> " + response.data[i].usage + "</td> ";
+                                cols += "<td class='text - center'> " + response.data[i].lastmain + "</td> ";
+                            }
+                            else
+                                if (response.data[i].usage > 80)
+                                {
+
+                                    var newRow = $("<tr>");
+                                    var cols = '';
+                                    cols += "<td class='text - center'> " + j + "</td> ";
+                                    cols += "<td class='text - center'> " + response.data[i].line_name + "</br>" + response.data[i].Machine_code + "</td> ";
+                                    cols += "<td class='text - center' > " + response.data[i].ToolName + "</td> ";
+                                    cols += "<td class='text - center'> " + response.data[i].Make + "</td> ";
+                                    cols += "<td class='text - center'> " + response.data[i].Part_number + "</td> ";
+                                    cols += "<td class='text - center'> " + response.data[i].Classification + "</td> ";
+                                    cols += "<td class='text - center'> " + response.data[i].Conversion_parameter + "</td> ";
+                                    cols += "<td class='text - center'> " + response.data[i].currentlifecle + "</td> ";
+                                    cols += "<td class='text - center'> " + response.data[i].ratedlifecle + "</td> ";
+                                    cols += "<td class='text - center'> " + response.data[i].RecText + "</td> ";
+                                    cols += "<td class='text - center'> " + response.data[i].UOM + "</td> ";
+                                    cols += "<td class='text - center' style='background-color: orange;color: black;'> " + response.data[i].usage + "</td> ";
+                                    cols += "<td class='text - center'> " + response.data[i].lastmain + "</td> ";
+
+                                }
+                            else {
+                                var newRow = $("<tr>");
+                                var cols = '';
+                                cols += "<td class='text - center'> " + j + "</td> ";
+                                cols += "<td class='text - center'> " + response.data[i].line_name + "</br>" + response.data[i].Machine_code + "</td> ";
+                                cols += "<td class='text - center' > " + response.data[i].ToolName + "</td> ";
+                                cols += "<td class='text - center'> " + response.data[i].Make + "</td> ";
+                                cols += "<td class='text - center'> " + response.data[i].Part_number + "</td> ";
+                                cols += "<td class='text - center'> " + response.data[i].Classification + "</td> ";
+                                cols += "<td class='text - center'> " + response.data[i].Conversion_parameter + "</td> ";
+                                cols += "<td class='text - center'> " + response.data[i].currentlifecle + "</td> ";
+                                cols += "<td class='text - center'> " + response.data[i].ratedlifecle + "</td> ";
+                                cols += "<td class='text - center'> " + response.data[i].RecText + "</td> ";
+                                cols += "<td class='text - center'> " + response.data[i].UOM + "</td> ";
+                                cols += "<td class='text - center'> " + response.data[i].usage + "</td> ";
+                                cols += "<td class='text - center'> " + response.data[i].lastmain + "</td> ";
+                            }
+
+                            //cols += "<td> " + response.data[i].Status + "</td> ";
+                            //cols += "<td> " + response.data[i].Next_PM + "</td> ";
+                            cols += "</tr>";
+                            newRow.append(cols);
+                            $(".details").append(newRow);
+
+
+                            //alert_table.row.add([j, response.data[i].line_name + "</br>" + response.data[i].Line_code, response.data[i].Machine_code, response.data[i].ToolName, response.data[i].Make, response.data[i].Part_number, response.data[i].Classification, response.data[i].Conversion_parameter, response.data[i].currentlifecle, response.data[i].ratedlifecle, response.data[i].RecText,response.data[i].UOM, response.data[i].usage, response.data[i].lastmain]).draw();
+                           // alert_table.row.add([j, response.data[i].Line_code + "</br>" + response.data[i].Machine_code, response.data[i].ToolName, response.data[i].Make, response.data[i].Part_number, response.data[i].Classification, response.data[i].Conversion_parameter, response.data[i].currentlifecle, response.data[i].ratedlifecle, response.data[i].RecText, response.data[i].UOM, response.data[i].usage, response.data[i].lastmain, response.data[i].Status, response.data[i].Next_PM]).draw();
+
+                            j++;
+
+
+                        }
+
+                        $('#datatable-live-toollife').DataTable({
+                            "responsive": true,
+                            "autoWidth": true,
+                            "scrollCollapse": true,
+                        });
+
+                        $('.updated_time').text(new Date().toLocaleString());
+                        $('.shift').text("N/A");
+                        $('.shift_n').show();
+                        $('.updated_time_n').show();
+                    }
+                    else {
+
+                        var rowsCnt = document.getElementById("datatable-live-toollife").getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
+                        if (rowsCnt > 0) {
+                            for (var i = 0; i < rowsCnt; i++) {
+                                document.getElementById("datatable-live-toollife").deleteRow(1);
+                            }
+                        }
+
+                        var newRow = $("<tr>");
+                        var cols = '';
+                        cols += "<td colspan='15' style='text-align:center;font-weight:bold;background-color:burlywood;color:black;'> No Data Available </td> ";
+                        cols += "</tr>";
+                        newRow.append(cols);
+                        $(".details").append(newRow);
+                        $('#maccode').text("N/A");
+
+                        $('.updated_time').text(new Date().toLocaleString());
+                        $('.shift').text("N/A");
+                        $('.shift_n').show();
+                        $('.updated_time_n').show();
+                        //$(".custom_pre_error").text(response.msg);
+                    }
+                }).error(function (response) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+                    }
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                });
+            }
+            else {
+
+                var rowsCnt = document.getElementById("datatable-live-toollife").getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
+                if (rowsCnt > 0) {
+                    for (var i = 0; i < rowsCnt; i++) {
+                        document.getElementById("datatable-live-toollife").deleteRow(1);
+                    }
+                }
+
+                var newRow = $("<tr>");
+                var cols = '';
+                cols += "<td colspan='13' style='text-align:center;font-weight:bold;background-color:burlywood;color:black;'> " + response.data[0].holiday_name + " </td> ";
+                cols += "</tr>";
+                newRow.append(cols);
+                $(".details").append(newRow);
+                $('#maccode').text("N/A");
+
+                $('.updated_time').text(new Date().toLocaleString());
+                $('.shift').text("N/A");
+                $('.shift_n').show();
+                $('.updated_time_n').show();
+            }
+        });
+
+        setTimeout(gettoollivedata, 60000);
+    }
+
+    $(document).ready(function () {
+        gettoollivedata();
+    });
+
+
+
+    var cols = '';
+    cols =` <div style='padding:5px;'>
+              <svg class='svg'>
+                <rect width='20' height='20' class='lagend' />
+              </svg>
+              <span>Above 80 % - PM Alert</span>
+           </div>
+           <div style='padding:5px;'>
+               <svg class='svg'>
+              <rect width='20' height='20' class='lagend2' />
+              </svg>
+              <span >Above 100 % - PM Due</span>
+          </div>`
+
+
+
+    $("#popupLegend").html(cols);
+
+     $(function () {
+
+        var myData = {
+            "CompanyCode": '@Session["CompanyCode"]',
+            "PlantCode": '@Session["PlantCode"]',
+            "LineCode": '@Session["LineCode"]',
+        };
+        var R_url = '@Url.Action("Login", "Main")';
+        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+        $.ajax({
+            type: "POST",
+            url: URL + 'api/Toollife/TBM',
+            headers: {
+                Authorization: 'Bearer ' + user1
+            },
+            data: myData,
+            dataType: "json",
+            beforeSend: function () {
+                $('.loading').show();
+            },
+            complete: function () {
+                $('.loading').hide();
+            },
+            success: function (response) {
+
+                if (response.status != "Error")
+                {
+
+                    var cols = '';
+
+                    cols += 'Total Elements Installed :<span style="margin-left: 5px;">' + response.data.Table[0].Total_Tools + ' Nos</span><br>';
+                    cols += 'Due For Preventive Maintenance(>80% & <100%) :<span style="margin-left: 5px;">' + response.data.Table[0].DUE + ' Nos</span><br>';
+                    cols += 'Overdue For Preventive Maintenance(>100%) :<span style="margin-left: 5px;">' + response.data.Table[0].OverDue + ' Nos</span>';
+
+
+                    $("#TBM").append(cols);
+
+                }
+                else {
+
+
+                    svg.append("text")
+                        .text("No Data Available")
+                        .style("font-size", "40px");
+                }
+
+            },
+            error: function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+            }
+        });
+    }
+    );
+
+
+</script>
+<style>
+    .titleTooltip:hover .tooltiptext1 {
+        visibility: visible;
+        display: block;
+    }
+
+    .titleTooltip .tooltiptext1 {
+        visibility: hidden;
+        width: 250px;
+        background-color: Grey;
+        color: white;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        top: 20px;
+        right: 105%;
+        font-weight: normal;
+        z-index: 1;
+    }
+</style>

@@ -1,0 +1,207 @@
+﻿
+@{
+    ViewBag.Title = "ALertLive";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    #datatable-live-OPE thead th {
+        background-color: teal;
+        color: white;
+    }
+</style>
+<header class="page-header">
+    <h2>Alert Display - Live</h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("NewDash","Main")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            @*<li><span>Production</span></li>
+                <li><span>RealTime Dashboard</span></li>
+                <li><span>Operator Efficiency</span></li>*@
+        </ol>
+    </div>
+</header>
+@if (ViewContext.Controller.HasPermission("AlertHistoric-View"))
+{
+    <div class="row">
+        @*<button type="button" style="float:right;margin-left:2%" class="btn btn-default">OEE Historic<span class="shift"></span></button>*@
+        <input type="button" class="btn-info" onclick="location.href='/ALertHistoric/AlertHistory';" value="Historic-Alert" style="float:right;text-decoration:none;margin-right:2%;background-color:black;border-style:none;" />
+
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">
+                        Asset :<span id="maccode"></span>
+                        @*<button type="button" style="float:right" class="btn btn-default">Last update time: <span class="updated_time"></span></button>*@
+                    </h2>
+                </header>
+                <div class="panel-body">
+                    <table class="table table-bordered table-striped mb-none" id="datatable-live-alert">
+                        <thead style="background-color:teal;color:white;">
+                            <tr>
+                                <th>S.NO</th>
+                                <th>Alert ID</th>
+                                <th>Start Time</th>
+                                <th>Variable</th>
+                                <th>Property Group</th>
+                                <th>Parameter</th>
+                                <th>Values</th>
+                                <th>Machine Code</th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody class="details"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row">
+        <h2 class="panel-title">View Permission is denied</h2>
+    </div>
+}
+
+<!-- end: page -->
+<script src="~/assets1/javascripts/swal.js"></script>
+<script type="text/javascript">
+    var URL = '@System.Configuration.ConfigurationManager.AppSettings["signalr_url"]';
+   
+        function getopelivedata() {
+            //var vars = [], hash;
+            //var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+            //for (var i = 0; i < hashes.length; i++) {
+            //    hash = hashes[i].split('?');
+            //    vars.push(hash[0]);
+            //    vars[hash[0]] = hash[1];
+            //}
+              var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+            var myData = {
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]',
+                "Line_code": '@Session["LineCode"]',
+            };
+
+            $('#maccode').html("");
+
+             $.ajax({
+                type: 'Post',
+                url: URL + 'api/OEE/check_holiday',
+                 data: myData,
+                 headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+
+                dataType: 'json'
+            }).success(function (response) {
+
+                if (response.data.length == 0)
+                {
+                     $.ajax({
+                type: 'POST',
+                url: URL + 'api/Alert/GetAlertlivedata',
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                data: myData,
+                dataType: 'json'
+            }).success(function (response) {
+                if (response.data.length != 0) {
+
+                     $('#maccode').text("N/A");
+
+                   
+                    if ($.fn.DataTable.isDataTable('#datatable-live-alert')) {
+                        $('#datatable-live-alert').DataTable().destroy();
+                    }
+
+                    var alert_table = $('#datatable-live-alert').DataTable({
+
+                        "responsive": true,
+                        "autoWidth": false,
+                        "searching": false,
+                        dom: 'Bfrtip',
+                        buttons: [
+                            
+                        ],
+                        "lengthMenu": [[20, 30, 50, -1], [20, 30, 50, "All"]]
+
+
+                    });
+                    alert_table.clear();
+                    //  $('#updated_time').text(response.data.Table[0].time_stamp);
+                    for (var i = 0; i < response.data.length; i++) {
+
+                        var num = i + 1
+
+                        alert_table.row.add([num, response.data[i].AlertID,response.data[i].StartTime, response.data[i].Variable, response.data[i].PropertyGroup, response.data[i].Parameter, response.data[i].P_Values, response.data[i].Machine_Code]).draw();
+
+
+                    }
+
+                    //$('.shift').text("N/A");
+                    $('.updated_time').text(new Date().toLocaleString());
+                    $('.shift_n').show();
+                    $('.updated_time_n').show();
+                   
+                }
+
+
+                else {
+                    //$(".custom_pre_error").text(response.msg);
+                    $(".details").empty();
+                     var newRow = $("<tr>");
+                    var cols = '';
+                    cols += "<td colspan='8' style='text-align:center;font-weight:bold;background-color:burlywood;color:black;'> No Data Available </td> ";
+                    cols += "</tr>";
+                    newRow.append(cols);
+                    $(".details").append(newRow);
+                    //$('.shift').text("N/A");
+                    $('#maccode').text("N/A");
+                    $('.updated_time').text(new Date().toLocaleString());
+                    $('.shift_n').show();
+                    $('.updated_time_n').show();
+                   
+                }
+            }).error(function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+            });
+                }
+               
+
+             });
+            setTimeout(getopelivedata, 120000);
+        }
+    //});
+    $(document).ready(function () {
+        getopelivedata();
+});
+</script>
+

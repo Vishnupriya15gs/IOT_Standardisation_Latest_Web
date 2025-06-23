@@ -1,0 +1,1017 @@
+@model IEnumerable<PlanDigitization_web.Models.Roles>
+@{ ViewBag.Title = "LineRoles_settings";
+    Layout = "~/Views/Shared/_Layout.cshtml"; }
+<header class="page-header">
+    <h2> Line Role  & Permission Details </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("MainDashboard","MainDashboard")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li><span>Settings</span></li>
+            <li><span>Line Role</span></li>
+        </ol>
+    </div>
+</header>
+
+
+<div class="row" id="divnew" style="display:none;">
+    <div class="col-md-12">
+        <section class="panel form-wizard" id="w1">
+            <header class="panel-heading" style="background-color:teal;color:white;">
+                <h2 class="panel-title" style="color:white;">Line Role & Permission</h2>
+            </header>
+            <div class="panel-body panel-body-nopadding">
+                <div class="wizard-tabs">
+                    <ul class="wizard-steps">
+                        <li class="active">
+                            <a href="#w1-account" data-toggle="tab" class="text-center">
+                                Role
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#w1-profile" data-toggle="tab" class="text-center">
+                                Permission
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                @if (ViewContext.Controller.HasPermission("LineRoleSetting-View"))
+                {
+                    <form class="form-horizontal">
+                        <div class="tab-content">
+                            <div id="w1-account" class="tab-pane active">
+                                <div class="form-group">
+                                    <input type="hidden" name="RoleID" id="RoleID" />
+                                    <input type="hidden" id="UniqueId" />
+                                    <label class="col-sm-2 control-label"> Role Name <span class="required">*</span></label>
+                                    <div class="col-sm-4">
+                                        <input type="text" id="Role" class="form-control space" title="Enter Role" placeholder="Role Name" required />
+                                    </div>
+                                    <label class="col-sm-2 control-label"> Role Description <span class="required">*</span></label>
+                                    <div class="col-sm-4">
+                                        <input type="text" id="Description" class="form-control space" title="Enter Description" placeholder="Description" required />
+                                    </div>
+                                </div>
+                                @*<div class="form-group">
+                                        <label class="col-sm-2 control-label"> Line <span class="required">*</span></label>
+                                        <div class="col-sm-4">
+                                            <select id="linecode" class="form-control lineecode" name="Line_Code" title="*"></select>
+                                        </div>
+
+                                    </div>*@
+                            </div>
+                            <div id="w1-profile" class="tab-pane">
+                                <div class="panel-body">
+                                    <div class="ulclass" role="navigation" id="mainmenu">
+                                        @*<nav id="ulclassmenu" class="nav-main" role="navigation"></nav>*@
+                                    </div>
+                                    @*<nav id="menu" class="nav-main" role="navigation">
+                                            <ul class="nav nav-main">
+                                                <li>
+                                                    <ul class="nav nav-children ">
+                                                        <li>link1</li>
+                                                        <li>link2</li>
+                                                    </ul>
+                                                </li>
+                                                <li>link3</li>
+                                            </ul>
+                                        </nav>*@
+
+                                </div>
+                                <footer class="panel-footer">
+                                    <div class="row">
+                                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                                            <button type="button" class="btn btn-primary submit">Submit</button>
+                                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                                        </div>
+                                    </div>
+                                </footer>
+                            </div>
+                        </div>
+                    </form> }
+                else
+                {
+                    <h2>View permission is denied</h2>}
+            </div>
+        </section>
+    </div>
+</div>
+
+
+<!-- Roles Details-->
+<div class="row" id="divdetails">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <section class="panel">
+            <header class="panel-heading" style="background-color:teal;color:white;">
+                @if (ViewContext.Controller.HasPermission("LineRoleSetting-Add"))
+                {
+                    <div class="panel-actions">
+                        <button class="btn btn-primary" id="add"><i class="fa fa-plus" aria-hidden="true"> Add New</i></button>
+                    </div>}
+                <h2 class="panel-title" style="color:white;">List of Roles : </h2>
+            </header>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="panel-body">
+                        @if (ViewContext.Controller.HasPermission("LineRoleSetting-View"))
+                        {
+                            <table class="table table-bordered table-striped mb-none" id="datatable-default">
+                                <thead style="background-color:teal;color:white;">
+                                    <tr>
+                                        <th class="centercls"> S.No </th>
+                                        <th style="display:none;"></th>
+                                        <th> Role Name </th>
+                                        <th style="text-align:center;width:150px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{int RowNo = 0;}
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr class="gradeX">
+                                            <td>
+                                                @{RowNo++;}@RowNo
+                                            </td>
+                                            <td class="RoleID" style="display:none;">
+                                                <span>@Html.Encode(item.RoleID)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.RoleName)</span>
+                                            </td>
+                                            <td style="text-align:center;">
+                                                @if (ViewContext.Controller.HasPermission("LineRoleSetting-Edit"))
+                                                {
+                                                    <button class="btn btn-primary" style="margin-top: 10px" id="edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>}
+                                                @if (ViewContext.Controller.HasPermission("LineRoleSetting-Delete"))
+                                                {
+                                                    <button class="btn btn-danger" style="margin-top: 10px" id="delete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>}
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table> }
+                        else
+                        {
+                            <h2>View permission is denied</h2>}
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+
+<script type="text/javascript">
+    function sanitize(string12) {
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#x27;',
+            "/": '&#x2F;',
+        };
+        const reg = /[&<>"'/]/ig;
+        return string12.replace(reg, (match) => (map[match]));
+    }</script>
+
+<script type="text/javascript">
+
+    $(document).on("keydown", ".space", function (evt) {
+
+        var caretPos = $(this)[0].selectionStart
+        if (evt.keyCode == 32 && caretPos == 0) {
+            return false;
+        }
+    });
+    $("#add").click(function () {
+
+        $('#Role').html("");
+        $("#Role").prop("readonly", false);
+        $('#Description').html("");
+        $('#RoleID').html("");
+        $('#UniqueId').html("");
+        $('.submit').text('Submit');
+
+        $("#permission_details TBODY TR").each(function () {
+            var row = $(this);
+            row.find("#Add_form").prop("checked", false);
+            row.find("#View_form").prop("checked", false);
+            row.find("#Edit_form").prop("checked", false);
+            row.find("#Delete_form").prop("checked", false);
+        });
+
+        $("#divnew").show();
+        $("#divdetails").hide();
+    });
+
+    $(".cancel").click(function () {
+        $("#divnew").hide();
+        $("#divdetails").show();
+    });</script>
+@if (@TempData["message"] != null)
+{
+    <script type="text/javascript">
+    $(function () {
+        var msg = '@TempData["message"]';
+        var newmsg='@TempData["msg"]';
+        if (msg == "Inserted") {
+            swal({
+                icon: "success",
+                title: "Details Added Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Updated") {
+            swal({
+                icon: "success",
+                title: "Details Updated Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Already RoleID") {
+            swal({
+                icon: "error",
+                title: "Failed to Add.Role ID already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Already RoleName") {
+            swal({
+                icon: "error",
+                title: "Failed to Add.Role Name already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+            else if (msg == "deleted") {
+            swal({
+                icon: "error",
+                title: "Role details deleted successfully",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "failed") {
+            swal({
+                icon: "error",
+                title: "Failed to delete role",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (newmsg =="No Line Selected") {
+            swal({
+                icon: "error",
+                title: "Select Atleast One line Permission",
+                button: true,
+                timer: 4500
+            })
+        }
+        else {
+            swal({
+                icon: "error",
+                title: "Failed to Add",
+                button: true,
+                timer: 4500
+            })
+        }
+    });
+    </script>
+}
+
+<script type="text/javascript">
+    function checkParents($li, state) {
+
+        var $siblings = $li.siblings();
+        var $parent = $li.parent().closest('li');
+
+        if ($siblings.children('label').find('input').prop('checked') == undefined) {
+            var state1 = true;
+        }
+        else {
+            var state1 = $siblings.children('label').find('input').prop('checked')
+        }
+
+        state = state && state1;
+        //state = state && $siblings.children('label').find('input').prop('checked');
+        $parent.children('label').find('input').prop('checked', state);
+
+        //  console.log($parent.prop('id'))
+        if ($parent.parents('li').length)
+            checkParents($parent, state);
+    }
+    $(document).ready(function () {
+        $(".submit").click(function (event) {
+            var permission = new Array
+            var finalpermission = new Array();
+            var role = new Array();
+            var roles = {};
+            roles.RoleName = $('#Role').val();
+            roles.RoleDescription = $('#Description').val();
+           // var checked = $("input[type=checkbox]:checked").length;
+
+           /* roles.Line_Code = $('.lineecode').val();*/
+            var remval = sanitize(roles.RoleName);
+            var remval1 = sanitize(roles.RoleDescription);
+            var conditions = ["&lt;", "&#x2F;", "&#x27;", "&amp;", "&gt;", "&quot;"];
+            var test1 = conditions.some(el => remval.includes(el));
+            var test2 = conditions.some(el => remval1.includes(el));
+            if (test1 == true || test2==true) {
+                upva = 1;
+
+                return swal({
+                    icon: "error",
+                    title: "Entered Role or Role Description contain special charecters which is not allowed",
+                    button: true,
+                    timer: 4500
+                })
+
+
+                //alert("Reamrks contain special charecters which is not allowed");
+
+            }
+            else if (roles.RoleName == "" && roles.RoleDescription == "" && roles.Line_Code == "") {
+                swal({
+                    icon: "error",
+                    title: "Please Enter RoleName, RoleDescription and Line...!",
+                    button: true,
+                    timer: 4500
+                })
+                return;
+            }
+            else if (roles.RoleName == "") {
+                swal({
+                    icon: "error",
+                    title: "Please Enter RoleName...!",
+                    button: true,
+                    timer: 4500
+                })
+                return;
+            }
+            else if (roles.RoleDescription == "") {
+                swal({
+                    icon: "error",
+                    title: "Please Enter RoleDescription...!",
+                    button: true,
+                    timer: 4500
+                })
+                return;
+            }
+            //else if (!checked ) {
+            //    swal({
+            //        icon: "error",
+            //        title: "No Permission Selected...!",
+            //        button: true,
+            //        timer: 4500
+            //    })
+            //    return;
+            //}
+
+            //else if (roles.Line_Code == "") {
+            //    swal({
+            //        icon: "error",
+            //        title: "Please Select Line...!",
+            //        button: true,
+            //        timer: 4500
+            //    })
+            //    return;
+            //}
+            if ($('.submit').text() == "Update") {
+                roles.QueryType = "Update";
+                permissions.QueryType="Update"
+
+            }
+            else {
+                roles.QueryType = "Insert";
+                permissions.QueryType="Insert"
+
+            }
+           // alert($('#RoleID').val())
+              //var a = $('#RoleID').val();
+               // alert(a)
+            roles.RoleID = $('#RoleID').val();
+            role.push(roles);
+
+            console.log('role' + JSON.stringify(roles))
+            $('input[type=checkbox]:checked').each(function () {
+
+
+
+                if ($(this).closest("li").children('ul').length == 0) {
+
+                    var permissions = {};
+                    permissions.Line_Code = $(this).prop('id')
+
+                        // console.log('for line' + $(this).prop('id') +'length'+ $(this).children('li').length)
+                        var i = 0;
+                        $(this).parents('li').each(function () {
+
+                            //  console.log('console'+i +''+ $(this).find('input').prop('id'))
+                            if (i == 1)
+                                permissions.Dept_Code = $(this).find('input').prop('id')
+                            else if (i == 2)
+                                permissions.Area_Code = $(this).find('input').prop('id')
+                            else if (i == 3)
+                                permissions.Plant_Code = $(this).find('input').prop('id')
+                            i = i + 1;
+
+                            if ($('.submit').text() != "Update") {
+                                permissions.QueryType = "Insert"
+                            }
+                            else {
+                                permissions.QueryType = "Update"
+                            }
+
+
+                            console.log("permission:"+permissions)
+                        });
+
+                        i = 0;
+                    }
+
+
+
+
+                    permission.push(permissions)
+
+                    // console.log('permission length' + permissions)
+
+                    finalpermission = permission.filter(function (e) { return e != null; });
+
+
+
+            });
+            //permission.push(permissions)
+             var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+
+
+           // Object.keys(JSON.stringify(permission)).forEach(k => (!JSON.stringify(permission)[k] && JSON.stringify(permission)[k] !== undefined) && delete JSON.stringify(permission)[k]);
+            console.log(JSON.stringify(permission))
+
+            if (finalpermission != "") {
+
+                $.ajax({
+                    type: "POST",
+                    url: "../UserSettings/Add_Line_Permission",
+                    data: '{permissions: ' + JSON.stringify(finalpermission) + ',role: ' + JSON.stringify(role) + '}',
+                    //headers: {
+                    //    Authorization: 'Bearer ' + user1
+                    //},
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    beforeSend: function () {
+                        $('.loading').show();
+                    },
+                    complete: function () {
+                        $('.loading').hide();
+                    },
+                    success: function (response) {
+                        //if ($('.submit').text() == "Update") {
+                        //    swal({
+                        //        icon: "success",
+                        //        title: "Details Updated Successfully...!",
+                        //        button: true,
+                        //        timer: 4500
+                        //    })
+                        //}
+                        //else if ($('.submit').text() == "Submit") {
+                        //    swal({
+                        //        icon: "success",
+                        //        title: "Details Added Successfully...!",
+                        //        button: true,
+                        //        timer: 4500
+                        //    })
+                        //}
+                        $('.submit').text('Submit');
+                        window.location = '@Url.Action("EmployeeLinePermission", "UserSettings")';
+                    }
+                })
+
+            } else {
+                /*alert('Select Atleast one line to Proceed..!!!');*/
+                swal({
+                    icon: "error",
+                    title: "Select Atleast one line to Proceed..!!!",
+                    button: true,
+                    closeModal: false
+                })
+                 @*window.location = '@Url.Action("EmployeeLinePermission", "UserSettings")';*@
+            }
+        });
+
+        $('.updated_time').text("N/A");
+        $('.shift').text("N/A");
+
+        if ($.fn.DataTable.isDataTable('#datatable-default')) {
+                        $('#datatable-default').DataTable().destroy();
+                    }
+
+
+                        $('#datatable-default').DataTable({
+
+                            "responsive": true,
+                            "autoWidth": false,
+                            scrollY: true,
+                            scrollX: true,
+                            scroller: true
+                        });
+
+
+    });
+</script>
+
+<script type="text/javascript">
+    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+    $("body").on("click", "#edit", function () {
+
+        //alert("edit")
+        var row = $(this).closest("tr");
+        var RoleID = row.find(".RoleID span").html();
+
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+
+        var myData12 = {
+            "QueryType": "Edit_line_role",
+            "Parameter": RoleID,
+            "Parameter1": '@Session["CompanyCode"]'
+            @*"CompanyCode": '@Session["CompanyCode"]'*@
+                            @*"PlantCode": '@Session["PlantCode"]',
+                            "LineCode": '@Session["LineCode"]'*@
+        };
+        $("#divnew").show();
+        $("#divdetails").hide();
+        $('.submit').text('Update');
+        $.ajax({
+            type: "POST",
+            url: URL + 'api/UserSettings/User_settings_details',
+            data: myData12,
+            headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+            dataType: "json",
+            beforeSend: function () {
+                $('.loading').show();
+            },
+            complete: function () {
+                $('.loading').hide();
+            },
+            success: function (response)
+            {
+
+                $('#Role').val(response.data.Table[0].RoleName);
+                $("#Role").prop("readonly", true);
+                $('#Description').val(response.data.Table[0].RoleDescription);
+                $('#RoleID').val(response.data.Table[0].roleid);
+
+                $('#UniqueId').val(response.data.Table[0].Unique_id);
+                $('input').prop('checked', false);
+                for (var i = 0; i < response.data.Table1.length; i++) {
+                    $('input[type=checkbox]').each(function () {
+
+
+                        if ($(this).prop('id') == response.data.Table1[i].Line_Code) {
+                            $(this).prop("checked", true)
+                            var $cb = $(this);
+                            var $li = $cb.closest('li');
+
+
+
+                            var state = $cb.prop('checked');
+                            console.log($cb.prop('id'))
+
+                            // check all children
+                            $li.find('input').prop('checked', state);
+
+
+
+                            // check all parents, as applicable
+                            if ($li.parents('li').length)
+
+                                checkParents($li, state);
+                        }
+
+
+
+
+                    });
+
+
+                }
+
+
+
+            }
+            , error: function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+            }
+        });
+    });
+
+    $("body").on("click", "#delete", function () {
+        if (confirm("Deleting this Role will delete all permissions in this role!!Do you want to proceed?")) {
+            var row = $(this).closest("tr");
+            var RoleID = row.find(".RoleID span").html();
+            var companycode = '@Session["CompanyCode"]';
+             window.location = '@Url.Action("EmployeeLinePermission", "UserSettings")';
+            var myData = {
+                "QueryType": "Delete_role_linepermission",
+                "Parameter": RoleID,
+                "Parameter1": companycode,
+                @*"CompanyCode": '@Session["CompanyCode"]',
+                         "PlantCode": '@Session["PlantCode"]',
+                         "LineCode": '@Session["LineCode"]'*@
+            };
+
+            var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/UserSettings/new_delete_User_settings_details',
+                data: myData,
+                   headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+
+
+                     if (response == "deleted") {
+                        swal({
+                            icon: "success",
+                            title: "Role details deleted successfully",
+                            button: true,
+                            timer: 4500
+                        })
+
+                    }
+                    else if (response == "failed") {
+                        swal({
+                            icon: "error",
+                            title: "Failed to delete role",
+                            button: true,
+                            timer: 4500
+                        })
+                    }
+                    //swal({
+                    //    icon: "success",
+                    //    title: "Roles Details and associated User Details Deleted Successfully...!",
+                    //    showConfirmButton: false,
+                    //    timer: 4500
+                    //})
+
+                }
+            }).error(function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+             });
+        }
+    });
+</script>
+<script>
+    function chk_function(val) {
+        var isChecked = $('.' + val + '').prop("checked");
+        $('#permission_details tr:has(td)').find('input[class="' + val + '"]').prop('checked', isChecked);
+    }
+    function checkAll() {
+        var checkboxes = document.getElementsByTagName('input'), val = null;
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].type == 'checkbox') {
+                if (val === null) val = checkboxes[i].checked;
+                checkboxes[i].checked = val;
+            }
+        }
+    }</script>
+
+
+<script>
+    window.permissions = {}
+
+    $(function () {
+          var myData = {
+
+
+                "CompanyCode": '@Session["CompanyCode"]',
+
+            };
+
+            var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/UserSettings/Plantstructure',
+                data: myData,
+                   headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+                    var jsondata = JSON.parse(JSON.stringify(response))
+                    console.log(JSON.parse(JSON.stringify(response)))
+                    console.log(jsondata[0]["companystructure"])
+
+                    var data = JSON.parse(jsondata[0]["companystructure"])
+
+                    data = JSON.parse(JSON.stringify(data).split('"dept":').join('"nodes":'));
+                    data = JSON.parse(JSON.stringify(data).split('"b":').join('"nodes":'));
+                    data = JSON.parse(JSON.stringify(data).split('"f":').join('"nodes":'));
+                    data = JSON.parse(JSON.stringify(data).split('"area_id":').join('"text":'));
+                    data = JSON.parse(JSON.stringify(data).split('"dept_id":').join('"text":'));
+                    data = JSON.parse(JSON.stringify(data).split('"Functionid":').join('"text":'));
+                    data = JSON.parse(JSON.stringify(data).split('"plantid":').join('"text":'));
+                    data = JSON.parse(JSON.stringify(data).split('"companycode":').join('"text":'));
+                    data = JSON.parse(JSON.stringify(data).split('"companyname":').join('"name":'));
+                    data = JSON.parse(JSON.stringify(data).split('"plantname":').join('"name":'));
+                    data = JSON.parse(JSON.stringify(data).split('"area_name":').join('"name":'));
+                    data = JSON.parse(JSON.stringify(data).split('"dept_name":').join('"name":'));
+                    data = JSON.parse(JSON.stringify(data).split('"Functionname":').join('"name":'));
+
+                    console.log(data)
+
+                   var container = document.getElementsByClassName('ulclass')[0];
+                  //  var container = document.getElementById('ulclassmenu')[0];
+
+
+                    if (container) {
+
+                        createSublist(container, data);
+
+                    }
+
+                    else {
+
+                        console.log('Container has not been found');
+
+                    }
+                    $('input').prop('checked', false);
+                }
+            }).error(function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+             });
+
+
+        //var data =
+        //    [
+        //        {
+        //            "companycode": "TEAL", "companyname": "Titan Engineering and Automation Limited",
+        //            "b": [{
+        //                "plantid": "Hosurunit1", "nodes": [{
+        //                    "area_id": "Area1_Unit1", "area_name": "Area1_Unit1",
+        //                    "dept": [{ "dept_id": "Dept1_Area1unit1", "dept_name": "Dept1_Area1unit1", "f": [{ "Functionid": "F1", "Functionname": "line1dept1area1unit1" }, { "Functionid": "F2", "Functionname": "line2dept1area1unit1" }] }, {
+        //                        "dept_id": "Dept2_Area1unit1",
+        //                        "dept_name": "Dept2_Area1unit1",
+        //                        "f": [{ "Functionid": "F11", "Functionname": "line1dept2area1unit1" }]
+        //                    }]
+        //                }, {
+        //                    "area_id": "Area2_Unit1",
+        //                    "area_name": "Area2_Unit1", "dept": [{
+        //                        "dept_id": "Dept2_Area2unit1", "dept_name": "Dept2_Area2unit1",
+        //                        "f": [{ "Functionid": "F12", "Functionname": "line1dept2area2unit1" }]
+        //                    }]
+        //                }]
+        //            }, {
+        //                "plantid": "Hosur_unit_2",
+        //                "nodes": [{
+        //                    "area_id": "Area1_Unit2", "area_name": "Area1_Unit2", "dept": [{
+        //                        "dept_id": "Dept1_Area1unit2",
+        //                        "dept_name": "Dept1_Area1unit2", "f": [{ "Functionid": "line1dept1area1unit2", "Functionname": "line1dept1area1unit2" }]
+        //                    }]
+        //                }]
+        //            }]
+        //        }]
+
+
+
+
+    })
+    //$('.list').click(function () {
+    //    $('ul', $(this).parent()).eq(0).toggle();
+    //});
+    $(document).on('click', '#mainmenu  li ', function () {
+
+       // //$(this).closest("ul").children('li').css({ "color": "red", "border": "2px solid red" });
+
+       // // $(this).find("ul").toggle()
+       // // $(this).find("ul").children("li").css({ "color": "red", "border": "2px solid red" });
+       // $(this).closest('ul').children().css({ "color": "red", "border": "2px solid red" });
+       // // $(this).next('ul').toggle();
+       // //$(this).children('li').each(function () {
+       //console.log($(this).children().closest('li')[0].find('input').prop('id'))
+       // //});
+
+
+    });
+
+    function createSublist(container, args) {
+
+        var ul = document.createElement('ul');
+        ul.id = 'mainmenu'
+        // ul.className='list'
+
+
+
+        for (var j = 0; j < args.length; j++) {
+
+            var row = args[j];
+
+
+
+            var li = document.createElement('li');
+            li.className = 'list'
+
+            var icon = document.createElement('i');
+            //icon.className = 'fa-li fa fa-check-square'
+
+            li.appendChild(icon)
+            //new trial
+            var checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = row.text;
+            checkbox.name = row.text;
+            checkbox.value = row.text;
+            checkbox.addEventListener('change', function () {
+                var $cb = $(this);
+                var $li = $cb.closest('li');
+
+
+
+                var state = $cb.prop('checked');
+                console.log($cb.prop('id'))
+
+                // check all children
+                $li.find('input').prop('checked', state);
+
+
+
+                // check all parents, as applicable
+                if ($li.parents('li').length)
+
+                    checkParents($li, state);
+            });
+
+            var label = document.createElement('label')
+            label.htmlFor = row.name + '  ';
+            label.innerText = row.name + '  ';
+
+            label.appendChild(checkbox);
+            //--new trial end
+
+            //var label = document.createElement("label");
+            //label.innerHTML = '<input type="checkbox" /> ' + row.text + '</label>';
+
+            li.appendChild(label)
+
+            var nodes = row.nodes;
+
+            if (nodes && nodes.length) {
+
+                createSublist(li, nodes);
+
+            }
+
+
+
+            ul.appendChild(li);
+
+        }
+
+
+
+        container.appendChild(ul);
+
+    };
+
+    function submitline() {
+
+        var permissions = {};
+        $('input[type=checkbox]:checked').each(function () {
+
+
+
+            if ($(this).children('li').length == 0) {
+
+
+                permissions.linecode = $(this).prop('id')
+
+                var i = 0;
+                $(this).parents('li').each(function () {
+
+                    if (i == 1)
+                        permissions.deptcode = $(this).find('input').prop('id')
+                    else if (i == 2)
+                        permissions.areacode = $(this).find('input').prop('id')
+                    else if (i == 3)
+                        permissions.plantcode = $(this).find('input').prop('id')
+                    i = i + 1;
+                    //console.log($(this).find('input').prop('id'))
+
+                });
+
+                i = 0;
+            }
+
+            console.log(permissions)
+
+        });
+
+
+    }
+    //$('#mainmenu li>ul').parent().addClass('selected');
+
+</script>
+<style>
+    /* #mainmenu ul {
+        font-size: 12px;
+        font-weight: bold;
+    }
+          */
+</style>

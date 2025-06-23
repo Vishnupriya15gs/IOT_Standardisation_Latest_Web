@@ -1,0 +1,711 @@
+﻿
+
+@Styles.Render("~/assets1/css")
+
+<!--tab-->
+<link rel="stylesheet" href="~/StyleSheets/tooltip/leftTooltip.css" />
+<link rel="stylesheet" href="~/assets1/stylesheets/LineOverView_Quality/Layout.css" />
+<link rel="stylesheet" href="~/assets1/stylesheets/LineOverView_Quality/Tabs.css" />
+<!--Modal-->
+<link rel="stylesheet" href="~/assets1/stylesheets/LineOverView_Quality/modal.css" />
+<!--charts-->
+@*<link rel="stylesheet" href="~/assets1/stylesheets/Quality_Charts/TooltipBar.css" />
+    <link rel="stylesheet" href="~/assets1/stylesheets/Quality_Charts/svg.css" />
+    <link rel="stylesheet" href="~/assets1/stylesheets/Quality_Charts/BarGraphBars.css" />
+    <link rel="stylesheet" href="~/assets1/stylesheets/Quality_Charts/LineGraphLines.css" />*@
+
+
+
+<div class="Layout">
+
+
+    <header class="page-header">
+        <h2>
+            Line Overview
+        </h2>
+        <div class="right-wrapper pull-right">
+            <ol class="breadcrumbs">
+                <li class="breadcrumb-item">
+                    <a href="@Url.Action("MainDashboard", "MainDashboard")">
+                        <div id="lefttooltip">
+                            <i class="fa fa-th"></i>
+                            <span class="tooltiptexts">
+                                <span class="name">Main Dashboard</span>
+                            </span>
+                        </div>
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="@Url.Action("Production", "LineOverview")">
+                        <div id="lefttooltip">
+                            <img src="~/Images/LineOverview/LOicon.png" />
+                            <span class="tooltiptexts">
+                                <span class="name">Production Dashboard</span>
+                            </span>
+                        </div>
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="@Url.Action("Maintenance", "LineOverview")">
+                        <div id="lefttooltip">
+                            <i class="fa  fa-wrench"></i>
+                            <span class="tooltiptexts">
+                                <span class="name">Maintenance Dashboard</span>
+                            </span>
+                        </div>
+                    </a>
+                </li>
+            </ol>
+        </div>
+
+    </header>
+
+
+    <h4 style="text-align: center; font-weight: bold;">Quality Dashboard</h4>
+    <div class="tab">
+        <button class="tablinks" id="S1" onclick="OpenShift('S1')">S1</button>
+        <button class="tablinks" id="S2" onclick="OpenShift('S2')">S2</button>
+        <button class="tablinks" id="S3" onclick="OpenShift('S3')">S3</button>
+    </div>
+
+    <div id="S1" class="tabcontent">
+        <!-- HTML markup for the loading spinner -->
+        <!--<div id="loadingSpinner"></div>-->
+        <div class="row">
+            <div class="column">
+                <div class="card">
+                    <div>
+
+
+                        <div class="card-layout1">
+
+                            <h4 style="font-size: 16px;color:black">DPR - OP180 Leakage Station </h4>
+                            <p class="pie-section">
+                                <svg style="margin-left: 43px; margin-top: -4px;" width="100" height="100"></svg>
+                                <ul class="legend">
+                                    <li><span class="superawesome"></span> Direct Pass</li>
+                                    <li><span class="awesome"></span> Rejection</li>
+                                    <li><span class="kindaawesome"></span> Rework</li>
+                                </ul>
+                            </p>
+                            <table class="pie-table1">
+                                <thead>
+                                    <tr>
+                                        <th>Produced</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pietable1">
+                                </tbody>
+                            </table>
+                            <table class="pie-table2">
+                                <thead>
+                                    <tr>
+                                        <th>Direct Pass</th>
+                                        <th onclick="showRejectionPopup()">
+                                            Rejection
+                                            <i class="glyphicon glyphicon-info-sign gi-8x">
+                                                @*<span class="tooltiptext2 fontSanserif" id="">
+                                                    Category wise Rejection Data
+                                                    </span>*@
+                                            </i>
+                                        </th>
+                                        <th>Rework</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pietable2">
+                                </tbody>
+                            </table>
+
+                            <!-- Rejection Popup -->
+                            <div id="popup">
+                                <div class="modal-content">
+                                    <div id="closeBtn" onclick="hideRejectionPopup()">X</div>
+                                    <h4>Category wise Rejection Data</h4>
+                                    <div class="column">
+                                        <div class="chart-container" id="pieChartContainer"></div>
+                                    </div>
+                                    <div class="column">
+                                        <table class="popuptable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Category Type</th>
+                                                    <th>Count</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="popupContent">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <table class="pie-table3">
+                                <thead>
+                                    <tr>
+                                        <th>Direct Pass %</th>
+                                        <th>Rejection %</th>
+                                        <th>Rework %</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pietable3">
+                                </tbody>
+                                @*<tr>
+                                        <td>60 % </td>
+                                        <td>40 % </td>
+                                    </tr>*@
+                            </table>
+
+                        </div>
+
+
+                        <div id="svgbardiv" style="height:300px; text-align:center; box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.2);margin-top:10px;">
+                            <h4 style="padding-top:10px;">EOL- Hourly Direct Pass Rate </h4>
+                            <svg @*style="margin-top:20px;"*@ id="svgbar"></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="column">
+                <div class="card">
+                    <div>
+                        <div id="chartdiv" style="height: 300px; padding: 2px 2px 9px 2px; box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.2);">
+                            <h4 style="font-size: 16px;color:black"> EOL- Daily Direct Pass Rate (<span id="CurrentMonthYear"></span>) </h4>
+                            @*<svg style=" margin-left: 55px;" width="500" height="250" id="svgbardaily"></svg>*@
+                            <svg @*style="margin-top:20px;"*@ id="chart"></svg>
+                        </div>
+
+                        <div id="svgbarmonthlydiv" style="height: 300px; padding: 2px 2px 9px 2px; box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.2); margin-top: 10px;">
+                            <h4 style="font-size: 16px;color:black">EOL - Monthly Direct Pass Rate (<span id="CurrentYear"></span>) </h4>
+                            <svg @*style="margin-top:20px;"*@ id="svgbarmonthly"></svg>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="column2">
+                <div class="card">
+                    <div style="height: 295px; padding: 2px 2px 9px 2px; box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.2);">
+                        <h4 style="font-size: 16px;color:black"> Callibration </h4>
+                        @*<svg width="401" height="240" style="margin-left: 8px; margin-top: -10px;" id="svgcaliberation"></svg>
+                            <ul class="legend" style="margin-top: -33px">
+                                <li><span class="kindaawesome"></span> Planned</li>
+                                <li><span class="superawesome"></span> Completed</li>
+                                <li><span class="awesome"></span> Over Due</li>
+                                <li><span class="regretawesome"></span> Completed_Delay</li>
+                            </ul>
+                            <span>Under development</span>
+                            <svg id="svgstacked" width="401" height="240" style="margin-left: 8px; margin-top: -10px;"></svg>
+                             <div>
+                             <label for="colorSelect">Select Color:</label>
+                             <select id="colorSelect"></select>
+                            </div>
+                            <div width="401" height="240" style="margin-left: 8px; margin-top: 5px;" id="graph"></div>*@
+
+                        <span class="deviceselection" for="device">Select Device Description:</span>
+                        <select id="device"></select>
+                        <svg id="graphs" width="400" height="200" style="margin-left: 3px; margin-top: 20px;">
+                        </svg>
+
+                        <div class="tooltipsvg" style="opacity: 0;"></div>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="column2">
+                <div class="card">
+                    <div id="svgParetodiv" style="height: 295px; padding: 2px 2px 9px 2px; box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.2);">
+                        <h4>Rework Pareto</h4>
+                        <svg id="svgPareto">
+                            @*<h4 style="font-size: 16px;color:black; padding-top: 10px;"> Rework Pareto </h4>*@
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="column2">
+                <div class="card">
+                    <div id="svgCategoryParetodiv" style="height: 295px; padding: 2px 2px 9px 2px; box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.2);">
+                        <h4>Rejection Category Pareto</h4>
+                        <svg id="svgCategoryPareto">
+                            @*<h4 style="font-size: 16px;color:black; padding-top: 10px;">Rejection Category Pareto </h4>*@
+                        </svg>
+                    </div>
+                </div>
+
+                <div id="container-modal-quality" style="display: none;">
+                    <div class="modal-content1">
+                        <div class="close-modal">
+                            <span class="close-icon"><i class="fa fa-times" onclick="closeModal()"></i></span>
+                        </div>
+                        <h4>Stationwise Rework Pareto</h4>
+                        <div class="tabsModal">
+                            <button class="tabModal tab-custom" onclick="showTab('custom')">Custom</button>
+                            <button class="tabModal tab-month" onclick="showTab('month')">Month</button>
+                        </div>
+                        <div id="custom" class="tab-content-quality">
+                            <label class="dateslabel" for="fromDate">From Date:</label>
+                            <input type="date" id="fromDate" name="fromDate" required>
+                            <label class="dateslabel" for="toDate">To Date:</label>
+                            <input type="date" id="toDate" name="toDate" required>
+                            <button id="viewButton_custom" onclick="getReworkData_Custom()">View</button> <!-- Button to load results -->
+                        </div>
+                        <div id="month" class="tab-content-quality" style="display: none;">
+                            <label class="dateslabel" for="monthSelect">Select Month:</label>
+                            <select id="monthSelect" name="monthSelect" required>
+                                <!-- JavaScript will populate the months dynamically -->
+                            </select>
+                            <button id="viewButton_month" onclick="getReworkData_Monthly()">View</button> <!-- Button to load results -->
+                        </div>
+                        <div class="box-2" id="chartRejPopup">
+                            <!-- Content of box-2 goes here -->
+                        </div>
+                        <div class="box-2" id="chartRejPopup_Monthly">
+                            <!-- Content of box-2 goes here -->
+                        </div>
+                    </div>
+                </div>
+
+
+                <div id="container-modal-category-quality" style="display: none;">
+                    <div class="modal-content1">
+                        <div class="close-modal">
+                            <span class="close-icon"><i class="fa fa-times" onclick="closeModal()"></i></span>
+                        </div>
+                        <h4>Rejection Category Pareto</h4>
+                        <div class="tabsModal">
+                            <button class="tabModal tab-custom1" onclick="showTab('custom1')">Custom</button>
+                            <button class="tabModal tab-month1" onclick="showTab('month1')">Month</button>
+                        </div>
+                        <div id="custom1" class="tab-content-quality">
+                            <label class="dateslabel" for="fromDate">From Date:</label>
+                            <input type="date" id="fromDate1" name="fromDate" required>
+                            <label class="dateslabel" for="toDate">To Date:</label>
+                            <input type="date" id="toDate1" name="toDate" required>
+                            <button id="viewButton_custom1" onclick="getCategoryData_Custom()">View</button> <!-- Button to load results -->
+                        </div>
+                        <div id="month1" class="tab-content-quality" style="display: none;">
+                            <label class="dateslabel" for="monthSelectcategory">Select Month:</label>
+                            <select id="monthSelectcategory" name="monthSelectcategory" required>
+                                <!-- JavaScript will populate the months dynamically -->
+                            </select>
+                            <button id="viewButton_month1" onclick="getCategoryData_Monthly()">View</button> <!-- Button to load results -->
+                        </div>
+                        <div class="box-2" id="chartCategoryPopup">
+                            <!-- Content of box-2 goes here -->
+                        </div>
+                        <div class="box-2" id="chartCategoryPopup_Monthly">
+                            <!-- Content of box-2 goes here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    @*<script>
+            function OpenShift(evt, shift) {
+                //var i, tabcontent, tablinks;
+                //tabcontent = document.getElementsByClassName("tabcontent");
+                //for (i = 0; i < tabcontent.length; i++) {
+                //    tabcontent[i].style.display = "none";
+                //}
+                //tablinks = document.getElementsByClassName("tablinks");
+                //for (i = 0; i < tablinks.length; i++) {
+                //    tablinks[i].className = tablinks[i].className.replace(" active", "");
+                //}
+                //document.getElementById(shift).style.display = "block";
+                //evt.currentTarget.className += " active";
+            }
+            document.getElementById("defaultOpen").click();
+        </script>*@
+
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+
+
+
+    <script src="~/assets1/javascripts/swal.js"></script>
+    <script src="~/assets1/javascripts/swal_alert.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="~/StyleSheets/root.css" />
+    <script src="~/Scripts/LineOverView_Quality/BargraphGroupedBarsLine.js"></script>
+    <script src="~/Scripts/LineOverview/Production/ProdDataCalls.js"></script>
+    <script src="~/Scripts/LineOverView_Quality/Modal.js"></script>
+    <script src="~/Scripts/LineOverView_Quality/LineOverView_Pie.js"></script>
+    <script src="~/Scripts/LineOverView_Quality/LineOverView_Bar.js"></script>
+    <script src="~/Scripts/LineOverView_Quality/LineOverView_API.js"></script>
+    <script>
+    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+    var sURL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+    var company = '@Session["CompanyCode"]';
+    var plant = '@Session["PlantCode"]';
+    var line = '@Session["LineCode"]';
+    var R_url = '@Url.Action("Login", "Main")';
+    var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+    var shiftname;
+    var CurrentShift = "";
+    var timeoutId = "";
+
+
+    //Auto load of Shifts
+
+    window.onload = setdefaultTab;
+
+    function setdefaultTab() {
+        var CurrentTime = new Date();
+        var currentHour = CurrentTime.getHours();
+
+        //shift timings based on Project Plant timings
+        var shift1start = 7; //just for my refernce
+        var shift2start = 15;
+        var shift3start = 23;
+
+        var defaultShift;
+        if (currentHour < shift2start)
+        {
+            defaultShift = 'S1';
+        }
+        else if(shift1start < currentHour < shift3start)
+        {
+            defaultShift = 'S2';
+        }
+        else
+        {
+            defaultShift = 'S3';
+        }
+        console.log(defaultShift, "DefaultShift")
+
+        if (defaultShift == 'S1') {
+            shiftname = "S1";
+            reloadGraph(shiftname);
+        }
+        else if (defaultShift == 'S2') {
+            shiftname = "S2";
+            reloadGraph(shiftname);
+        }
+        else
+            shiftname = "S3";
+        reloadGraph(shiftname);
+
+
+        //shiftname = defaultShift == 'S1' ? "S1" : "S2";
+        console.log(shiftname, "shiftname");
+        var CurrentDate = new Date();
+
+        var currentyear = CurrentDate.getFullYear();
+        var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        var currentMonth = months[CurrentDate.getMonth()]; //   CurrentDate.getMonth() + 1;
+        document.getElementById("CurrentMonthYear").innerHTML = currentMonth + "-" + currentyear ;
+        document.getElementById("CurrentYear").innerHTML = currentyear;
+
+        OpenShift(shiftname);
+    }
+
+
+    //    function OpenShift(shift) {
+    //        debugger;
+    //    //var i, tabcontent, tablinks;
+    //    //tabcontent = document.getElementsByClassName("tabcontent");
+    //    //for (i = 0; i < tabcontent.length; i++) {
+    //    //    tabcontent[i].style.display = "none";
+    //    //}
+    //    tablinks = document.getElementsByClassName("tablinks");
+    //    for (i = 0; i < tablinks.length; i++) {
+    //        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    //    }
+    //    document.getElementById(shift).style.display = "block";
+    //    var buttonactive = document.getElementById(shift);
+    //    buttonactive.classList.add('active');
+    //    //document.getElementById(shift).className += " active";
+    //    /*$('.tabcontent').empty();*/
+    //    LineOverView_API_Call(URL, sURL, company, plant, line, R_url, user1, shift);
+    //    $('.loading').hide();
+
+
+    //}
+    //document.getElementById("defaultOpen").click();
+
+
+        function OpenShift(shift) {
+            // Ensure 'shift' parameter is a valid value (S1, S2, or S3)
+            if (!/^(S1|S2|S3)$/.test(shift)) {
+                console.error('Invalid shift parameter.');
+                return;
+            }
+
+            // Remove potential XSS vulnerabilities by encoding user inputs
+            var encodedShift = encodeHTML(shift);
+
+            // Hide all tab contents
+            var tabContents = document.getElementsByClassName("tabcontent");
+            for (var i = 0; i < tabContents.length; i++) {
+                tabContents[i].style.display = "none";
+            }
+
+            // Remove 'active' class from all tab links
+            var tabLinks = document.getElementsByClassName("tablinks");
+            for (var i = 0; i < tabLinks.length; i++) {
+                tabLinks[i].classList.remove("active");
+            }
+
+            // Display the selected tab content
+            document.getElementById(encodedShift).style.display = "block";
+
+            // Add 'active' class to the clicked tab button
+            document.getElementById(encodedShift).classList.add("active");
+
+            // Call the API function
+            LineOverView_API_Call(URL, sURL, company, plant, line, R_url, user1, encodedShift);
+        }
+
+        // Function to encode user inputs to prevent XSS vulnerabilities
+        function encodeHTML(input) {
+            return input.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+        }
+
+    function showRejectionPopup() {
+
+       var URL = this.sURL;
+        var R_url = this.R_url;
+        var user1 = this.user1;
+
+
+      var myData =
+        {
+            "CompanyCode":'@Session["CompanyCode"]',
+            "PlantCode":'@Session["PlantCode"]',
+            "LineCode":'@Session["LineCode"]',
+            "ShiftId": "S1",
+            "MachineCode": "M1"
+        };
+
+
+        $.ajax({
+            type: "POST",
+            url: URL + 'api/LineOverView_Quality/RejCategory_Pie',
+            headers: {
+                Authorization: 'Bearer ' + user1
+            },
+            data: myData,
+            dataType: "json",
+
+            success: function (response) {
+                console.log(response);
+
+
+                // Sample data for dynamic columns
+                const rejectionData = response.data.Table;
+
+                //for (i = 0; i <= response.data.Table.length; i++)
+                //{
+                //    rejectionData.push({
+                //        Category_Name: response.data.Table[i].Category_Name,
+                //        RejCount: response.data.Table[i].RejCount
+                //    });
+                //}
+
+                const popup = document.getElementById("popup");
+                const content = document.getElementById("popupContent");
+
+                // Clear previous content
+                content.innerHTML = "";
+
+                // Populate popup content with dynamic data
+                rejectionData.forEach((entry) => {
+                    const row = document.createElement("tr");
+                    const Category_NameCell = document.createElement("td");
+                    Category_NameCell.textContent = entry.Category_Name;
+                    row.appendChild(Category_NameCell);
+
+                    const RejCountCell = document.createElement("td");
+                    RejCountCell.textContent = entry.RejCount;
+                    row.appendChild(RejCountCell);
+
+                    content.appendChild(row);
+                });
+
+                // Show the popup
+                popup.style.display = "block";
+
+                // Draw the D3.js pie chart
+                drawPieChart(rejectionData);
+
+
+
+            },
+            error: function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+            }
+        });
+
+
+
+        //// Sample data for dynamic columns
+        //const rejectionData = [
+        //    { vishnu: 'Mechanical Issue', count: 2 },
+        //    { vishnu: 'Electrical Issue', count: 2 },
+        //    { vishnu: 'Visual Issue', count: 1 },
+        //    // Add more data as needed
+        //];
+
+        //const popup = document.getElementById("popup");
+        //const content = document.getElementById("popupContent");
+
+        //// Clear previous content
+        //content.innerHTML = "";
+
+        //// Populate popup content with dynamic data
+        //rejectionData.forEach((entry) => {
+        //    const row = document.createElement("tr");
+        //    const vishnuCell = document.createElement("td");
+        //    vishnuCell.textContent = entry.vishnu;
+        //    row.appendChild(vishnuCell);
+
+        //    const countCell = document.createElement("td");
+        //    countCell.textContent = entry.count;
+        //    row.appendChild(countCell);
+
+        //    content.appendChild(row);
+        //});
+
+        //// Show the popup
+        //popup.style.display = "block";
+
+        //// Draw the D3.js pie chart
+        //drawPieChart(rejectionData);
+    }
+
+    function hideRejectionPopup() {
+        document.getElementById("popup").style.display = "none";
+
+    }
+
+    // D3.js Pie Chart
+    function drawPieChart(data) {
+
+        d3.select('#pieChartContainer svg').remove();
+
+        const width = 300;
+        const height = 250;
+        const radius = Math.min(width, height) / 2;
+
+        const svg = d3.select("#pieChartContainer")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .append("g")
+            .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+        const color = d3.scaleOrdinal(d3.schemeCategory10);
+
+        const pie = d3.pie().value(function (d) { return d.RejCount; });
+
+        const path = d3.arc()
+            .outerRadius(radius)
+            .innerRadius(0);
+
+        const arc = svg.selectAll("arc")
+            .data(pie(data))
+            .enter()
+            .append("g")
+            .on("mouseover", function (event, d) {
+                // Increase size and add shadow on hover
+                d3.select(this).select("path")
+                    .transition()
+                    .duration(200)
+                    .attr("d", d3.arc().outerRadius(radius * 1.1).innerRadius(0))
+                    .style("box-shadow", "0 0 10px rgba(0, 0, 0, 0.3)");
+            })
+            .on("mouseout", function (event, d) {
+                // Restore original size and remove shadow on hover out
+                d3.select(this).select("path")
+                    .transition()
+                    .duration(200)
+                    .attr("d", path)
+                    .style("box-shadow", "none");
+            });
+
+        arc.append("path")
+            .attr("d", path)
+            .attr("fill", function (d) { return color(d.data.Category_Name); })
+            .transition() // Apply transition to the path
+            .duration(1000) // Set the duration of the animation in milliseconds
+            .attrTween("d", function (d) {
+                var interpolate = d3.interpolate({ startAngle: 0, endAngle: 0 }, d);
+                return function (t) {
+                    return path(interpolate(t));
+                };
+            });
+
+        //arc.append("text")
+        //    .attr("transform", function (d) { return "translate(" + path.centroid(d) + ")"; })
+        //    .attr("dy", ".4em")
+        //    .text(function (d) { return d.data.Category_Name; });
+
+        // Add legend
+        const legend = svg.selectAll(".legend")
+            .data(color.domain())
+            .enter()
+            .append("g")
+            .attr("class", "legend")
+            .attr("transform", function (d, i) { return "translate(0," + i * 20 + ")"; });;
+
+        legend.append("rect")
+            .attr("x", width - 18)
+            .attr("width", 18)
+            .attr("height", 18)
+            .style("fill", color)
+            .style("opacity", 0) // Set initial opacity to 0
+            .transition() // Apply transition to the legend rect
+            .duration(1000) // Set the duration of the animation in milliseconds
+            .style("opacity", 1); // Set the final opacity
+
+        legend.append("text")
+            .attr("x", width - 24)
+            .attr("y", 9)
+            .attr("dy", ".35em")
+            .style("text-anchor", "end")
+            .text(function (d) { return d; });
+
+        // Tooltip
+        //arc.append("text")
+        //    .attr("transform", function (d) { return "translate(" + path.centroid(d) + ")"; })
+        //    .attr("dy", ".4em")
+        //    .text(function (d) { return d.data.Category_Name; })
+        //    .style("opacity", 0) // Set initial opacity to 0
+        //    .transition() // Apply transition to the tooltip text
+        //    .duration(1000) // Set the duration of the animation in milliseconds
+        //    .style("opacity", 1); // Set the final opacity
+    }
+
+
+    function hideRejectionPopup() {
+        document.getElementById("popup").style.display = "none";
+
+    }
+    </script>

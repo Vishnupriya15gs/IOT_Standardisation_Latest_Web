@@ -1,0 +1,446 @@
+﻿@model IEnumerable<PlanDigitization_web.Models.plant>
+@{ ViewBag.Title = "Plant_details";
+                Layout = "~/Views/Shared/_Layout.cshtml"; }
+
+<header class="page-header">
+    <h2> Plant Details </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("MainDashboard","MainDashboard")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li><span>Settings</span></li>
+            <li><span>Plants</span></li>
+        </ol>
+    </div>
+</header>
+
+<!-- Add New Plant-->
+<div class="row" id="divnew" style="display:none;">
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Add_Plant","UserSettings")" method="post">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Add New Plant</h2>
+                </header>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Plant ID <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="PlantID" name="PlantID" class="form-control space" title="Plant ID" placeholder="Plant ID" required />
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+                        <label class="col-sm-2 control-label"> Plant Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="PlantName" id="PlantName" class="form-control space" title="Plant Name" placeholder="Plant Name" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Plant Description <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="PlantDescription" id="PlantDescription" class="form-control space" title="Plant Description" placeholder="Plant Description" required />
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+                        <label class="col-sm-2 control-label"> Plant Location <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="PlantLocation" id="PlantLocation" class="form-control space" title="Plant Location" placeholder="Plant Location" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> TimeZone <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="TimeZone" id="TimeZone" class="form-control space" title="TimeZone" placeholder="TimeZone" required />
+                        </div>
+                    </div>
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+<!-- Plant Details-->
+<div class="row" id="divdetails">
+    <div class="col-md-12">
+        <section class="panel">
+            <header class="panel-heading" style="background-color:teal;color:white;">
+                @if (ViewContext.Controller.HasPermission("PlantSetting-Add"))
+                {
+    <div class="panel-actions">
+        <button class="btn btn-primary" id="add"><i class="fa fa-plus" aria-hidden="true"> Add New</i></button>
+    </div>}
+                <h2 class="panel-title" style="color:white;">List of Plants : </h2>
+            </header>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="panel-body">
+                        @if (ViewContext.Controller.HasPermission("PlantSetting-View"))
+                        {
+            <table class="table table-bordered table-striped mb-none" id="datatable-default" data-swf-path="assets1/vendor/jquery-datatables/extras/TableTools/swf/copy_csv_xls_pdf.swf">
+                <thead style="background-color:teal;color:white;">
+                    <tr>
+                        <th class="centercls"> S.No </th>
+                        <th style="display:none;"></th>
+                        <th>Plant ID</th>
+                        <th>Plant Name</th>
+                        <th> Plant Location </th>
+                        <th> Parent Organization </th>
+                        <th>Status</th>
+                        <th style="text-align:center;width:150px;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{int RowNo = 0;}
+                    @foreach (var item in Model)
+                    {
+    <tr class="gradeX">
+        <td>
+            @{RowNo++;}@RowNo
+        </td>
+        <td class="PlantId" style="display:none;">
+            <span>@Html.Encode(item.Unique_id)</span>
+        </td>
+        <td>
+            <span>@Html.Encode(item.PlantID)</span>
+        </td>
+        <td>
+            <span>@Html.Encode(item.PlantName)</span>
+        </td>
+        <td>
+            <span>@Html.Encode(item.PlantLocation)</span>
+        </td>
+        <td>
+            <span>@Html.Encode(item.ParentOrganization)</span>
+        </td>
+        <td>
+            <span>@Html.Encode(item.IsActive)</span>
+        </td>
+        <td style="text-align:center;">
+            @if (ViewContext.Controller.HasPermission("PlantSetting-Edit"))
+            {
+<button class="btn btn-primary" style="margin-top: 10px" id="edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>}
+            @if (ViewContext.Controller.HasPermission("PlantSetting-Delete"))
+            {
+<button class="btn btn-danger" style="margin-top: 10px" id="delete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>}
+        </td>
+    </tr>}
+                </tbody>
+            </table> }
+                        else
+                        {
+            <h2>View permission is denied</h2>}
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!--Edit Plant Details-->
+<div class="row" id="divedit" style="display:none;">
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Update_Plant","UserSettings")" method="post">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Update Plant</h2>
+                </header>
+                <div class="panel-body">
+                    <div class="form-group Code" style="display:none;">
+                        <input type="hidden" id="eUnique_id" name="Unique_id" />
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Plant ID <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="ePlantID" name="PlantID" class="form-control space" title="Plant ID" readonly placeholder="Plant ID" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Plant Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="PlantName" id="ePlantName" class="form-control space" title="Plant Name" placeholder="Plant Name" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Plant Description <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="PlantDescription" id="ePlantDescription" class="form-control space" title="Plant Description" placeholder="Plant Description" required />
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+                        <label class="col-sm-2 control-label"> Plant Location <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="PlantLocation" id="ePlantLocation" class="form-control space" title="Plant Location" placeholder="Plant Location" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> TimeZone <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="TimeZone" id="eTimeZone" class="form-control space" title="TimeZone" placeholder="TimeZone" required />
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+                        <label class="col-sm-2 control-label"> Status <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select name="IsActive" id="estatus" class="form-control" required>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+@if (@TempData["message"] != null)
+{
+<script type="text/javascript">
+    $(function () {
+        var msg = '@TempData["message"]';
+        if (msg == "Inserted") {
+            swal({
+                icon: "success",
+                title: "Details Added Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Updated") {
+            swal({
+                icon: "success",
+                title: "Details Updated Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+       else if (msg == "Already PlantID") {
+            swal({
+                icon: "error",
+                title: "Failed to Add.Plant ID already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Already PlantName") {
+            swal({
+                icon: "error",
+                title: "Failed to Add.Plant Name already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+        else {
+            swal({
+                icon: "error",
+                title: "Failed to Add",
+                button: true,
+                timer: 4500
+            })
+        }
+    });
+</script>}
+<script type="text/javascript">
+    $("#add").click(function () {
+        $("#divnew").show();
+        $("#divdetails").hide();
+        $("#divedit").hide();
+    });
+
+    $(".cancel").click(function () {
+        $("#divnew").hide();
+        $("#divdetails").show();
+        $("#divedit").hide();
+    });
+
+    $(document).on("keydown", ".space", function (evt) {
+        var caretPos = $(this)[0].selectionStart
+        if (evt.keyCode == 32 && caretPos == 0) {
+            return false;
+        }
+    });
+
+</script>
+<script type="text/javascript">
+    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+    $("body").on("click", "#edit", function () {
+        var row = $(this).closest("tr");
+        var ID = row.find(".PlantId span").html();
+        var myData = {
+            "QueryType": "Edit_Plant",
+            "Parameter": ID
+        };
+
+        $("#divedit").show();
+        $("#divnew").hide();
+        $("#divdetails").hide();
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+        $.ajax({
+            type: "POST",
+            url: URL + 'api/UserSettings/User_settings_details',
+            data: myData,
+             headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+            dataType: "json",
+            beforeSend: function () {
+                $('.loading').show();
+            },
+            complete: function () {
+                $('.loading').hide();
+            },
+            success: function (response) {
+                $('#eUnique_id').val(response.data.Table[0].Unique_id);
+                $('#ePlantID').val(response.data.Table[0].PlantID);
+                $('#ePlantName').val(response.data.Table[0].PlantName);
+                $('#ePlantDescription').val(response.data.Table[0].PlantDescription);
+                $('#ePlantLocation').val(response.data.Table[0].PlantLocation);
+
+                var s = '<option value="0">Select</option>';
+                if (response.data.Table[0].IsActive == "Active") {
+                    s += "<option value='Active' selected='selected' >Active</option>";
+                    s += "<option value='InActive'>In Active</option>";
+                }
+                else if (response.data.Table[0].IsActive == "InActive") {
+                    s += "<option value='Active'>Active</option>";
+                    s += "<option value='InActive' selected='selected'>In Active</option>";
+                }
+                else {
+                    s += "<option value='Active'>Active</option>";
+                    s += "<option value='InActive'>In Active</option>";
+                }
+                $("#estatus").html(s);
+
+                $('#eTimeZone').val(response.data.Table[0].TimeZone);
+            }
+            , error: function (response) {
+
+            }
+        }).error(function (response) {
+            if (response.status == "401") {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            }
+            else {
+                swal({
+                    icon: "warning",
+                    title: response.responseText,
+                    button: true,
+                    closeModal: false
+                })
+
+            }
+             });
+    });
+
+    $("body").on("click", "#delete", function () {
+        if (confirm("Do you want to Delete this Plant?")) {
+            var row = $(this).closest("tr");
+            var ID = row.find(".PlantId span").html();
+
+            var myData = {
+                "QueryType": "Delete_Plantdetails",
+                "Parameter": ID
+            };
+            var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/UserSettings/delete_User_settings_details',
+                data: myData,
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+                    swal({
+                        icon: "success",
+                        title: "Plant Details Deleted Successfully...!",
+                        button: true,
+                        timer: 4500
+                    })
+                    window.location = '@Url.Action("Plant_details", "UserSettings")';
+                }
+            }).error(function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+            });
+        }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('.updated_time').text("N/A");
+        $('.shift').text("N/A");
+
+        if ($.fn.DataTable.isDataTable('#datatable-default')) {
+            $('#datatable-default').DataTable().destroy();
+        }
+
+
+        $('#datatable-default').DataTable({
+
+            "responsive": true,
+            "autoWidth": false,
+            scrollY: true,
+            scrollX: true,
+            scroller: true
+        });
+
+
+    });
+</script>

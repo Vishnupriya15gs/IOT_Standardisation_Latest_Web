@@ -1,0 +1,2959 @@
+﻿
+@model IEnumerable<PlanDigitization_web.Models.Alerts>
+@{
+    ViewBag.Title = "Alert";
+}
+
+<header class="page-header">
+    <h2> Alert Details </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("NewDash","Main")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li><span>Settings</span></li>
+            <li><span>Alert</span></li>
+        </ol>
+    </div>
+</header>
+
+<!-- Add New Alert-->
+<div class="row" id="divnew" style="display:none;">
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Save_Alert","AlertSetting")" method="post">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Add Alert</h2>
+                </header>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Machine <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select id="subsystem" class="form-control Machine_Code" name="Machine_Code" required>
+                                <option value="">Select Machine</option>
+                                @*<option value="M1">Machine1</option>*@
+                            </select>
+                        </div>
+                        <label class="col-sm-2 control-label"> Alert Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="Alert_Name" class="form-control" title="Enter Name" placeholder="Alert Name" required />
+                        </div>
+
+                    </div>
+                    <div style="text-align:center">
+                        <h4>Parameter1</h4>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> P1 Variable <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select id="p1variable" class="form-control" name="P1_Variable" required>
+                                <option value="">Select Variable</option>
+
+                            </select>
+                            <input type="text" id="vname1" hidden />
+                        </div>
+                        <label class="col-sm-2 control-label"> P1 Group <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select id="p1group" class="form-control" name="P1_PG" required>
+                                <option value="">Select Group</option>
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+
+                        <label class="col-sm-2 control-label"> P1 Param <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select id="p1param" class="form-control" name="P1_Param" required>
+                            </select>
+                        </div>
+
+                        <label class="col-sm-2 control-label"> Expression <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control" name="Expression" required>
+                                <option value=""> Select </option>
+                                <option value="<"> < </option>
+                                <option value=">"> > </option>
+                                <option value="="> = </option>
+                                <option value="!="> != </option>
+                                <option value=">="> >= </option>
+                                <option value="<="> <= </option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div style="text-align:center">
+                        <h4>Parameter2</h4>
+
+
+
+
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Select Constant/Variable for Second Parameter </label>
+                        <div class="col-sm-4">
+                            <select id="option" class="form-control option" required>
+                                <option value="">Select Variable One First</option>
+                                @*<option value="Constant"> Constant </option>
+                                <option value="Variable"> Variable </option>*@
+
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="form-group" id="param2div" novalidate>
+                        <label class="col-sm-2 control-label"> P2 Variable </label>
+                        <div class="col-sm-2">
+                            <select id="p2variable" class="form-control" name="P2_Variable">
+                                <option value="0">Select Variable</option>
+                                @*<option value="V1"> V1 </option>
+                                    <option value="V2"> V2 </option>
+                                    <option value="V3"> V3 </option>*@
+                            </select>
+                            <input type="text" id="vname2" hidden />
+                        </div>
+                        <label class="col-sm-2 control-label"> P2 Group </label>
+                        <div class="col-sm-2">
+                            <select id="p2group" class="form-control" name="P2_PG">
+                                <option value="0">Select Group</option>
+                                @*<option value="PG1">PG1</option>
+                                    <option value="PG2">PG2</option>
+                                    <option value="PG3">PG3</option>*@
+                            </select>
+                        </div>
+                        <label class="col-sm-2 control-label"> P2 Param </label>
+                        <div class="col-sm-2">
+                            <select id="p2param" class="form-control" name="P2_Param">
+                                <option value="0"> Select </option>
+                                @*<option value="1"> Para1 </option>
+                                    <option value="2"> Para2 </option>
+                                    <option value="3"> Para3 </option>*@
+                            </select>
+                        </div>
+
+
+
+                    </div>
+                    <div class="form-group" id="constantdiv" novalidate>
+                        <label class="col-sm-2 control-label"> Constant </label>
+                        <div class="col-sm-4">
+                            <input type="number" name="Constant" class="form-control" min="0" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+
+                        @*<label class="col-sm-2 control-label"> Duration (in Mins)  <span class="required">*</span></label>
+        <div class="col-sm-2">
+            <input type="number" name="DurationForAlert" class="form-control" required />
+        </div>*@
+
+                        <label class="col-sm-2 control-label"> Repetetion Time (in Mins)  <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="number" name="DurationForRepetetion" class="form-control" min="0" required />
+                        </div>
+                        @if (ViewContext.Controller.HasPermission("PermissionSetting-Add"))
+                        {
+                            <div class="col-sm-3">
+                                <button class="btn btn-warning" onclick="window.location.href = '@Url.Action("UserGroup_settings","UserSettings")'"><i class="fa fa-plus" aria-hidden="true">Add New group</i></button>
+                            </div>
+                        }
+                        @*<div class="col-sm-3">
+                            <span class="glyphicon glyphicon-info-sign gi-8x">Click this icon to see group list after selecting group</span>
+
+                        </div>*@
+                        
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="col-sm-2 control-label"> Escalation Group 1  <span class="required">*</span></label>
+                        <div class="col-sm-2">
+                            <select id="groupid1" class="form-control" name="Group_id1" required>
+                                <option value=""> Select </option>
+
+                            </select>
+                            <span class="glyphicon glyphicon-info-sign gi-8x" onclick="group1('add')"></span>
+                        </div>
+
+                        <label class="col-sm-2 control-label"> Escalation Group 2  </label>
+                        <div class="col-sm-2">
+                            <select id="groupid2" class="form-control" name="Group_id2">
+                                <option value=""> Select </option>
+
+                            </select>
+                            <span class="glyphicon glyphicon-info-sign gi-8x" onclick="group2('add')"></span>
+                        </div>
+
+                        <label class="col-sm-2 control-label"> Escalation Group 3  </label>
+                        <div class="col-sm-2">
+                            <select id="groupid3" class="form-control" name="Group_id3">
+                                <option value=""> Select </option>
+
+                            </select>
+                            <span class="glyphicon glyphicon-info-sign gi-8x" onclick="group3('add')"></span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Message Text <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <textarea name="MessageText" class="form-control" required></textarea>
+                        </div>
+                        <label class="col-sm-2 control-label"> Remarks <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <textarea name="Remarks" class="form-control" required></textarea>
+                        </div>
+                    </div>
+
+
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+
+<!-- Alert Details-->
+<div class="row" id="divdetails">
+    <div class="col-md-12">
+        <section class="panel">
+            <header class="panel-heading" style="background-color:teal;color:white;">
+                @if (ViewContext.Controller.HasPermission("AlertSetting-Add"))
+                {
+                    <div class="panel-actions">
+                        <button class="btn btn-primary" id="add"><i class="fa fa-plus" aria-hidden="true"> Add New</i></button>
+                    </div>
+                }
+
+                <h2 class="panel-title" style="color:white;">List of Alerts : </h2>
+            </header>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="panel-body">
+                        <table class="table table-bordered table-striped mb-none" id="datatable-default">
+                            <thead style="background-color:teal;color:white;">
+                                <tr>
+                                    <th class="centercls"> S.No </th>
+                                    <th> Alert ID </th>
+                                    <th style="display:none;"> ID </th>
+                                    <th> Alert Name </th>
+                                    @*<th> Machine </th>*@
+                                    <th style="text-align:center;width:150px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{int RowNo = 0;}
+                                @foreach (var item in Model)
+                                {
+                                    <tr class="gradeX">
+                                        <td>
+                                            @{RowNo++;}@RowNo
+                                        </td>
+                                        <td>
+                                            <span>@Html.Encode(item.alertID)</span>
+                                        </td>
+                                        <td class="uniqueid" style="display:none;">
+                                            <span>@Html.Encode(item.unique_id)</span>
+                                        </td>
+                                        <td>
+                                            <span>@Html.Encode(item.Alert_Name)</span>
+                                        </td>
+                                        @*<td >
+                                                <span>@Html.Encode(item.Machine_Code)</span>
+                                            </td>*@
+                                        <td style="text-align:center;">
+                                            @if (ViewContext.Controller.HasPermission("AlertSetting-Edit"))
+                                            {
+                                                <button class="btn btn-primary" style="margin-top: 10px" id="edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
+
+                                            }
+                                            @if (ViewContext.Controller.HasPermission("AlertSetting-Delete"))
+                                            {
+                                                <button class="btn btn-danger" style="margin-top: 10px" id="delete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+<!--Edit Alert Details-->
+<div class="row" id="divedit" style="display:none;">
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Update_Alert","AlertSetting")" method="post">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Update Alert Setting</h2>
+                </header>
+                <div class="panel-body">
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Machine <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select id="eMachine_Code" class="form-control eMachine_Code" name="Machine_Code" required>
+                                <option value="">Select Machine</option>
+                                @*<option value="M1">Machine1</option>*@
+                            </select>
+                        </div>
+                        <label class="col-sm-2 control-label"> Alert Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" id="eAlert_Name" name="Alert_Name" class="form-control" title="Enter Name" placeholder="Alert Name" required />
+                        </div>
+                        <input type="hidden" id="eID" name="unique_id" />
+                        <input type="hidden" id="eAlertID" name="alertID" />
+                    </div>
+                    <div style="text-align:center">
+                        <h4>Parameter1</h4>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> P1 Variable <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select id="ep1variable" class="form-control" name="P1_Variable" required>
+                                <option value="">Select Variable</option>
+
+                            </select>
+                            <input type="text" id="vname1" hidden />
+                        </div>
+                        <label class="col-sm-2 control-label"> P1 Group <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select id="ep1group" class="form-control" name="P1_PG" required>
+                                <option value="">Select Group</option>
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+
+                        <label class="col-sm-2 control-label"> P1 Param <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select id="ep1param" class="form-control" name="P1_Param" required>
+                            </select>
+                        </div>
+
+                        <label class="col-sm-2 control-label"> Expression <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select id="eExpression" class="form-control" name="Expression" required>
+                                <option value=""> Select </option>
+                                @*<option value="<"> < </option>
+                                    <option value=">"> > </option>
+                                    <option value="="> = </option>
+                                    <option value=">="> >= </option>
+                                    <option value="<="> <= </option>*@
+                            </select>
+                        </div>
+
+                    </div>
+                    <div style="text-align:center">
+                        <h4>Parameter2</h4>
+
+
+
+
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Select Constant/Variable for Second Parameter </label>
+                        <div class="col-sm-4">
+                            <select id="eoption" class="form-control eoption" required>
+                                <option value="">Select Variable One First</option>
+                                @*<option value="Constant"> Constant </option>
+                                <option value="Variable"> Variable </option>*@
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" id="eparam2div" novalidate>
+                        <label class="col-sm-2 control-label"> P2 Variable </label>
+                        <div class="col-sm-2">
+                            <select id="ep2variable" class="form-control" name="P2_Variable">
+                                <option value="0">Select Variable</option>
+                                @*<option value="V1"> V1 </option>
+                                    <option value="V2"> V2 </option>
+                                    <option value="V3"> V3 </option>*@
+                            </select>
+                            <input type="text" id="vname2" hidden />
+                        </div>
+                        <label class="col-sm-2 control-label"> P2 Group </label>
+                        <div class="col-sm-2">
+                            <select id="ep2group" class="form-control" name="P2_PG">
+                                <option value="0">Select Group</option>
+                                @*<option value="PG1">PG1</option>
+                                    <option value="PG2">PG2</option>
+                                    <option value="PG3">PG3</option>*@
+                            </select>
+                        </div>
+                        <label class="col-sm-2 control-label"> P2 Param </label>
+                        <div class="col-sm-2">
+                            <select id="ep2param" class="form-control" name="P2_Param">
+                                <option value="0"> Select </option>
+                                @*<option value="1"> Para1 </option>
+                                    <option value="2"> Para2 </option>
+                                    <option value="3"> Para3 </option>*@
+                            </select>
+                        </div>
+
+
+
+                    </div>
+                    <div class="form-group" id="econstantdiv" novalidate>
+                        <label class="col-sm-2 control-label"> Constant </label>
+                        <div class="col-sm-4">
+                            <input type="number" id="eConstant" name="Constant" class="form-control" min="0" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+
+                        @*<label class="col-sm-2 control-label"> Duration (in Mins)  <span class="required">*</span></label>
+        <div class="col-sm-2">
+            <input type="number" id="eDurationForAlert" name="DurationForAlert" class="form-control" required/>
+        </div>*@
+
+                        <label class="col-sm-2 control-label"> Repetetion Time (in Mins)  <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="number" id="eDurationForRepetetion" name="DurationForRepetetion" class="form-control" min="0" required />
+                        </div>
+
+                        @if (ViewContext.Controller.HasPermission("PermissionSetting-Add"))
+                        {
+                            <div class="col-sm-3">
+                                <button class="btn btn-warning" onclick="window.location.href = '@Url.Action("UserGroup_settings","UserSettings")'"><i class="fa fa-plus" aria-hidden="true">Add New group</i></button>
+                            </div>
+                        }
+                        @*<div class="col-sm-3">
+                            <span class="glyphicon glyphicon-info-sign gi-8x">Click this icon to see group list after selecting group</span>
+
+                        </div>*@
+
+                        @*<label class="col-sm-2 control-label"> Group  <span class="required">*</span></label>
+        <div class="col-sm-4">
+            <select id="egroupid" class="form-control" name="Group_id" required>
+                <option value=""> Select </option>
+
+            </select>
+        </div>*@
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="col-sm-2 control-label"> Escalation Group 1  <span class="required">*</span></label>
+                        <div class="col-sm-2">
+                            <select id="egroupid1" class="form-control" name="Group_id1" required>
+                                <option value=""> Select </option>
+
+                            </select>
+                            <span class="glyphicon glyphicon-info-sign gi-8x" onclick="group1('update')"></span>
+
+                        </div>
+
+                        <label class="col-sm-2 control-label"> Escalation Group 2  </label>
+                        <div class="col-sm-2">
+                            <select id="egroupid2" class="form-control" name="Group_id2">
+                                <option value=""> Select </option>
+
+                            </select>
+                            <span class="glyphicon glyphicon-info-sign gi-8x" onclick="group2('update')"></span>
+
+                        </div>
+
+                        <label class="col-sm-2 control-label"> Escalation Group 3  </label>
+                        <div class="col-sm-2">
+                            <select id="egroupid3" class="form-control" name="Group_id3">
+                                <option value=""> Select </option>
+
+                            </select>
+                            <span class="glyphicon glyphicon-info-sign gi-8x" onclick="group3('update')"></span>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Message Text <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <textarea name="MessageText" id="eMessageText" class="form-control" required></textarea>
+                        </div>
+                        <label class="col-sm-2 control-label"> Remarks <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <textarea name="Remarks" id="eRemarks" class="form-control" required></textarea>
+                        </div>
+                    </div>
+
+
+                    @*<div class="form-group">
+                            <label class="col-sm-2 control-label"> Machine <span class="required">*</span></label>
+                            <div class="col-sm-2">
+                                <select class="form-control" name="Machine_Code" id="eMachine_Code" required>
+                                    <option value="0">Select Machine</option>
+                                </select>
+                            </div>
+                            <label class="col-sm-2 control-label"> Alert Name <span class="required">*</span></label>
+                            <div class="col-sm-2">
+                                <input type="text" name="Alert_Name" id="eAlert_Name" class="form-control" title="Enter Name" placeholder="Alert Name" required />
+                            </div>
+                            <label class="col-sm-2 control-label"> P1 Variable <span class="required">*</span></label>
+                            <div class="col-sm-2">
+                                <select class="form-control" name="P1_Variable" required>
+                                    <option value="0">Select Variable</option>
+                                    <option value="V1"> V1 </option>
+                                    <option value="V2"> V2 </option>
+                                    <option value="V3"> V3 </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"> P1 Group <span class="required">*</span></label>
+                            <div class="col-sm-2">
+                                <select class="form-control" name="P1_PG" required>
+                                    <option value="0">Select Group</option>
+                                    <option value="PG1">PG1</option>
+                                    <option value="PG2">PG2</option>
+                                    <option value="PG3">PG3</option>
+                                </select>
+                            </div>
+                            <label class="col-sm-2 control-label"> P1 Param <span class="required">*</span></label>
+                            <div class="col-sm-2">
+                                <select class="form-control" name="P1_Param" required>
+                                    <option value="0"> Select </option>
+                                    <option value="1"> Para1 </option>
+                                    <option value="2"> Para2 </option>
+                                    <option value="3"> Para3 </option>
+                                </select>
+                            </div>
+
+                            <label class="col-sm-2 control-label"> P2 Variable <span class="required">*</span></label>
+                            <div class="col-sm-2">
+                                <select class="form-control" name="P2_Variable" required>
+                                    <option value="0">Select Variable</option>
+                                    <option value="V1"> V1 </option>
+                                    <option value="V2"> V2 </option>
+                                    <option value="V3"> V3 </option>
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"> P2 Group <span class="required">*</span></label>
+                            <div class="col-sm-2">
+                                <select class="form-control" name="P2_PG" required>
+                                    <option value="0">Select Group</option>
+                                    <option value="PG1">PG1</option>
+                                    <option value="PG2">PG2</option>
+                                    <option value="PG3">PG3</option>
+                                </select>
+                            </div>
+                            <label class="col-sm-2 control-label"> P2 Param <span class="required">*</span></label>
+                            <div class="col-sm-2">
+                                <select class="form-control" name="P2_Param" required>
+                                    <option value="0"> Select </option>
+                                    <option value="1"> Para1 </option>
+                                    <option value="2"> Para2 </option>
+                                    <option value="3"> Para3 </option>
+                                </select>
+                            </div>
+
+                            <label class="col-sm-2 control-label"> Expression <span class="required">*</span></label>
+                            <div class="col-sm-2">
+                                <select class="form-control" name="Expression" required>
+                                    <option value="0"> Select </option>
+                                    <option value="<"> < </option>
+                                    <option value=">"> > </option>
+                                    <option value="="> = </option>
+                                    <option value=">="> >= </option>
+                                    <option value="<="> <= </option>
+                                </select>
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"> Constant <span class="required">*</span></label>
+                            <div class="col-sm-2">
+                                <input type="number" name="Constant" id="eConstant" class="form-control" />
+                            </div>
+                            <label class="col-sm-2 control-label"> Duration  <span class="required">*</span></label>
+                            <div class="col-sm-2">
+                                <input type="number" name="DurationForAlert" id="eDurationForAlert" class="form-control" />
+                            </div>
+
+                            <label class="col-sm-2 control-label"> Group  <span class="required">*</span></label>
+                            <div class="col-sm-2">
+                                <select class="form-control" name="Group_id" required>
+                                    <option value="0"> Select Group </option>
+                                    <option value="G1">G1</option>
+                                    <option value="G2">G2</option>
+                                    <option value="G3">G3</option>
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"> Message Text <span class="required">*</span></label>
+                            <div class="col-sm-4">
+                                <textarea name="MessageText" id="eMessageText" class="form-control"></textarea>
+                            </div>
+                            <label class="col-sm-2 control-label"> Remarks <span class="required">*</span></label>
+                            <div class="col-sm-4">
+                                <textarea name="Remarks" id="eRemarks" class="form-control"></textarea>
+                            </div>
+                        </div>*@
+
+
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+<div id="myModal1" class="modal">
+    <!-- Modal content -->
+    <div class="modal-dialog" style="width:80%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close compclose">&times;</span>
+                <h3><span id="comptablehead" style="font-family:Calibri;font-weight:bold;"></span></h3>
+            </div>
+            
+            <div class="modal-body" id="breakdown1">
+
+                <table class="table table-bordered table-striped mb-none" id="datatable-editable1">
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>User Name</th>
+                            <th>Group Name</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody class="body mtable1"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Bulk_Copy_Alert","AlertSetting")" method="post">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Bulk Copy Alert One Machine To Another</h2>
+                    <b><span style="display:block;float:right;align-content:center;text-align:center;">Note: Alarm and Losses ariables will not be copied</span></b>
+                </header>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Machine One<span class="required">*</span></label>
+                        <div class="col-sm-2">
+                            <select class="form-control Machine_Code" id="subsystem1" name="Machine_Code1" required>
+                                <option value="0">Select Machine</option>
+                                
+                            </select>
+                        </div>
+
+                        <label class="col-sm-2 control-label"> Machine Two<span class="required">*</span></label>
+                        <div class="col-sm-2">
+                            <select class="form-control" id="subsystem2" name="Machine_Code2" required>
+                                <option value="0">Select Machine</option>
+                                
+                            </select>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                                <button type="submit" class="btn btn-primary">Copy</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </form>
+
+        @*<form class="form" action="@Url.Action("Bulk_Copy_group","AlertSetting")" method="post">
+                <section class="panel">
+                    <header class="panel-heading" style="background-color:teal;color:white;">
+                        <div class="panel-actions">
+                        </div>
+                        <h2 class="panel-title" style="color:white;">Bulk Copy Alert One Group To Another</h2>
+                    </header>
+                    <div class="panel-body">
+                        <div class="form-group">
+
+                            <label class="col-sm-2 control-label"> Group One<span class="required">*</span></label>
+                            <div class="col-sm-2">
+                                <select class="form-control" name="Group_id1" id="groupid1" required>
+                                    <option value="0">Select Group</option>
+                                    <option value="G1">G1</option>
+                                    <option value="G2">G2</option>
+                                </select>
+                            </div>
+
+                            <label class="col-sm-2 control-label"> Group Two<span class="required">*</span></label>
+                            <div class="col-sm-2">
+                                <select class="form-control" name="Group_id2" id="groupid2" required>
+                                    <option value="0">Select Group</option>
+                                    <option value="G1">G1</option>
+                                    <option value="G2">G2</option>
+                                </select>
+                            </div>
+
+                            <div class="col-sm-4">
+                                <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                                    <button type="submit" class="btn btn-primary">Copy</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </form>*@
+    </div>
+</div>
+
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+
+@if (@TempData["message"] != null)
+{
+    <script type="text/javascript">
+    $(function () {
+        var msg = '@TempData["message"]';
+        //alert(msg)
+        if (msg == "1") {
+            swal({
+                icon: "success",
+                title: "Details Added Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "2") {
+            swal({
+                icon: "success",
+                title: "Details Updated Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "3") {
+            swal({
+                icon: "success",
+                title: "Bulk Alert Copy to Machine Successfully Completed...!",
+                button: true,
+                timer: 4500
+            })
+        }
+            else if (msg == "5") {
+            swal({
+                icon: "error",
+                title: "Same Machine selected...!!Copy to another Machine Failed...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "4") {
+            swal({
+                icon: "success",
+                title: "Bulk Alert Copy to another Group Successfully Completed...!",
+                button: true,
+                timer: 4500
+            })
+        }
+            else if (msg == "6") {
+            swal({
+                icon: "error",
+                title: "Same Group selected...!!Copy to another Group Failed...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else {
+            swal({
+                icon: "error",
+                title: "Failed to Add",
+                button: true,
+                timer: 4500
+            })
+        }
+    });
+    </script>
+}
+<script type="text/javascript">
+    $("#add").click(function () {
+        $("#divnew").show();
+        $("#divdetails").hide();
+        $("#divedit").hide();
+    });
+
+    $(".cancel").click(function () {
+        $("#divnew").hide();
+        $("#divdetails").show();
+        $("#divedit").hide();
+    });</script>
+
+<script type="text/javascript">
+    var modal1 = document.getElementById("myModal1");
+    // Get the <span> element that closes the modal
+    var span1 = document.getElementsByClassName("compclose")[0];
+    // When the user clicks on <span> (x), close the modal
+    span1.onclick = function () {
+        modal1.style.display = "none";
+    }
+</script>
+
+<script type="text/javascript">
+
+    function group1(text) {
+
+        //alert(start)
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+        $("#comptablehead").text("User Group Details");
+
+        var groupselect = '';
+
+        if (text == 'add') {
+            groupselect = $('#groupid1').val();
+        }
+        else {
+            groupselect = $('#egroupid1').val();
+        }
+        
+         var preData = {
+                "LineCode": '@Session["LineCode"]',
+                "QueryType": "GroupDetails",
+                "CompanyCode": '@Session["CompanyCode"]',
+            "PlantCode": '@Session["PlantCode"]',
+            "Group": groupselect,
+        };
+
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+        $.ajax({
+            type: "POST",
+            url: URL + 'api/UserSettings/List_group_details',
+            headers: {
+                Authorization: 'Bearer ' + user1
+            },
+            data: preData,
+            dataType: "json",
+            success: function (response) {
+                modal1.style.display = "block";
+
+                if ( $.fn.DataTable.isDataTable('#datatable-editable1') ) {
+                    $('#datatable-editable1').DataTable().destroy();
+                }
+
+                $("#datatable-editable1 > tbody").html("");
+
+                $(".mtable1").html('');
+
+                if (response.length != 0) {
+
+                        for (var i = 0; i < response.length; i++) {
+                            var newRow = $("<tr>");
+                            var cols = '';
+                            //var j = 1;
+                            //cols += "<td>" + j + "</td> ";
+                            cols += "<td> " + response[i].UserID + "</td> ";
+                            cols += "<td> " + response[i].UserName + "</td> ";
+                            cols += "<td> " + response[i].GroupName + "</td> ";
+                            cols += "</tr>";
+                            newRow.append(cols);
+                            //j++;
+                            $("#datatable-editable1").append(newRow);
+
+                        }
+
+                        $('#datatable-editable1').DataTable({
+
+
+                            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]]
+
+                        });
+
+
+
+                    }
+                    else {
+
+                        //$(".custom_pre_error").text(response.msg);
+                        var newRow = $("<tr>");
+                        var cols = '';
+                        cols += "<td colspan='14' style='text-align:center'> No Data Available </td> ";
+                        cols += "</tr>";
+                        newRow.append(cols);
+                        $(".mtable1").append(newRow);
+                        $('.shift').text("N/A");
+                        $('#maccode').text("N/A");
+                        $('.updated_time').text(new Date().toLocaleString());
+                    }
+
+            },
+                        //If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                             //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+        }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+
+    }
+
+    function group2(text) {
+
+        //alert(start)
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+        $("#comptablehead").text("User Group Details");
+
+        var groupselect = '';
+
+        if (text == 'add') {
+            groupselect = $('#groupid2').val();
+        }
+        else {
+            groupselect = $('#egroupid2').val();
+        }
+         var preData = {
+                "LineCode": '@Session["LineCode"]',
+                "QueryType": "GroupDetails",
+                "CompanyCode": '@Session["CompanyCode"]',
+            "PlantCode": '@Session["PlantCode"]',
+            "Group": groupselect,
+        };
+
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+        $.ajax({
+            type: "POST",
+            url: URL + 'api/UserSettings/List_group_details',
+            headers: {
+                Authorization: 'Bearer ' + user1
+            },
+            data: preData,
+            dataType: "json",
+            success: function (response) {
+                modal1.style.display = "block";
+
+                if ( $.fn.DataTable.isDataTable('#datatable-editable1') ) {
+                    $('#datatable-editable1').DataTable().destroy();
+                }
+
+                $("#datatable-editable1 > tbody").html("");
+
+                $(".mtable1").html('');
+
+
+
+                if (response.length != 0) {
+
+                    for (var i = 0; i < response.length; i++) {
+                            var newRow = $("<tr>");
+                            var cols = '';
+                            //var j = 1;
+                            //cols += "<td>" + j + "</td> ";
+                            cols += "<td> " + response[i].UserID + "</td> ";
+                            cols += "<td> " + response[i].UserName + "</td> ";
+                            cols += "<td> " + response[i].GroupName + "</td> ";
+                            cols += "</tr>";
+                            newRow.append(cols);
+                            //j++;
+                            $("#datatable-editable1").append(newRow);
+
+                        }
+
+                        $('#datatable-editable1').DataTable({
+
+
+                            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]]
+
+                        });
+
+
+
+                    }
+                    else {
+
+                        //$(".custom_pre_error").text(response.msg);
+                        var newRow = $("<tr>");
+                        var cols = '';
+                        cols += "<td colspan='14' style='text-align:center'> No Data Available </td> ";
+                        cols += "</tr>";
+                        newRow.append(cols);
+                        $(".mtable1").append(newRow);
+                        $('.shift').text("N/A");
+                        $('#maccode').text("N/A");
+                        $('.updated_time').text(new Date().toLocaleString());
+                    }
+
+            },
+                        //If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                             //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+        }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+
+    }
+
+    function group3(text) {
+
+        //alert(start)
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+        $("#comptablehead").text("User Group Details");
+
+        var groupselect = '';
+
+        if (text == 'add') {
+            groupselect = $('#groupid3').val();
+        }
+        else {
+            groupselect = $('#egroupid3').val();
+        }
+         var preData = {
+                "LineCode": '@Session["LineCode"]',
+                "QueryType": "GroupDetails",
+                "CompanyCode": '@Session["CompanyCode"]',
+            "PlantCode": '@Session["PlantCode"]',
+            "Group": groupselect,
+        };
+
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+        $.ajax({
+            type: "POST",
+            url: URL + 'api/UserSettings/List_group_details',
+            headers: {
+                Authorization: 'Bearer ' + user1
+            },
+            data: preData,
+            dataType: "json",
+            success: function (response) {
+                modal1.style.display = "block";
+
+                if ( $.fn.DataTable.isDataTable('#datatable-editable1') ) {
+                    $('#datatable-editable1').DataTable().destroy();
+                }
+
+                $("#datatable-editable1 > tbody").html("");
+
+                $(".mtable1").html('');
+
+
+
+                if (response.length != 0) {
+
+                        for (var i = 0; i < response.length; i++) {
+                            var newRow = $("<tr>");
+                            var cols = '';
+                            //var j = 1;
+                            //cols += "<td>" + j + "</td> ";
+                            cols += "<td> " + response[i].UserID + "</td> ";
+                            cols += "<td> " + response[i].UserName + "</td> ";
+                            cols += "<td> " + response[i].GroupName + "</td> ";
+                            cols += "</tr>";
+                            newRow.append(cols);
+                            //j++;
+                            $("#datatable-editable1").append(newRow);
+
+                        }
+                        $('#datatable-editable1').DataTable({
+
+
+                            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]]
+
+                        });
+
+
+
+                    }
+                    else {
+
+                        //$(".custom_pre_error").text(response.msg);
+                        var newRow = $("<tr>");
+                        var cols = '';
+                        cols += "<td colspan='14' style='text-align:center'> No Data Available </td> ";
+                        cols += "</tr>";
+                        newRow.append(cols);
+                        $(".mtable1").append(newRow);
+                        $('.shift').text("N/A");
+                        $('#maccode').text("N/A");
+                        $('.updated_time').text(new Date().toLocaleString());
+                    }
+
+            },
+                        //If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                             //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+        }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+
+    }
+
+
+</script>
+
+
+@*<script>
+        $(function () {
+            var msg = '@TempData["message"]';
+            if (msg == "1") {
+                swal({
+                    icon: "success",
+                    title: "Details Added Successfully...!",
+                    button: true,
+                    timer: 4500
+                })
+            }
+            else if (msg == "2") {
+                swal({
+                    icon: "success",
+                    title: "Details Updated Successfully...!",
+                    button: true,
+                    timer: 4500
+                })
+            }
+
+            else {
+                swal({
+                    icon: "error",
+                    title: "Failed to Add",
+                    button: true,
+                    timer: 4500
+                })
+            }
+        });
+
+    </script>*@
+<script type="text/javascript">
+    /*
+     Function to check if,
+     line code,plantcode and company code selected on initial page load
+     */
+     $('#subsystem').change(function () {
+
+         var R_url = '@Url.Action("Login", "Main")';
+        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+         //variable list
+                    var myData_getvariablelist = {
+                        "Flag": "Variablelist",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+                         "MachineCode":$('.Machine_Code').val(),
+                        "LineCode":'@Session["LineCode"]',
+                    };
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("GetSettingdatas1", "Main")',
+                        data: myData_getvariablelist,
+                        dataType: "json",
+                         headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                        success: function (response) {
+
+                            var s = '<option value="">Select Variable</option>';
+                            for (var i = 0; i < response.data.length; i++) {
+                                s += '<option value="' + response.data[i].Name + '">' + response.data[i].Name + '</option>';
+                            }
+
+                            $("#p1variable").html(s);
+                            $("#p2variable").html(s);
+                        },
+                        //If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                            //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                    }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+     })
+
+    $('#eMachine_Code').change(function () {
+
+         var R_url = '@Url.Action("Login", "Main")';
+        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+         //variable list
+                    var myData_getvariablelist = {
+                        "Flag": "Variablelist",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+                         "MachineCode":$('.eMachine_Code').val(),
+                        "LineCode":'@Session["LineCode"]',
+                    };
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("GetSettingdatas1", "Main")',
+                        data: myData_getvariablelist,
+                        dataType: "json",
+                         headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                        success: function (response) {
+
+                            var s = '<option value="">Select Variable</option>';
+                            for (var i = 0; i < response.data.length; i++) {
+                                s += '<option value="' + response.data[i].Name + '">' + response.data[i].Name + '</option>';
+                            }
+
+                            $("#ep1variable").html(s);
+                            $("#ep2variable").html(s);
+                        },
+                        //If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                            //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                    }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+    })
+
+    $('#p1variable').change(function () {
+
+         var R_url = '@Url.Action("Login", "Main")';
+        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+        var paravalue = $('#p1variable').val().toLowerCase();
+
+        if (paravalue == 'variant' || paravalue == 'operator') {
+            var s = '<option value="">Select Option</option>';
+            s += '<option value="Constant"> Constant </option>';
+            s += '<option value="Variable"> Variable </option>';
+
+            $(".option").html(s);
+        }
+        else
+        {
+            var s = '<option value="">Select Option</option>';
+            s += '<option value="Constant"> Constant </option>';
+
+            $(".option").html(s);
+        }
+
+        var y = document.getElementById("constantdiv");
+              y.style.display = "none";
+              var x = document.getElementById("param2div");
+              x.style.display = "none";
+
+        //alert("changed")
+        //to assign property group to p1
+        var myData_getpropertygroup = {
+                        "Flag": "PropertyGroup",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+            "LineCode": '@Session["LineCode"]',
+                         "MachineCode":$('.Machine_Code').val(),
+            "Parameter": $('#p1variable').val()
+                    };
+                    $.ajax({
+                        type: "POST",
+                        url: '/Main/Getvariabledetails',
+                        data: myData_getpropertygroup,
+                        headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                        dataType: "json",
+                        success: function (response) {
+
+                            var s = '<option value="">Select Property Group</option>';
+                            for (var i = 0; i < response.data.length; i++) {
+                                s += '<option value="' + response.data[i].Code + '">' + response.data[i].Code + '_' + response.data[i].Name + '</option>';
+                            }
+                            $("#p1group").html(s);
+
+                        },
+                        //If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                            //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                    }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+         var myData_getparameter = {
+             "Flag": "ParameterName",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+             "LineCode": '@Session["LineCode"]',
+                          "MachineCode":$('.Machine_Code').val(),
+            "Parameter": $('#p1variable').val()
+                    };
+                    $.ajax({
+                        type: "POST",
+                        url: '/Main/Getvariabledetails',
+                        data: myData_getparameter,
+                        headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                        dataType: "json",
+                        success: function (response) {
+
+                            var s = '<option value="">Select Para</option>';
+                            for (var i = 0; i < response.data.length; i++) {
+                                s += '<option value="' + response.data[i].Name + '">' + response.data[i].Name + '</option>';
+                            }
+                            $("#p1param").html(s);
+
+                        },
+                        //If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                            //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                    }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+
+    })
+    $('#p2variable').change(function () {
+
+         var R_url = '@Url.Action("Login", "Main")';
+                     var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+        //to assign property group to p1
+        var myData_getpropertygroup = {
+                        "Flag": "PropertyGroup",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+            "LineCode": '@Session["LineCode"]',
+                         "MachineCode":$('.Machine_Code').val(),
+            "Parameter": $('#p2variable').val()
+                    };
+                    $.ajax({
+                        type: "POST",
+                        url: '/Main/Getvariabledetails',
+                        data: myData_getpropertygroup,
+                        headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                        dataType: "json",
+                        success: function (response) {
+
+                            var s = '<option value="">Select Property Group</option>';
+                            for (var i = 0; i < response.data.length; i++) {
+                                s += '<option value="' + response.data[i].Code + '">' + response.data[i].Code + '_' + response.data[i].Name + '</option>';
+                            }
+                            $("#p2group").html(s);
+
+                        },
+                        //If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                            //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                    }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+         var myData_getparameter = {
+             "Flag": "ParameterName",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+             "LineCode": '@Session["LineCode"]',
+                          "MachineCode":$('.Machine_Code').val(),
+            "Parameter": $('#p2variable').val()
+                    };
+                    $.ajax({
+                        type: "POST",
+                        url: '/Main/Getvariabledetails',
+                        data: myData_getparameter,
+                        headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                        dataType: "json",
+                        success: function (response) {
+
+                            var s = '<option value="">Select Para</option>';
+                            for (var i = 0; i < response.data.length; i++) {
+                                s += '<option value="' + response.data[i].Name + '">' + response.data[i].Name + '</option>';
+                            }
+                            $("#p2param").html(s);
+
+                        },
+                        //If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                            //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                    }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+
+    })
+      $('#option').change(function () {
+          var selected = $('#option').val();
+          if (selected == "Constant") {
+
+              var y = document.getElementById("constantdiv");
+              y.style.display = "block";
+              var x = document.getElementById("param2div");
+              x.style.display = "none";
+          }
+          if (selected == "Variable") {
+
+              var y = document.getElementById("param2div");
+              y.style.display = "block";
+              var x = document.getElementById("constantdiv");
+              x.style.display = "none";
+          }
+
+      })
+     $('#ep1variable').change(function () {
+
+          var R_url = '@Url.Action("Login", "Main")';
+         var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+         var paravalue = $('#ep1variable').val().toLowerCase();
+
+        if (paravalue == 'variant' || paravalue == 'operator') {
+            var s = '<option value="">Select Option</option>';
+            s += '<option value="Constant"> Constant </option>';
+            s += '<option value="Variable"> Variable </option>';
+
+            $(".eoption").html(s);
+        }
+        else
+        {
+            var s = '<option value="">Select Option</option>';
+            s += '<option value="Constant"> Constant </option>';
+
+            $(".eoption").html(s);
+         }
+
+         $('#ep2variable').val('');
+              $('#ep2group').val('');
+         $('#ep2param').val('');
+         $('#eConstant').val('');
+         var y = document.getElementById("econstantdiv");
+              y.style.display = "none";
+              var x = document.getElementById("eparam2div");
+              x.style.display = "none";
+
+        //alert("changed")
+        //to assign property group to p1
+        var myData_getpropertygroup = {
+                        "Flag": "PropertyGroup",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+            "LineCode": '@Session["LineCode"]',
+                         "MachineCode":$('.eMachine_Code').val(),
+            "Parameter": $('#ep1variable').val()
+                    };
+                    $.ajax({
+                        type: "POST",
+                        url: '/Main/Getvariabledetails',
+                        data: myData_getpropertygroup,
+                        headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                        dataType: "json",
+                        success: function (response) {
+
+                            var s = '<option value="">Select Property Group</option>';
+                            for (var i = 0; i < response.data.length; i++) {
+                                s += '<option value="' + response.data[i].Code + '">' + response.data[i].Code + '_' + response.data[i].Name + '</option>';
+                            }
+                            $("#ep1group").html(s);
+
+                        },
+                        //If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                            //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                    }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+         var myData_getparameter = {
+             "Flag": "ParameterName",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+             "LineCode": '@Session["LineCode"]',
+                          "MachineCode":$('.eMachine_Code').val(),
+            "Parameter": $('#ep1variable').val()
+                    };
+                    $.ajax({
+                        type: "POST",
+                        url: '/Main/Getvariabledetails',
+                        data: myData_getparameter,
+                        headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                        dataType: "json",
+                        success: function (response) {
+
+                            var s = '<option value="">Select Para</option>';
+                            for (var i = 0; i < response.data.length; i++) {
+                                s += '<option value="' + response.data[i].Name + '">' + response.data[i].Name + '</option>';
+                            }
+                            $("#ep1param").html(s);
+
+                        },
+                        //If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                            //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                    }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+
+    })
+    $('#ep2variable').change(function () {
+
+         var R_url = '@Url.Action("Login", "Main")';
+                     var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+        //to assign property group to p1
+        var myData_getpropertygroup = {
+                        "Flag": "PropertyGroup",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+            "LineCode": '@Session["LineCode"]',
+                         "MachineCode":$('.eMachine_Code').val(),
+            "Parameter": $('#ep2variable').val()
+                    };
+                    $.ajax({
+                        type: "POST",
+                        url: '/Main/Getvariabledetails',
+                        data: myData_getpropertygroup,
+                        headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                        dataType: "json",
+                        success: function (response) {
+
+                            var s = '<option value="">Select Property Group</option>';
+                            for (var i = 0; i < response.data.length; i++) {
+                                s += '<option value="' + response.data[i].Code + '">' + response.data[i].Code + '_' + response.data[i].Name + '</option>';
+                            }
+                            $("#ep2group").html(s);
+
+                        },
+                        //If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                            //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                    }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+         var myData_getparameter = {
+             "Flag": "ParameterName",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+             "LineCode": '@Session["LineCode"]',
+                          "MachineCode":$('.eMachine_Code').val(),
+            "Parameter": $('#ep2variable').val()
+                    };
+                    $.ajax({
+                        type: "POST",
+                        url: '/Main/Getvariabledetails',
+                        data: myData_getparameter,
+                        headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                        dataType: "json",
+                        success: function (response) {
+
+                            var s = '<option value="">Select Para</option>';
+                            for (var i = 0; i < response.data.length; i++) {
+                                s += '<option value="' + response.data[i].Name + '">' + response.data[i].Name + '</option>';
+                            }
+                            $("#ep2param").html(s);
+
+                        },
+                        //If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                            //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                    }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+
+    })
+    $('#eoption').change(function () {
+          var selected = $('#eoption').val();
+          if (selected == "Constant") {
+              $('#ep2variable').val('');
+              $('#ep2group').val('');
+              $('#ep2param').val('');
+              var y = document.getElementById("econstantdiv");
+              y.style.display = "block";
+              var x = document.getElementById("eparam2div");
+              x.style.display = "none";
+          }
+          if (selected == "Variable") {
+              $('#eConstant').val('');
+              var y = document.getElementById("eparam2div");
+              y.style.display = "block";
+              var x = document.getElementById("econstantdiv");
+              x.style.display = "none";
+          }
+
+    })
+
+    function editloadP1(variable,group,param,machine){
+
+         var R_url = '@Url.Action("Login", "Main")';
+                     var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+        //to assign property group to p1
+        var myData_getpropertygroup1 = {
+                        "Flag": "PropertyGroup",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+            "LineCode": '@Session["LineCode"]',
+                          "MachineCode":machine,
+            "Parameter": variable
+                    };
+                    $.ajax({
+                        type: "POST",
+                        url: '/Main/Getvariabledetails',
+                        data: myData_getpropertygroup1,
+                        headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                        dataType: "json",
+                        success: function (response) {
+                            //alert(response.data[0].Code)
+                            var s = '<option value="">Select Property Group</option>';
+                            for (var i = 0; i < response.data.length; i++) {
+                                //s += '<option value="' + response.data[i].Code + '">' + response.data[i].Code + '</option>';
+                                if (response.data[i].Code == group) {
+
+                                    s += '<option value="' + response.data[i].Code + '" selected=selected>' + response.data[i].Code + '_' + response.data[i].Name + '</option>';
+                                }
+                                else {
+                                    s += '<option value="' + response.data[i].Code + '">' + response.data[i].Code + '_' + response.data[i].Name + '</option>';
+                                }
+                            }
+                            $("#ep1group").html(s);
+
+                        },
+                        //If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                            //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                    }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+         var myData_getparameter1 = {
+             "Flag": "ParameterName",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+             "LineCode": '@Session["LineCode"]',
+                          "MachineCode":machine,
+            "Parameter": variable
+                    };
+                    $.ajax({
+                        type: "POST",
+                        url: '/Main/Getvariabledetails',
+                        data: myData_getparameter1,
+                        headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                        dataType: "json",
+                        success: function (response) {
+
+                            var s = '<option value="">Select Para</option>';
+                            for (var i = 0; i < response.data.length; i++) {
+                                //s += '<option value="' + response.data[i].Name + '">' + response.data[i].Name + '</option>';
+                                if (response.data[i].Name == param) {
+
+                                    s += '<option value="' + response.data[i].Name + '" selected=selected>' + response.data[i].Name + '</option>';
+                                }
+                                else {
+                                    s += '<option value="' + response.data[i].Name + '">' + response.data[i].Name + '</option>';
+                                }
+                            }
+                            $("#ep1param").html(s);
+
+                        },
+                        //If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                            //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                    }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+    }
+
+    function editloadP2(variable,group,param,machine) {
+
+         var R_url = '@Url.Action("Login", "Main")';
+                     var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+        //to assign property group to p2
+        var myData_getpropertygroup = {
+                        "Flag": "PropertyGroup",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+            "LineCode": '@Session["LineCode"]',
+                          "MachineCode":machine,
+            "Parameter": variable
+                    };
+                    $.ajax({
+                        type: "POST",
+                        url: '/Main/Getvariabledetails',
+                        data: myData_getpropertygroup,
+                        headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                        dataType: "json",
+                        success: function (response) {
+
+                            var s = '<option value="">Select Property Group</option>';
+                            for (var i = 0; i < response.data.length; i++) {
+                                //s += '<option value="' + response.data[i].Code + '">' + response.data[i].Code + '</option>';
+                                if (response.data[i].Code == group) {
+
+                                    s += '<option value="' + response.data[i].Code + '" selected=selected>' + response.data[i].Code + '_' + response.data[i].Name + '</option>';
+                                }
+                                else {
+                                    s += '<option value="' + response.data[i].Code + '">' + response.data[i].Code + '_' + response.data[i].Name + '</option>';
+                                }
+                            }
+                            $("#ep2group").html(s);
+
+                        },
+                        //If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                            //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                    }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+         var myData_getparameter = {
+             "Flag": "ParameterName",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+             "LineCode": '@Session["LineCode"]',
+                          "MachineCode":machine,
+            "Parameter": variable
+                    };
+                    $.ajax({
+                        type: "POST",
+                        url: '/Main/Getvariabledetails',
+                        data: myData_getparameter,
+                        headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                        dataType: "json",
+                        success: function (response) {
+
+                            var s = '<option value="">Select Para</option>';
+                            for (var i = 0; i < response.data.length; i++) {
+                                //s += '<option value="' + response.data[i].Name + '">' + response.data[i].Name + '</option>';
+                                if (response.data[i].Name == param) {
+
+                                    s += '<option value="' + response.data[i].Name + '" selected=selected>' + response.data[i].Name + '</option>';
+                                }
+                                else {
+                                    s += '<option value="' + response.data[i].Name + '">' + response.data[i].Name + '</option>';
+                                }
+                            }
+                            $("#ep2param").html(s);
+
+                        },
+                        //If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                            //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                    }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+
+    }
+
+    $(function () {
+
+        var x = document.getElementById("param2div");
+        x.style.display = "none";
+        var y = document.getElementById("constantdiv");
+        y.style.display = "none";
+        var CompanyCode = '@Session["CompanyCode"]';
+        var PlantCode = '@Session["PlantCode"]';
+        var LineCode = '@Session["LineCode"]';
+        if (CompanyCode == "" && PlantCode == "" && LineCode == "") {
+            swal({
+                icon: "error",
+                title: "Please Select Customer, Plant and Line...!",
+                button: true,
+                timer: 4500
+            })
+            return;
+        }
+        else
+            if (CompanyCode == "") {
+                swal({
+                    icon: "error",
+                    title: "Please Select Customer...!",
+                    button: true,
+                    timer: 4500
+                })
+                return;
+            }
+            else
+                if (PlantCode == "") {
+                    swal({
+                        icon: "error",
+                        title: "Please Select Plant...!",
+                        button: true,
+                        timer: 4500
+                    })
+                    return;
+                }
+                if (LineCode == "") {
+                    swal({
+                        icon: "error",
+                        title: "Please Select Line...!",
+                        button: true,
+                        timer: 4500
+                    })
+                    return;
+                }
+                /*Api call to retrieve machine list for selected line and display*/
+                else {
+                    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+
+                    //json data to send to api
+                    //machine list
+                     var myData1 = {
+                        "Flag": "Subsystem",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+                        "LineCode":'@Session["LineCode"]',
+                    };
+                     var R_url = '@Url.Action("Login", "Main")';
+                     var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+                    // Retrieving machine list and binding in dropdown
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("GetSettingdatas1", "Main")',
+                        data: myData1,
+                        dataType: "json",
+                         headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                        success: function (response) {
+                            var s = '<option value="">Select Machine</option>';
+                            for (var i = 0; i < response.data.length; i++) {
+                                s += '<option value="' + response.data[i].Code + '">' + response.data[i].Name + '</option>';
+                            }
+                            $("#subsystem").html(s);
+                            $("#subsystem1").html(s);
+                            $("#subsystem2").html(s);
+                        },
+                        //If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                             //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                    }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+
+
+
+
+                    //for group
+                     var myData_getgrouplist = {
+                         "Flag": "Group_details",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+                        "LineCode":'@Session["LineCode"]',
+                    };
+                    $.ajax({
+                        type: "POST",
+                        url: '/Main/GetSettingdatas2',
+                        data: myData_getgrouplist,
+                         headers: {
+                             Authorization: 'Bearer ' + user1
+                         },
+                        dataType: "json",
+                        success: function (response) {
+
+                            var s = '<option value="">Select Group</option>';
+                            for (var i = 0; i < response.data.length; i++) {
+                                s += '<option value="' + response.data[i].Code + '">' + response.data[i].Name + '</option>';
+                            }
+
+                            $("#groupid1").html(s);
+                            $("#groupid2").html(s);
+                            $("#groupid3").html(s);
+
+                        },
+                        //If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                            //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                    }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+
+
+                }
+
+    });
+</script>
+<script>
+    function getpropertylist_p1(name) {
+
+    }
+</script>
+<script type="text/javascript">
+    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+    $("body").on("click", "#edit", function () {
+        var row = $(this).closest("tr");
+        var ID = row.find(".uniqueid span").html();
+        //alert(ID)
+        var myData = {
+            "QueryType": "Edit_alert",
+            "Parameter": ID,
+            "CompanyCode": '@Session["CompanyCode"]',
+             "PlantCode": '@Session["PlantCode"]',
+             "LineCode":'@Session["LineCode"]'
+
+        };
+         var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+        $("#divedit").show();
+        $("#divnew").hide();
+        $("#divdetails").hide();
+        $.ajax({
+            type: "POST",
+            url: URL + 'api/Alert/settings_details',
+
+            data: myData,
+            dataType: "json",
+            headers: {
+                Authorization: 'Bearer ' + user1
+            },
+
+            success: function (response)
+            {
+
+                $('#eID').val(response.data.Table[0].unique_id);
+                $('#eAlertID').val(response.data.Table[0].alertID);
+                $('#eAlert_Name').val(response.data.Table[0].Alert_Name);
+                $('#eConstant').val(response.data.Table[0].Constant);
+                //$('#eDurationForAlert').val(response.data.Table[0].DurationForAlert);
+                $('#eDurationForRepetetion').val(response.data.Table[0].DurationForRepetetion);
+                $('#eMessageText').val(response.data.Table[0].MessageText);
+                $('#eRemarks').val(response.data.Table[0].Remarks);
+
+                var machine = response.data.Table[0].Machine_Code;
+                var P1 = response.data.Table[0].P1_Variable;
+                var P2 = response.data.Table[0].P2_Variable;
+                var grpid1 = response.data.Table[0].Groupid1;
+                var grpid2 = response.data.Table[0].Groupid2;
+                var grpid3 = response.data.Table[0].Groupid3;
+                var exp = response.data.Table[0].Expression;
+                var p1grp =response.data.Table[0].P1_PG;
+                var p2grp =response.data.Table[0].P2_PG;
+                var p1param =response.data.Table[0].P1_Param;
+                var p2param=response.data.Table[0].P2_Param;
+
+                $("#ep1param").val(p1param);
+                $("#ep1group").val(p1grp);
+
+                 $("#ep2param").val(p2param);
+                $("#ep2group").val(p2grp);
+
+                var paravalue = P1.toLowerCase();
+
+                if (paravalue == 'variant' || paravalue == 'operator') {
+                    var s = '<option value="">Select Option</option>';
+                    s += '<option value="Constant"> Constant </option>';
+                    s += '<option value="Variable"> Variable </option>';
+
+                    $(".eoption").html(s);
+                }
+                else
+                {
+                    var s = '<option value="">Select Option</option>';
+                    s += '<option value="Constant"> Constant </option>';
+
+                    $(".eoption").html(s);
+                }
+
+                var selected1 = "";
+
+                    if (P2 == "" || P2 == null|| P2 == "null") {
+                        selected1 = $('#eoption').val('Constant');
+                        var y = document.getElementById("econstantdiv");
+                          y.style.display = "block";
+                          var x = document.getElementById("eparam2div");
+                          x.style.display = "none";
+                    }
+                    else {
+                        selected1 = $('#eoption').val('Variable');
+                         var y = document.getElementById("eparam2div");
+                          y.style.display = "block";
+                          var x = document.getElementById("econstantdiv");
+                          x.style.display = "none";
+                    }
+
+
+                //expression
+                var s1 = '<option value="">Select Machine</option>';
+
+                s1 += '<option value="<"> < </option>';
+                s1 += '<option value=">"> > </option>';
+                s1 += '<option value="="> = </option>';
+                s1 += '<option value="!="> != </option>';
+                s1 += '<option value=">="> >= </option>';
+                s1 += '<option value="<="> <= </option>';
+
+                $("#eExpression").html(s1);
+                $("#eExpression").val(exp);
+
+                    //machine list
+                     var myData1 = {
+                        "Flag": "Subsystem",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+                        "LineCode":'@Session["LineCode"]',
+                    };
+                     var R_url = '@Url.Action("Login", "Main")';
+                     var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+                    // Retrieving machine list and binding in dropdown
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("GetSettingdatas1", "Main")',
+                        data: myData1,
+                         headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                        dataType: "json",
+                        success: function (response) {
+                            var s = '<option value="">Select Machine</option>';
+
+                            for (var i = 0; i < response.data.length; i++) {
+                                //s += '<option value="' + response.data[i].Code + '">' + response.data[i].Name + '</option>';
+                                if (response.data[i].Code == machine) {
+
+                                    s += '<option value="' + response.data[i].Code + '" selected=selected>' + response.data[i].Name + '</option>';
+                                }
+                                else {
+                                    s += '<option value="' + response.data[i].Code + '">' + response.data[i].Name + '</option>';
+                                }
+                            }
+                            $("#eMachine_Code").html(s);
+
+                        },
+                        //If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                             //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                    }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+
+                    //P1 variable list
+                    var myData_getvariablelist = {
+                        "Flag": "Variablelist",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+                        "LineCode": '@Session["LineCode"]',
+                        "MachineCode":machine
+                    };
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("GetSettingdatas1", "Main")',
+                        data: myData_getvariablelist,
+                         headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                        dataType: "json",
+                        success: function (response) {
+
+                            var s = '<option value="">Select Variable</option>';
+
+                            for (var i = 0; i < response.data.length; i++) {
+                                //s += '<option value="' + response.data[i].Name + '">' + response.data[i].Name + '</option>';
+                                if (response.data[i].Name == P1) {
+
+                                    s += '<option value="' + response.data[i].Name + '" selected=selected>' + response.data[i].Name + '</option>';
+                                }
+                                else {
+                                    s += '<option value="' + response.data[i].Name+ '">' + response.data[i].Name + '</option>';
+                                }
+                            }
+
+                            $("#ep1variable").html(s);
+                            //$("#ep2variable").html(s);
+                        },
+                        //If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                            //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                    }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+
+                    //P2 variable list
+                    var myData_getvariablelist1 = {
+                        "Flag": "Variablelist",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+                        "LineCode": '@Session["LineCode"]',
+                        "MachineCode":machine
+                    };
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("GetSettingdatas1", "Main")',
+                        data: myData_getvariablelist1,
+                         headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                        dataType: "json",
+                        success: function (response) {
+
+                            var s = '<option value="">Select Variable</option>';
+
+                            for (var i = 0; i < response.data.length; i++) {
+                                //s += '<option value="' + response.data[i].Name + '">' + response.data[i].Name + '</option>';
+                                if (response.data[i].Name == P2) {
+
+                                    s += '<option value="' + response.data[i].Name + '" selected=selected>' + response.data[i].Name + '</option>';
+                                }
+                                else {
+                                    s += '<option value="' + response.data[i].Name+ '">' + response.data[i].Name + '</option>';
+                                }
+                            }
+
+                            //$("#ep1variable").html(s);
+                            $("#ep2variable").html(s);
+                        },
+                        //If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                            //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                    }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+
+
+                    //for group
+                     var myData_getgrouplist = {
+                         "Flag": "Group_details",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+                         "LineCode": '@Session["LineCode"]',
+                        "MachineCode":machine
+                    };
+                    $.ajax({
+                        type: "POST",
+                        url: '/Main/GetSettingdatas2',
+                        data: myData_getgrouplist,
+                         headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                        dataType: "json",
+                        success: function (response) {
+
+                            var s = '<option value="">Select Group</option>';
+
+                            for (var i = 0; i < response.data.length; i++) {
+                                //s += '<option value="' + response.data[i].Code + '">' + response.data[i].Name + '</option>';
+                                 if (response.data[i].Code == grpid1) {
+
+                                    s += '<option value="' + response.data[i].Code + '" selected=selected>' + response.data[i].Name + '</option>';
+                                }
+                                else {
+                                    s += '<option value="' + response.data[i].Code + '">' + response.data[i].Name + '</option>';
+                                }
+                            }
+
+                            $("#egroupid1").html(s);
+
+                            var s2 = '<option value="">Select Group</option>';
+
+                            for (var i = 0; i < response.data.length; i++) {
+                                //s += '<option value="' + response.data[i].Code + '">' + response.data[i].Name + '</option>';
+                                 if (response.data[i].Code == grpid2) {
+
+                                    s2 += '<option value="' + response.data[i].Code + '" selected=selected>' + response.data[i].Name + '</option>';
+                                }
+                                else {
+                                    s2 += '<option value="' + response.data[i].Code + '">' + response.data[i].Name + '</option>';
+                                }
+                            }
+
+                            $("#egroupid2").html(s2);
+
+
+                            var s3 = '<option value="">Select Group</option>';
+
+                            for (var i = 0; i < response.data.length; i++) {
+                                //s += '<option value="' + response.data[i].Code + '">' + response.data[i].Name + '</option>';
+                                 if (response.data[i].Code == grpid3) {
+
+                                    s3 += '<option value="' + response.data[i].Code + '" selected=selected>' + response.data[i].Name + '</option>';
+                                }
+                                else {
+                                    s3 += '<option value="' + response.data[i].Code + '">' + response.data[i].Name + '</option>';
+                                }
+                            }
+
+                            $("#egroupid3").html(s3);
+
+
+
+                        },
+                        //If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                            //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                    }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+
+
+                editloadP1(P1,p1grp,p1param,machine);
+                editloadP2(P2,p2grp,p2param,machine);
+
+
+
+            }
+            ,  //If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                            //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+        }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+    });
+
+    $("body").on("click", "#delete", function () {
+        if (confirm("Do you want to Delete this Alert?")) {
+            var row = $(this).closest("tr");
+            var ID = row.find(".uniqueid span").html();
+
+            var myData = {
+                "QueryType": "Delete_alert",
+                "unique_id": ID,
+                "CompanyCode": '@Session["CompanyCode"]',
+            "PlantCode": '@Session["PlantCode"]',
+             "Line_Code": '@Session["LineCode"]'
+
+            };
+
+            var R_url = '@Url.Action("Login", "Main")';
+                     var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/Alert/Add_Alert',
+                data: myData,
+                headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                dataType: "json",
+                success: function (response) {
+
+                    if (response == 3) {
+                        swal({
+                            icon: "success",
+                            title: "Details Deleted Successfully...!",
+                            button: true,
+                            timer: 4500
+                        })
+                        window.location = '@Url.Action("Alert", "AlertSetting")';
+                    }
+                    else {
+                        swal({
+                            icon: "error",
+                            title: "Deletion failed...!",
+                            button: true,
+                            timer: 4500
+                        })
+                        window.location = '@Url.Action("Alert", "AlertSetting")';
+                    }
+
+                },
+                        //If token expired /invalid page will be redirected to login
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+
+                            }
+                            //if error other than token, notification will display the actual error message
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+            }).error(function (response) {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            });
+        }
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('.updated_time').text("N/A");
+        $('.shift').text("N/A");
+
+
+    });
+</script>
+
+

@@ -1,0 +1,840 @@
+﻿@model IEnumerable<PlanDigitization_web.Models.Absent_Data>
+
+@{
+    ViewBag.Title = "Operator_Absent_Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+<link rel="stylesheet" type="text/css" href="~/assets1/datepicker_normal/jquery-ui-1.8.19.custom.css">
+
+
+
+<header class="page-header">
+    <h2> Operator Absent Details </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("NewDash","Main")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li><span>Settings</span></li>
+            <li><span>Operator Absent Details</span></li>
+        </ol>
+    </div>
+</header>
+
+
+<!----------Select View Div------------>
+<!--<div class="row" id="" style="display:none;">
+
+    <div class="col-md-12">
+        <section class="panel">
+
+            <header class="panel-heading" style="background-color:teal;color:white;">
+                <div class="panel-actions">-->
+@*<button class="btn btn-primary" id="add" data-toggle="modal" data-target="edit_absent_div"><i class="fa fa-plus" aria-hidden="true"> Add Absent</i></button>*@
+<!--</div>
+                <h2 class="panel-title" style="color:white;"> List Of Operator Absent Details </h2>
+            </header>
+
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="panel-body">
+
+                        <div class="form-group">
+
+                            <label class="col-sm-2 control-label"> Select Machine <span class="required">*</span></label>
+
+                            <div class="col-sm-2">
+                                <select class="form-control" id="sMachine_id" name="Machine_id" required>
+                                </select>
+                            </div>
+
+                            <label class="col-sm-2 control-label"> select Operator  <span class="required">*</span></label>
+
+                            <div class="col-sm-2">
+                                <select class="form-control" id="sOperator_id" name="Operator_id" required>
+                                </select>
+                            </div>
+
+                        </div>
+                        <div class="form-group">
+                            <footer>
+
+                                <div class="row">
+
+                                    <div class="col-lg-9 col-lg-offset-3" style="text-align:right;">
+                                        <button type="submit" id="btn_apply" class="btn btn-primary ">Apply</button>
+                                        <button type="button" id="apply_cancel" class="btn btn-danger ">Reset</button>
+
+                                    </div>
+
+                                </div>
+
+                            </footer>
+                        </div>
+
+                        <br />
+
+                        <div class="form-group ">
+
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <div class="panel-body">
+
+                                        <table class="table table-bordered table-striped mb-none  details_table" id="datatable-default2" data-swf-path="assets1/vendor/jquery-datatables/extras/TableTools/swf/copy_csv_xls_pdf.swf">
+                                            <thead style="background-color:teal;color:white;">
+                                                <tr>
+
+                                                    <th class="centercls"> S.No </th>
+                                                    <th style="display:none;"></th>
+                                                    <th class="centercls">Operator</th>
+                                                    <th class="centercls">Absent Date</th>
+                                                    <th style="text-align:center;width:150px;">Action</th>
+
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div id="slots_error" style="color:red;font-size:15px;font-weight:bold;">
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </div>
+
+</div>-->
+<!--------------Table View-------->
+
+<div class="row" id="divdetails" style="display:block">
+    <div class="col-md-12">
+        <section class="panel">
+            <header class="panel-heading" style="background-color:teal;color:white;">
+                <div class="panel-actions">
+
+                </div>
+                <h2 class="panel-title" style="color:white;">List of Operator Absent Details : </h2>
+            </header>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="panel-body">
+
+
+
+                        <label class="col-sm-2 control-label" hidden> ID  <span class="required">*</span></label>
+
+                        <div class="col-sm-2">
+                            <input type="text" name="name" id="eID" hidden />
+                        </div>
+
+                        <!---------Edit absent Div----->
+
+                        <div class="form-group" id="edit_operator" style="display:none;">
+
+                            <label class="col-sm-2 control-label"> select Operator  <span class="required">*</span></label>
+
+                            <div class="col-sm-2">
+                                <select class="form-control" id="eOperator_id" required>
+                                </select>
+                            </div>
+
+                        </div>
+                        <br />
+
+                        <table class="table table-bordered table-striped mb-none" id="datatable-default" data-swf-path="assets1/vendor/jquery-datatables/extras/TableTools/swf/copy_csv_xls_pdf.swf">
+                            <thead style="background-color:teal;color:white;">
+
+                                <tr>
+                                    <th class="centercls"> S.No </th>
+                                    <th style="display:none;"></th>
+                                    <th class="centercls"> Operator </th>
+                                    <th class="centercls"> Absent Date </th>
+                                    <th class="centercls" style="text-align:center;width:150px;"> Action </th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody class="display_details">
+
+                                @{int RowNo = 0;}
+                                @foreach (var item in Model)
+                                {
+                                    <tr class="gradeX">
+
+                                        <td>
+                                            @{RowNo++;}@RowNo
+                                        </td>
+                                        <td class="ID" style="display:none;">
+                                            <span>@Html.Encode(item.ID)</span>
+                                        </td>
+
+                                        <td class="Operator_id">
+                                            <span>@Html.Encode(item.OperatorName)</span>
+                                        </td>
+
+                                        <td>
+                                            <span>@Html.Encode(item.ADate)</span>
+                                        </td>
+
+
+                                        <td style="text-align:center;width:150px;">
+
+                                            <button class="btn btn-primary" style="margin-top: 10px" id="edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
+                                            <button class="btn btn-danger" style="margin-top: 10px" id="delete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+
+                                        </td>
+
+
+                                    </tr>
+                                }
+                            </tbody>
+
+
+                        </table>
+
+                    </div>
+                </div>
+                <div id="absent_error" style="color:red;font-size:15px;font-weight:bold;">
+
+                </div>
+            </div>
+        </section>
+    </div>
+
+</div>
+
+
+
+
+<div class="modal fade" tabindex="-1" id="edit_absent_div">
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:teal;color:white;">
+                <h4 class="modal-title">Update Absent Date</h4>
+            </div>
+            <div class="modal-body">
+
+                @*<form action="@Url.Action("Update_Absent_Details","Operatorallocation")" method="post">*@
+
+                <div class="form-group">
+
+                    <div class="form-group">
+
+                        <label class="col-sm-4 control-label"> Absent Date  <span class="required">*</span></label>
+
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control datepic" id="eAbsent_Date" required name="Absent_Date" autocomplete="off" />
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="modal-footer">
+
+                    <div class="col-sm-9 col-sm-offset-3" style="text-align:right;">
+                        <button type="submit" id="btn_update_absent" class="btn btn-primary update" data-dismiss="modal">Update</button>
+                        <button type="button" class="btn btn-danger" id="btn-close" data-dismiss="modal">Close</button>
+                    </div>
+
+                </div>
+
+
+
+                @*</form>*@
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+
+<script src="~/Scripts/bootstrap-datepicker.js"></script>
+
+
+@if (@TempData["message"] != null)
+{
+    <script type="text/javascript">
+
+        $(function () {
+
+        var msg = '@TempData["message"]';
+        if (msg == "1") {
+            swal({
+                icon: "success",
+                title: "Details Added Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "1") {
+            swal({
+                icon: "success",
+                title: "Details Updated Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "-1") {
+
+            swal({
+
+                icon: "error",
+                title: "Details ID already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+        else {
+            swal({
+
+                icon: "error",
+                title: "Failed to Add",
+                button: true,
+                timer: 4500
+            })
+        }
+    });
+
+    </script>
+}
+
+
+<script>
+
+
+    $(document).ready(function () {
+
+        $(".datepic").datepicker({
+            format: "yyyy-mm-dd",
+            orientation: "top",
+            startDate: 'dd',
+            /* endDate: '+0d'*/
+        });
+
+
+        $("#btn-close").click(function () {
+
+            $("#edit_operator").hide();
+        });
+
+    });
+
+</script>
+
+<script>
+
+ //-----load Machine data--------------
+
+     $(document).ready(function () {
+
+
+
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+        var myDatas1 =
+            {
+                "QueryType": "Assets",
+                "Parameter": '@Session["PlantCode"]',
+                "Parameter1": '@Session["CompanyCode"]',
+                "Parameter2": '@Session["LineCode"]',
+
+
+            };
+
+        $.ajax({
+            type: "POST",
+            data: myDatas1,
+            headers: {
+                Authorization: 'Bearer ' + user1
+            },
+            url: URL + "api/UserSettings/User_settings_details",
+            dataType: "json",
+
+            success: function (response) {
+
+                console.log(response)
+                var s = '<option value="0">Select Machine</option>';
+                for (var i = 0; i < response.data.Table.length; i++) {
+                    s += '<option value="' + response.data.Table[i].AssetID + '">' + response.data.Table[i].AssetName + '</option>';
+                }
+                $("#sMachine_id").html(s);
+            }, error: function (response) {
+
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Token is not valid",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+
+            }
+        });
+
+//-----load operator data--------------
+
+        $("#sMachine_id").change(function () {
+
+                  var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+                  var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+                  var R_url = '@Url.Action("Login", "Main")';
+                  var data = {
+                    "QueryType": "Operators",
+                         "Parameter": '@Session["LineCode"]',
+
+                        "Parameter1": '@Session["CompanyCode"]',
+
+                 };
+                    $.ajax({
+                        type: "POST",
+                        data: data,
+                         headers: {
+                                 Authorization: 'Bearer ' + user1
+                             },
+                        url: URL + 'api/UserSettings/User_settings_details',
+                        dataType: "json",
+                        success: function (response) {
+
+
+                            var s = '<option value="0">Select Operator</option>';
+                            for (var i = 0; i < response.data.Table.length; i++) {
+                                s += '<option value="' + response.data.Table[i].OP_ID + '">' + response.data.Table[i].OperatorName + '</option>';
+                            }
+                            $("#sOperator_id").html(s);
+                        }
+                    }).error(function (response) {
+                        if (response.status == "401") {
+                            swal({
+                                icon: "warning",
+                                title: "Token is not valid",
+                                button: true,
+                                closeModal: false
+                            })
+                            window.location = R_url;
+                        }
+                        else {
+                            swal({
+                                icon: "warning",
+                                title: response.responseText,
+                                button: true,
+                                closeModal: false
+                            })
+
+                        }
+                    });
+
+
+        });
+
+
+
+    });
+
+
+
+</script>
+
+<script>
+
+
+    $(document).ready(function () {
+
+         //-------apply button function------------
+
+        @*$("#btn_apply").click(function (event) {
+
+            var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+            var Machine = $("#sMachine_id").val();
+            var Operator = $("#sOperator_id").val();
+
+
+            $("#divdetails").hide();
+            $("#apply_details").show();
+
+           myData = {
+               "QueryType": "",
+               "Parameter": '@Session["PlantCode"]',
+               "Parameter1": '@Session["CompanyCode"]',
+               "Parameter2": Machine,
+               "Parameter3": Operator,
+           }
+
+
+         $.ajax({
+             type: "POST",
+             url: URL + 'api/UserSettings/User_settings_details',
+             data: myData,
+             headers: {
+                 Authorization: 'Bearer ' + user1
+             },
+             dataType: "json",
+             beforeSend: function () {
+                 $('.loading').show();
+             },
+             complete: function () {
+                 $('.loading').hide();
+             },
+             success: function (response) {
+
+                 console.log(response)
+
+                 var rowsCnt = document.getElementById("datatable-default").getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
+                 if (rowsCnt > 0) {
+                     for (var i = 0; i < rowsCnt; i++) {
+                         document.getElementById("datatable-default").deleteRow(1);
+                     }
+                 }
+
+                 if (response.data.Table.length != 0)
+                 {
+                     $("#slots_error").html("");
+                     var j = 1;
+                     for (var i = 0; i < response.data.Table.length; i++)
+                     {
+                         var newRow = $("<tr>");
+                         var cols = '';
+
+                         cols += '<td>'  + response.data.Table[i].ID +  '</td>';
+                         cols += '<td>' + response.data.Table[i].Opertor + '</td>';
+                         cols += '<td>' + response.data.Table[i].Shift + '</td>';
+                         cols += '<td>' + response.data.Table[i].AbsentDate + '</td>';
+                         cols += '<td> <button class="btn btn-primary" style="margin-top: 10px" id="edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>  <button class="btn btn-danger" style="margin-top: 10px" id="delete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>   </td> ';
+                         cols += "</tr>";
+                         newRow.append(cols);
+                         $(".add_details").append(newRow);
+                         j++;
+                     }
+                 }
+
+                 else
+                 {
+                     $("#apply_details").hide();
+                     $("#slots_error").html("Operator Allocation Slots Details Not Found...!");
+                 }
+
+             },
+             error: function (response) {
+
+             }
+         });
+
+        });*@
+
+
+          //-------Edit Selection-------
+
+        $("body").on("click", "#edit", function () {
+
+             var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+             var R_url = '@Url.Action("Login", "Main")';
+             var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+             var row = $(this).closest("tr");
+            var ID = row.find(".ID span").html();
+            $("#edit_operator").show();
+            $("#edit_absent_div").modal({ backdrop: "static" });
+            var myData = {
+
+                      "QueryType": "Edit_absent",
+                       "Parameter": ID
+            };
+
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/UserSettings/User_settings_details',
+                data: myData,
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+                    console.log(response)
+
+                    var s = '<option value="0">Select Operator</option>';
+                    for (var i = 0; i < response.data.Table.length; i++) {
+
+                        if (response.data.Table[i].Id == response.data.Table[0].Id) {
+
+                            s += '<option value="' + response.data.Table[i].Operator + '"selected=selected>' + response.data.Table[i].Operator + '</option>';
+                        }
+                        else {
+                            s += '<option value="' + response.data.Table[i].Operator + '">' + response1.data.Table[i].Operator + '</option>';
+                        }
+                    }
+                    $("#eOperator_id").html(s);
+
+
+
+                    $('#eAbsent_Date').val(response.data.Table[0].ADate);
+                    $("#eID").val(response.data.Table[0].ID);
+
+                }
+            }).error(function (response) {
+                if (response4.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Token is not valid",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+            });
+        });
+
+
+
+
+
+        //--------Update button function---------
+
+        $(".update").click(function (event) {
+
+            var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+            var Id = $("#eID").val();
+
+            var Absent_Date = $("#eAbsent_Date").val();
+           /* var Operator = $("#eOperator_id").val();*/
+
+
+            if (Absent_Date == null || Absent_Date == "") {
+
+                swal({
+                    icon: "warning",
+                    title: "Please Fill the Absent Date...!",
+                    button: true,
+                    timer: 4500
+                })
+            }
+            else {
+
+                  myData = {
+                  "Absent_Date": Absent_Date,
+                    "Id":Id,
+            }
+
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("Update_Absent_Details", "Operatorallocation")",
+                    data: myData,
+                    headers: {
+                        Authorization: 'Bearer ' + user1
+                    },
+
+                    dataType: "json",
+                    beforeSend: function () {
+                        $('.loading').show();
+                    },
+                    complete: function () {
+                        $('.loading').hide();
+                    },
+                    success: function (response) {
+
+                        swal({
+                            icon: "success",
+                            title: "Details Updated Successfully...!",
+                            button: true,
+                            timer: 4500
+                        })
+                        window.location = '@Url.Action("Operator_Absent_Details", "Operatorallocation")';
+                    } //error: function (response) {
+
+                    //    if (response4.status == "401") {
+                    //        swal({
+                    //            icon: "warning",
+                    //            title: "Token is not valid",
+                    //            button: true,
+                    //            closeModal: false
+                    //        })
+                    //        window.location = R_url;
+                    //    }
+                    //    else {
+                    //        swal({
+                    //            icon: "warning",
+                    //            title: response.responseText,
+                    //            button: true,
+                    //            closeModal: false
+                    //        })
+
+                    //    }
+
+
+                    //}
+
+                //}).error(function (response) {
+
+
+                //    if (response.status == "401") {
+                //        swal({
+                //            icon: "warning",
+                //            title: "Token is not valid",
+                //            button: true,
+                //            closeModal: false
+                //        })
+                //        window.location = R_url;
+                //    }
+                //    else {
+                //        swal({
+                //            icon: "warning",
+                //            title: response.responseText,
+                //            button: true,
+                //            closeModal: false
+                //        })
+
+                //    }
+
+
+
+                });
+            }
+
+
+        });
+
+          //-------Delete Section-------
+
+               $("body").on("click", "#delete", function ()
+               {
+                    if (confirm("Do you want to Delete this...?"))
+                    {
+                        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+                        var R_url = '@Url.Action("Login", "Main")';
+                        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+                        var row = $(this).closest("tr");
+                        var ID = row.find(".ID span").html();
+
+                        var myData = {
+                            "QueryType": "Delete_absent",
+                            "Parameter": ID
+                        };
+
+                            $.ajax({
+                                type: "POST",
+                                url: URL + 'api/UserSettings/delete_User_settings_details',
+                                data: myData,
+                                headers: {
+                                    Authorization: 'Bearer ' + user1
+                                },
+                                dataType: "json",
+                                beforeSend: function () {
+                                    $('.loading').show();
+                                },
+                                complete: function () {
+                                    $('.loading').hide();
+                                },
+                                success: function (response) {
+
+                                    swal({
+                                        icon: "success",
+                                        title: "Details Deleted Successfully...!",
+                                        button: true,
+                                        timer: 4500
+                                    })
+
+                                    window.location = '@Url.Action("Operator_Absent_Details", "Operatorallocation")';
+                                }
+                            }).error(function (response) {
+                                console.log(response)
+                                if (response.status == "401") {
+                                    swal({
+                                        icon: "warning",
+                                        title: "Token is not valid",
+                                        button: true,
+                                        closeModal: false
+                                    })
+                                    window.location = R_url;
+                                }
+                                else {
+                                    swal({
+                                        icon: "warning",
+                                        title: response.responseText,
+                                        button: true,
+                                        closeModal: false
+                                    })
+
+                                }
+                            });
+                    }
+               });
+
+    });
+
+</script>
+@*<script>
+
+        $(document).ready(function () {
+
+            $('.updated_time').text("N/A");
+            $('.shift').text("N/A");
+
+            if ($.fn.DataTable.isDataTable('#datatable-default')) {
+                $('#datatable-default').DataTable().destroy();
+            }
+
+            $('#datatable-default').DataTable({
+
+                "responsive": true,
+                "autoWidth": false,
+                scrollY: true,
+                scrollX: true,
+                scroller: true
+            });
+
+
+        });
+
+    </script>*@
+

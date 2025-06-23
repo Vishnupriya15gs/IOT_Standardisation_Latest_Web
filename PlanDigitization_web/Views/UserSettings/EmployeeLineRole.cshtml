@@ -1,0 +1,436 @@
+﻿@model IEnumerable<PlanDigitization_web.Models.Roles>
+@{ ViewBag.Title = "Employeelinerole_settings";
+    Layout = "~/Views/Shared/_Layout.cshtml"; }
+
+
+<h2>EmployeeLineRole</h2>
+<header class="page-header">
+    <h2> Role & Permission Details </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("MainDashboard","MainDashboard")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li><span>Settings</span></li>
+            <li><span>Roles</span></li>
+        </ol>
+    </div>
+</header>
+<div>
+    <input type="button" onclick="submitline()"/>
+    <div class="ulclass"></div>
+    @*<ul >
+        <li>
+                <label><input type="checkbox" /> All Plants</label>
+                <ul class="accounts">
+                    <li>
+                        <label><input type="checkbox" /> Hosur_unit_1</label>
+                        <ul class="subaccounts">
+                            <li><label><input type="checkbox" /> Area1</label>
+                                <ul>
+                                    <li>
+                                        <label><input type="checkbox" /> Dept1</label>
+                                    </li>
+                                    <li>
+                                        <label><input type="checkbox" /> Dept2</label>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li><label><input type="checkbox" /> Area2</label></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <label><input type="checkbox" /> Hosur_unit_2</label>
+                        <ul class="subaccounts">
+                            <li><label><input type="checkbox" /> Area12</label></li>
+                            <li><label><input type="checkbox" /> Area13</label></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+    </ul>*@
+</div>
+
+
+
+<style>
+
+    /*body {
+        color: #f36;
+        background: #171717;
+    }*/
+
+    ul {
+        list-style: none;
+    }
+
+    li {
+        margin-left: -20px;
+    }
+</style>
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+<script>
+
+
+    //function checkParents($li, state) {
+    //    var $siblings = $li.siblings();
+    //    var $parent = $li.parent().closest('li');
+    //    state = state && $siblings.children('label').find('input').prop('checked');
+    //    $parent.children('label').find('input').prop('checked', state);
+    //    if ($parent.parents('li').length)
+    //        checkParents($parent, state);
+    //}
+
+    //$('input').change(function () {
+    //    checkboxchanged()
+        
+    //});
+
+    
+
+
+    $('input').prop('checked', true);
+
+    function checkParents($li, state) {
+        var $siblings = $li.siblings();
+        var $parent = $li.parent().closest('li');
+        state = state && $siblings.children('label').find('input').prop('checked');
+        $parent.children('label').find('input').prop('checked', state);
+
+      //  console.log($parent.prop('id'))
+        if ($parent.parents('li').length)
+            checkParents($parent, state);
+    }
+
+    $('input').change(function () {
+        checkboxchanged()
+        
+    });
+    function checkboxchanged() {
+        var $cb = $(this);
+        var $li = $cb.closest('li');
+
+
+        var state = $cb.prop('checked');
+        console.log(state)
+        // check all children
+        $li.find('input').prop('checked', state);
+
+        
+        // check all parents, as applicable
+        if ($li.parents('li').length)
+
+            checkParents($li, state);
+    }
+</script>
+
+<script>
+    window.permissions = {}
+    $(function () {
+        var data=
+            [
+                {
+                    "companycode": "TEAL", "companyname": "Titan Engineering and Automation Limited",
+                    "b": [{
+                        "plantid": "Hosurunit1", "nodes": [{
+                            "area_id": "Area1_Unit1", "area_name": "Area1_Unit1",
+                            "dept": [{ "dept_id": "Dept1_Area1unit1", "dept_name": "Dept1_Area1unit1", "f": [{ "Functionid": "F1", "Functionname": "line1dept1area1unit1" }, { "Functionid": "F2", "Functionname": "line2dept1area1unit1" }] }, {
+                                "dept_id": "Dept2_Area1unit1",
+                                "dept_name": "Dept2_Area1unit1",
+                                "f": [{ "Functionid": "F11", "Functionname": "line1dept2area1unit1" }]
+                            }]
+                        }, {
+                            "area_id": "Area2_Unit1",
+                            "area_name": "Area2_Unit1", "dept": [{
+                                "dept_id": "Dept2_Area2unit1", "dept_name": "Dept2_Area2unit1",
+                                "f": [{ "Functionid": "F12", "Functionname": "line1dept2area2unit1" }]
+                            }]
+                        }]
+                    }, {
+                        "plantid": "Hosur_unit_2",
+                        "nodes": [{
+                            "area_id": "Area1_Unit2", "area_name": "Area1_Unit2", "dept": [{
+                                "dept_id": "Dept1_Area1unit2",
+                                "dept_name": "Dept1_Area1unit2", "f": [{ "Functionid": "line1dept1area1unit2", "Functionname": "line1dept1area1unit2" }]
+                            }]
+                        }]
+                    }]
+                }]
+
+
+        data = JSON.parse(JSON.stringify(data).split('"dept":').join('"nodes":'));
+        data = JSON.parse(JSON.stringify(data).split('"b":').join('"nodes":'));
+        data = JSON.parse(JSON.stringify(data).split('"f":').join('"nodes":'));
+        data = JSON.parse(JSON.stringify(data).split('"area_id":').join('"text":'));
+        data = JSON.parse(JSON.stringify(data).split('"dept_id":').join('"text":'));
+        data = JSON.parse(JSON.stringify(data).split('"Functionid":').join('"text":'));
+        data = JSON.parse(JSON.stringify(data).split('"plantid":').join('"text":'));
+        data = JSON.parse(JSON.stringify(data).split('"companycode":').join('"text":'));
+        
+        //var data = [
+        //    {
+        //        "text": "Hosur_Unit_1",
+
+        //        "nodes": [
+
+        //            {
+
+        //                "text": "Area1",
+        //                "nodes": [
+        //                    {
+        //                        "text": "Dept1",
+        //                        "nodes": [
+        //                            {
+        //                                "text":"Line1_dept1"
+        //                            },
+        //                            {
+        //                                "text": "Line2_dept1"
+        //                            },
+
+        //                        ]
+        //                    },
+        //                    {
+        //                        "text": "Dept2",
+        //                        "nodes": [
+        //                            {
+        //                                "text": "Line1_dept2"
+        //                            },
+        //                            {
+        //                                "text": "Line2_dept2"
+        //                            },
+
+        //                        ]
+        //                    }
+
+        //                ],
+
+        //            },
+
+        //            {
+
+        //                "text": "Area2",
+        //                "nodes": [
+        //                    {
+        //                        "text": "Dept2_1",
+        //                        "nodes": [
+        //                            {
+        //                                "text": "Line1_dept2_1"
+        //                            },
+        //                            {
+        //                                "text": "Line2_dept2_1"
+        //                            },
+
+        //                        ]
+
+        //                    }, {
+        //                        "text": "Dept2_2",
+        //                        "nodes": [
+        //                            {
+        //                                "text": "Line1_dept2_2"
+        //                            },
+        //                            {
+        //                                "text": "Line2_dept2_2"
+        //                            },
+
+        //                        ]
+        //                    }
+
+        //                ],
+
+        //            }
+
+        //        ],
+
+        //    },
+
+        //    {
+
+        //        "text": "Hosur_unit_2",
+
+        //        "nodes": [
+
+        //            {
+
+        //                "text": "Unit2_Area1",
+        //                "nodes": [
+        //                    {
+        //                        "text": "Unit2_Dept1",
+
+        //                    },
+        //                    {
+        //                        "text": "Unit2_Dept2",
+        //                    }
+
+        //                ],
+
+        //            },
+
+        //            {
+
+        //                "text": "Unit2_Area2",
+        //                "nodes": [
+        //                    {
+        //                        "text": "Unit2_Dept2_1",
+
+        //                    },
+        //                    {
+        //                        "text": "Unit2_Dept2_2",
+        //                    }
+
+        //                ],
+
+        //            }
+
+        //        ],
+
+        //    }
+
+        //];
+
+
+        var container = document.getElementsByClassName('ulclass')[0];
+
+        if (container) {
+
+            createSublist(container, data);
+
+        }
+
+        else {
+
+            console.log('Container has not been found');
+
+        }
+        $('input').prop('checked', true);
+        
+    })
+    $('.list').click(function () {
+        $('ul', $(this).parent()).eq(0).toggle();
+    });
+
+    function createSublist(container, args) {
+
+        var ul = document.createElement('ul');
+        ul.id = 'mainmenu'
+       // ul.className='list'
+       
+
+
+        for (var j = 0; j < args.length; j++) {
+
+            var row = args[j];
+
+
+
+            var li = document.createElement('li');
+            li.className = 'list'
+            
+            var icon = document.createElement('i');
+            /*icon.className ='fa-li fa fa-check-square'*/
+
+            li.appendChild(icon)
+            //new trial
+            var checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = row.text;
+            checkbox.name = row.text;
+            checkbox.value = row.text;
+            checkbox.addEventListener('change', function () {
+                var $cb = $(this);
+                var $li = $cb.closest('li');
+
+
+
+                var state = $cb.prop('checked');
+                console.log($cb.prop('id'))
+                
+                // check all children
+                $li.find('input').prop('checked', state);
+
+                
+                
+                // check all parents, as applicable
+                if ($li.parents('li').length)
+                 
+                    checkParents($li, state);
+            });
+
+            var label = document.createElement('label')
+            label.htmlFor = row.text + '  ';
+            label.innerText = row.text + '  ';
+
+            label.appendChild(checkbox);
+            //--new trial end
+
+            //var label = document.createElement("label");
+            //label.innerHTML = '<input type="checkbox" /> ' + row.text + '</label>';
+
+            li.appendChild(label)
+
+            var nodes = row.nodes;
+
+            if (nodes && nodes.length) {
+
+                createSublist(li, nodes);
+
+            }
+
+
+
+            ul.appendChild(li);
+
+        }
+
+
+
+        container.appendChild(ul);
+
+    };
+
+    function submitline() {
+        
+        var permissions = {};
+        $('input[type=checkbox]:checked').each(function () {
+
+
+
+            if ($(this).children('li').length == 0) {
+               
+               
+                permissions.linecode = $(this).prop('id')
+
+                var i = 0;
+                $(this).parents('li').each(function () {
+
+                    if (i == 1)
+                        permissions.deptcode = $(this).find('input').prop('id')
+                    else if (i == 2)
+                        permissions.areacode = $(this).find('input').prop('id')
+                    else if (i == 3)
+                        permissions.plantcode = $(this).find('input').prop('id')
+                    i = i + 1;
+                    //console.log($(this).find('input').prop('id'))
+                    
+                });
+
+                i = 0;
+            }
+
+            console.log(permissions)
+
+        });
+        
+
+    }
+    //$('#mainmenu li>ul').parent().addClass('selected');
+
+</script>
+
+<style>
+    ul li ul {
+        display: none;
+    }
+</style>

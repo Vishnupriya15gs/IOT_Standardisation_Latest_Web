@@ -1,0 +1,1514 @@
+﻿@model IEnumerable<PlanDigitization_web.Models.Operator_Schedule>
+
+@{
+    ViewBag.Title = "Operator_Schedule";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+<script src="~/Scripts/bootstrap-datepicker.js"></script>
+
+<link rel="stylesheet" type="text/css" href="~/assets1/datepicker_normal/jquery-ui-1.8.19.custom.css">
+
+
+
+<header class="page-header">
+    <h2> Operator Schedule </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("NewDash","Main")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li><span>Settings</span></li>
+            <li><span>Operator Schedule</span></li>
+        </ol>
+    </div>
+</header>
+
+
+<!----------Select View Div------------>
+
+
+<div class="row" id="select_div" style="display:block;">
+
+    <div class="col-md-12">
+        <section class="panel">
+            <header class="panel-heading" style="background-color:teal;color:white;">
+                <div class="panel-actions">
+                    <button class="btn btn-primary" id="add"><i class="fa fa-plus" aria-hidden="true"> Add New</i></button>
+                </div>
+                <h2 class="panel-title" style="color:white;"> Operator Schedule </h2>
+            </header>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"> Select Machine <span class="required">*</span></label>
+                            <div class="col-sm-2">
+                                <select class="form-control" id="sMachine_id" name="Machine_id" required>
+                                </select>
+                            </div>
+                            <label class="col-sm-2 control-label"> select Operator  <span class="required">*</span></label>
+
+                            <div class="col-sm-2">
+                                <select class="form-control" id="sOperator_id" name="Operator_id" required>
+                                </select>
+                            </div>
+
+                            <div class="col-sm2 " style="text-align:right;">
+                                <button type="submit" id="btn_apply" class="btn btn-primary  ">Apply</button>
+                                <button type="button" id="apply_cancel" class="btn btn-danger ">Reset</button>
+                            </div>
+                        </div>
+
+
+                        <br />
+
+                        <div id="maintable_1" style="display:block">
+                            <div class="form-group ">
+                                <div class="panel-body">
+                                    <div class="form-group">
+                                        <div class="panel-body">
+                                            <table class="table table-bordered table-striped mb-none  details_table" id="datatable-default" data-swf-path="assets1/vendor/jquery-datatables/extras/TableTools/swf/copy_csv_xls_pdf.swf">
+                                                <thead style="background-color:teal;color:white;">
+                                                    <tr>
+                                                        <th class="centercls"> S.No </th>
+                                                        <th style="display:none;"></th>
+                                                        <th class="centercls">Machine</th>
+                                                        <th class="centercls">Operator</th>
+                                                        <th class="centercls">Shift</th>
+                                                        <th class="centercls">From Date</th>
+                                                        <th class="centercls">To Date</th>
+                                                        <th style="text-align:center;width:150px;">Action</th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody>
+
+                                                    @{int RowNo = 0;}
+                                                    @foreach (var item in Model)
+                                                    {
+                                                        <tr class="gradeX">
+
+                                                            <td>
+                                                                @{RowNo++;}@RowNo
+                                                            </td>
+                                                            <td class="ID" style="display:none;">
+                                                                <span>@Html.Encode(item.Id)</span>
+                                                            </td>
+                                                            <td>
+                                                                @*<span>@Html.Encode(item.Machine)</span>*@
+                                                                <span>@Html.Encode(item.AssetName)</span>
+                                                            </td>
+                                                            <td>
+                                                                @*<span>@Html.Encode(item.Operator)</span>*@
+                                                                <span>@Html.Encode(item.OperatorName)</span>
+                                                            </td>
+                                                            <td>
+                                                                <span>@Html.Encode(item.ShiftName)</span>
+                                                            </td>
+                                                            <td>
+                                                                <span>@Html.Encode(item.FDate)</span>
+                                                            </td>
+                                                            <td>
+                                                                <span>@Html.Encode(item.TDate)</span>
+                                                            </td>
+
+                                                            <td style="text-align:center;width:150px;">
+                                                                <button class="btn btn-primary" style="margin-top: 10px" id="edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
+                                                                <button class="btn btn-danger" style="margin-top: 10px" id="delete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                                                            </td>
+
+
+                                                        </tr>
+                                                    }
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!--------Select Table-------------->
+
+                        <div class="row" id="Table_2" style="display:none;">
+                            @*<div class="col-md-12">
+                                <section class="panel">
+
+                                      <div class="panel-body">*@
+                            <div class="form-group">
+                                <div class="panel-body">
+                                    <table class="table table-bordered table-striped mb-none" id="datatable-default1">
+
+                                        <thead style="background-color:teal;color:white;">
+
+                                            <tr>
+
+                                                <th class="centercls"> S.No </th>
+                                                <th style="display:none;"></th>
+                                                <th class="centercls"> Machine </th>
+                                                <th class="centercls"> Operator </th>
+                                                <th class="centercls"> Shift </th>
+                                                <th class="centercls"> From Date </th>
+                                                <th class="centercls"> End Date </th>
+
+                                                <th style="text-align:center;width:150px;">Action</th>
+
+                                            </tr>
+
+                                        </thead>
+                                        <tbody class="add_details">
+                                        </tbody>
+
+
+                                    </table>
+
+                                </div>
+                                <div id="schedule_error" style="color:red;font-size:15px;font-weight:bold;">
+
+                                </div>
+                            </div>
+
+                            @*</div>
+                                    </section>
+                                </div>*@
+
+                        </div>
+
+
+
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </div>
+
+</div>
+
+
+
+
+<!----------Add New Data-------->
+
+<div class="row" id="divnew" style="display:none;">
+
+    <div class="col-md-12">
+
+        <section>
+
+            <header class="panel-heading" style="background-color:teal;color:white;">
+                @*@if (ViewContext.Controller.HasPermission("ShiftSetting-Add"))
+                    {
+                        <div class="panel-actions">
+                            <button class="btn btn-primary" id="add"><i class="fa fa-plus" aria-hidden="true"> Add New</i></button>
+                        </div>}*@
+                <h2 class="panel-title" style="color:white;">Add Operator Schedule : </h2>
+            </header>
+
+            <div class="panel-body">
+
+                <div class="form-group">
+
+                    <div class="panel-body">
+
+                        <form action="@Url.Action("Insert_Operator_Schedule","Operatorallocation")" method="post">
+
+                            <div class="form-group">
+
+                                <label class="col-sm-2 control-label"> Select Machine <span class="required">*</span></label>
+
+                                <div class="col-sm-2">
+                                    <select class="form-control" id="Machine_id" name="Machine" required>
+                                    </select>
+                                </div>
+
+                                <label class="col-sm-2 control-label"> select Operator  <span class="required">*</span></label>
+
+                                <div class="col-sm-2">
+                                    <select class="form-control" id="Operator_id" name="Operator" required>
+                                    </select>
+                                </div>
+
+                                <label class="col-sm-2 control-label"> Select Shift  <span class="required">*</span></label>
+
+                                <div class="col-sm-2">
+
+                                    <select class="form-control" id="Shift" name="Shift" required>
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                            <div id="div_Date" style="display:none">
+
+                                <div class="form-group">
+
+                                    <label class="col-sm-2 control-label"> From Date  <span class="required">*</span></label>
+
+                                    <div class="col-sm-2">
+                                        <input type="text" class="form-control FDate" id="FromDate" name="FromDate" required autocomplete="off" />
+                                    </div>
+
+                                    <label class="col-sm-2 control-label"> End Date  <span class="required">*</span></label>
+
+                                    <div class="col-sm-2">
+                                        <input type="text" class="form-control TDate" id="ToDate" name="ToDate" required autocomplete="off" />
+                                    </div>
+
+
+                                    <label class="col-sm-2 control-label"> Repeatition After  <span class="required">*</span></label>
+
+                                    <div class="col-sm-2">
+                                        <input type="text" class="form-control days" id="Days" name="Days" required onblur="isvalid()" />
+
+                                        <div id="not_valied" style="color:red;font-size:15px;font-weight:bold;">
+                                        </div>
+                                        <div id="valied" style="color:limegreen;font-size:15px;font-weight:bold;">
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                                <div>
+
+                                    <label class="col-sm-2 control-label"> Repeatition  <span class="required">*</span></label>
+
+                                    <div class="col-sm-2">
+
+                                        <input type="text" class="form-control " id="Repeat" required name="Repeat" />
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <footer>
+
+                                <div class="row">
+
+                                    <div class="col-sm-9 col-sm-offset-3" style="text-align:right;">
+                                        <button type="submit" id="btn_save" class="btn btn-primary">Save</button>
+                                        <button type="button" id="" class="btn btn-danger cancel">Cancel</button>
+                                    </div>
+
+                                </div>
+
+                            </footer>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+</div>
+
+<!----------------Edit View--------------->
+
+<div class="row" id="divedit" style="display:none;">
+
+    <div class="col-md-12">
+
+        <section>
+
+            <header class="panel-heading" style="background-color:teal;color:white;">
+
+                @*@if (ViewContext.Controller.HasPermission("ShiftSetting-Add"))
+
+                    <div class="panel-actions">
+                        <button class="btn btn-primary" id="add"><i class="fa fa-plus" aria-hidden="true"> Add New</i></button>
+                    </div>*@
+
+                <h2 class="panel-title" style="color:white;">Update Operator Schedule </h2>
+
+            </header>
+
+            <div class="panel-body">
+
+                <div class="form-group">
+
+                    <div class="panel-body">
+
+                        <form action="@Url.Action("Update_Operator_Schedule","Operatorallocation")" method="post">
+
+                            <div class="form-group">
+
+                                <div class="col-sm-2" hidden>
+                                    <input type="text" name="ID" id="eID" hidden />
+                                </div>
+
+                                <label class="col-sm-2 control-label"> Select Machine <span class="required">*</span></label>
+
+                                <div class="col-sm-2">
+                                    <select class="form-control" id="eMachine" name="Machine" required readonly>
+                                    </select>
+
+                                </div>
+
+                                <label class="col-sm-2 control-label"> Select Operator  <span class="required">*</span></label>
+
+                                <div class="col-sm-2">
+                                    <select class="form-control " id="eOperator" name="Operator" required readonly>
+                                    </select>
+                                </div>
+
+                                <label class="col-sm-2 control-label"> Select Shift  <span class="required">*</span></label>
+
+                                <div class="col-sm-2">
+
+                                    <select class="form-control" id="eShift" name="Shift" required>
+                                    </select>
+
+                                </div>
+                            </div>
+
+                            <div class="form-group" id="div_remarks" style="display:none;">
+
+                                <label class="col-sm-2 control-label"> Remarks  <span class="required">*</span></label>
+
+                                <div class="col-sm-4">
+                                    <textarea class="form-control" id="eRemarks" name="Remarks" required>   </textarea>
+
+                                </div>
+
+                            </div>
+
+                            <div id="">
+
+                                <div class="form-group">
+
+
+                                    <label class="col-sm-2 control-label"> From Date  <span class="required">*</span></label>
+
+                                    <div class="col-sm-2">
+                                        <input type="text" class="form-control FDate" id="eFDate" name="" required readonly />
+                                    </div>
+
+                                    <label class="col-sm-2 control-label"> End Date  <span class="required">*</span></label>
+
+                                    <div class="col-sm-2">
+                                        <input type="text" class="form-control TDate" id="eTDate" name="" required readonly />
+                                    </div>
+
+
+                                    <label class="col-sm-2 control-label"> Repeatition After  <span class="required">*</span></label>
+
+                                    <div class="col-sm-2">
+                                        <input type="text" class="form-control" id="eDays" name="" required readonly />
+                                    </div>
+
+                                </div>
+
+
+                                <div>
+
+                                    <label class="col-sm-2 control-label"> Repeatition  <span class="required">*</span></label>
+
+                                    <div class="col-sm-2">
+
+                                        <input type="text" class="form-control " id="eRepeat" name="" required readonly />
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <footer>
+
+                                <div class="row">
+
+                                    <div class="col-sm-9 col-sm-offset-3" style="text-align:right;">
+
+                                        <button type="submit" id="btn_update" class="btn btn-primary">Update</button>
+                                        <button type="button" id="Reset" class="btn btn-danger cancel ">Cancel</button>
+
+                                    </div>
+
+                                </div>
+
+                            </footer>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+</div>
+
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+
+
+@if (@TempData["message"] != null)
+{
+    <script type="text/javascript">
+
+        $(function () {
+
+        var msg = '@TempData["message"]';
+        if (msg == "1") {
+            swal({
+                icon: "success",
+                title: "Details Added Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "2") {
+            swal({
+                icon: "success",
+                title: "Details Updated Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "-1") {
+
+            swal({
+
+                icon: "error",
+                title: "Details ID already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+        else {
+            swal({
+
+                icon: "error",
+                title: "Failed to Add",
+                button: true,
+                timer: 4500
+            })
+        }
+    });
+
+    </script>
+}
+
+<script>
+
+    function isvalid() {
+
+        var Fromdate = $("#FromDate").val();
+        var Todate = $("#ToDate").val();
+        var Duration = $("#Days").val();
+
+
+        var date1 = new Date(Fromdate);
+        var date2 = new Date(Todate);
+
+        /* To calculate the time difference of two dates*/
+        var Difference_In_Time = date2.getTime() - date1.getTime();
+
+        // To calculate the no. of days between two dates
+        var C_Days = Difference_In_Time / (1000 * 60 * 60 * 24);
+
+        if (C_Days > Duration) {
+
+            $("#not_valied").html("Please enter the value is greater than >>" + C_Days + "<<--!!!");
+            $("#valied").html("");
+        }
+        else if (C_Days < Duration) {
+            $("#valied").html("Correct..");
+            $("#not_valied").html("");
+        }
+        else {
+            $("#not_valied").html("");
+            $("#valied").html("");
+        }
+    }
+
+
+
+    $(function () {
+
+
+        var todaydt = new Date();
+        $(".FDate").datepicker({
+            autoclose: true,
+            /*endDate: 'dd',*/
+            format: 'yyyy-mm-dd'
+        }).on('changeDate', function (selected) {
+            var minDate = new Date(selected.date);
+            minDate.setDate(minDate.getDate() + 1);
+            $('.TDate').datepicker('setStartDate', minDate);
+        });
+
+        var Fdate = $(".FDate").getDate();
+
+        $(".TDate").datepicker({
+            autoclose: true,
+            startDate: Fdate,
+            /* endDate: todaydt,*/
+            format: 'yyyy-mm-dd'
+
+        }).on('changeDate', function (selected) {
+            var minDate = new Date(selected.date);
+            minDate.setDate(minDate.getDate() - 1);
+            $('.FDate').datepicker('setEndDate', minDate);
+        });
+
+    });
+
+
+</script>
+
+<script>
+
+
+    $(document).ready(function () {
+
+        $("#maintable_1").show();
+
+        $("#add").click(function (event) {
+
+            $("#divnew").show();
+            $("#divdetails").hide();
+            $("#divedit").hide();
+            $("#select_div").hide();
+            $("#apply_details").hide();
+
+              //-----load Machine data------
+
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+        var myDatas1 =
+            {
+                "QueryType": "Assets",
+                "Parameter": '@Session["PlantCode"]',
+                "Parameter1": '@Session["CompanyCode"]',
+                "Parameter2": '@Session["LineCode"]',
+
+
+            };
+
+        $.ajax({
+            type: "POST",
+            data: myDatas1,
+            headers: {
+                Authorization: 'Bearer ' + user1
+            },
+            url: URL + "api/UserSettings/User_settings_details",
+            dataType: "json",
+
+            success: function (response) {
+
+                console.log(response)
+                var s = '<option value="">Select Machine</option>';
+                for (var i = 0; i < response.data.Table.length; i++) {
+                    s += '<option value="' + response.data.Table[i].AssetID + '">' + response.data.Table[i].AssetName + '</option>';
+                }
+                $("#Machine_id").html(s);
+            }, error: function (response) {
+
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Token is not valid",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+
+
+            }
+        });
+
+
+        $("#Machine_id").change(function () {
+
+            //-----load operator data------
+
+            var machine = $("#Machine_id").val();
+            alert('')
+                  var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+                  var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+                  var R_url = '@Url.Action("Login", "Main")';
+                  var data = {
+                      "QueryType": "Get_Operators",
+                         "Parameter":machine,
+                         "Parameter1": '@Session["CompanyCode"]',
+                         "Parameter2": '@Session["PlantCode"]',
+                 };
+                    $.ajax({
+                        type: "POST",
+                        data: data,
+                         headers: {
+                                 Authorization: 'Bearer ' + user1
+                             },
+                        url: URL + 'api/UserSettings/User_settings_details',
+                        dataType: "json",
+                        success: function (response) {
+
+                            console.log(response)
+                            var s = '<option value="">Select Operator</option>';
+                            for (var i = 0; i < response.data.Table.length; i++) {
+                                s += '<option value="' + response.data.Table[i].OP_ID + '">' + response.data.Table[i].OperatorName + '</option>';
+                            }
+                            $("#Operator_id").html(s);
+                        }
+                    }).error(function (response) {
+                        if (response.status == "401") {
+                            swal({
+                                icon: "warning",
+                                title: "Token is not valid",
+                                button: true,
+                                closeModal: false
+                            })
+                            window.location = R_url;
+                        }
+                        else {
+                            swal({
+                                icon: "warning",
+                                title: response.responseText,
+                                button: true,
+                                closeModal: false
+                            })
+
+                        }
+                    });
+          });
+        });
+
+
+
+          //----------Shift------------
+
+            $(function () {
+
+                  var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+                  var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+                  var myDatas1 =
+                      {
+                        "QueryType": "ShiftSettings",
+                        "Parameter": '@Session["PlantCode"]',
+                        "Parameter1": '@Session["CompanyCode"]',
+                        "Parameter2": '@Session["LineCode"]',
+
+
+                      };
+
+                $.ajax({
+                    type: "POST",
+                    data: myDatas1,
+                    headers: {
+                        Authorization: 'Bearer ' + user1
+                    },
+                    url: URL + "api/UserSettings/User_settings_details",
+                    dataType: "json",
+
+                    success: function (response) {
+                        console.log(response)
+                        var s = '<option value="">Select Shift</option>';
+                        for (var i = 0; i < response.data.Table.length; i++) {
+                            s += '<option value="' + response.data.Table[i].ID + '">' + response.data.Table[i].ShiftName + '</option>';
+                        }
+                        $("#Shift").html(s);
+                    }, error: function (response) {
+
+                        if (response.status == "401") {
+                            swal({
+                                icon: "warning",
+                                title: "Token is not valid",
+                                button: true,
+                                closeModal: false
+                            })
+                            window.location = R_url;
+                        }
+                        else {
+                            swal({
+                                icon: "warning",
+                                title: response.responseText,
+                                button: true,
+                                closeModal: false
+                            })
+
+                        }
+
+                    }
+                });
+
+            });
+
+        $(".cancel").click(function (event) {
+            $("#eRemarks").val("");
+            $("#Shift").val("");
+            $("#Machine_id").val("0");
+            $("#Operator_id").val("0");
+            $("#divnew").hide();
+            $("#divdetails").hide();
+            $("#details_table").show();
+            $("#divedit").hide();
+            $("#select_div").show();
+            $("#div_Date").hide();
+            $("#apply_details").hide();
+            $("#table_details").hide();
+            $("#div_remarks").hide();
+        });
+
+        $("#apply_cancel").click(function (event) {
+
+            $("#maintable_1").show();
+            $("#divnew").hide();
+            $("#divdetails").hide();
+            $("#divedit").hide();
+            $("#apply_details").hide();
+            $("#apply_details").hide();
+            $("#div_details").hide();
+            $("#Table_2").hide();
+            $("#div_remarks").hide();
+
+             window.location = '@Url.Action("Operator_Schedule", "Operatorallocation")';
+
+        });
+    });
+
+
+
+    $("#Shift").change(function () {
+
+        var Shift = $("#Shift").val();
+
+        if (Shift != "" || Shift != null) {
+
+            $("#div_Date").show();
+        }
+        else if (Shift == "0" || Shift == "") {
+
+            $("#div_Date").hide();
+        }
+
+    });
+
+    $("#eShift").change(function () {
+
+        $("#div_remarks").show();
+
+
+    });
+
+
+
+</script>
+
+<script>
+
+    $(document).ready(function () {
+
+        //-----load Machine data------
+
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+        var myDatas1 =
+            {
+                "QueryType": "Assets",
+                "Parameter": '@Session["PlantCode"]',
+                "Parameter1": '@Session["CompanyCode"]',
+                "Parameter2": '@Session["LineCode"]',
+
+
+            };
+
+        $.ajax({
+            type: "POST",
+            data: myDatas1,
+            headers: {
+                Authorization: 'Bearer ' + user1
+            },
+            url: URL + "api/UserSettings/User_settings_details",
+            dataType: "json",
+
+            success: function (response) {
+
+
+                var s = '<option value="">Select Machine</option>';
+                for (var i = 0; i < response.data.Table.length; i++) {
+                    s += '<option value="' + response.data.Table[i].AssetID + '">' + response.data.Table[i].AssetName + '</option>';
+                }
+                $("#sMachine_id").html(s);
+            }, error: function () {
+
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Token is not valid",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+
+            }
+        });
+
+
+        $("#sMachine_id").change(function () {
+
+            //-----load operator data------
+
+                  var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+                  var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+                  var R_url = '@Url.Action("Login", "Main")';
+            var machine = $("#sMachine_id").val()
+            var data = {
+
+                         "QueryType": "Get_Operators",
+                         "Parameter":machine,
+                         "Parameter1": '@Session["CompanyCode"]',
+                         "Parameter2": '@Session["PlantCode"]',
+                         @*"QueryType": "Operators",
+                         "Parameter": '@Session["LineCode"]',
+                         "Parameter1": '@Session["CompanyCode"]',*@
+
+                  };
+                    $.ajax({
+                        type: "POST",
+                        data: data,
+                         headers: {
+                                 Authorization: 'Bearer ' + user1
+                             },
+                        url: URL + 'api/UserSettings/User_settings_details',
+                        dataType: "json",
+                        success: function (response) {
+
+
+                            var s = '<option value="">Select Operator</option>';
+                            for (var i = 0; i < response.data.Table.length; i++) {
+                                s += '<option value="' + response.data.Table[i].OP_ID + '">' + response.data.Table[i].OperatorName + '</option>';
+                            }
+                            $("#sOperator_id").html(s);
+                        }
+                    }).error(function (response) {
+                        if (response.status == "401") {
+                            swal({
+                                icon: "warning",
+                                title: "Token is not valid",
+                                button: true,
+                                closeModal: false
+                            })
+                            window.location = R_url;
+                        }
+                        else {
+                            swal({
+                                icon: "warning",
+                                title: response.responseText,
+                                button: true,
+                                closeModal: false
+                            })
+
+                        }
+                    });
+
+
+        });
+
+
+
+    });
+
+
+
+
+
+</script>
+
+
+
+
+<script>
+
+
+    $(document).ready(function () {
+
+        //-------apply button function------------
+
+        $("#btn_apply").click(function (event) {
+
+            var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+            var Machine = $("#sMachine_id").val();
+            var Operator = $("#sOperator_id").val();
+
+
+
+            if (Machine == "0" || Machine == "") {
+
+                swal({
+                    icon: "warning",
+                    title: "Please Select Machine...!",
+                    button: true,
+                    timer: 4500
+                })
+            }
+            else if (Operator == "0" || Operator == "") {
+
+                swal({
+                    icon: "warning",
+                    title: "Please Select Operator...!",
+                    button: true,
+                    timer: 4500
+                })
+            }
+            else {
+
+                $("#divnew").hide();
+                $("#divedit").hide();
+                $("#Table_2").show();
+                /*  $("#div_details").hide();*/
+                $("#maintable_1").hide();
+
+                 myData = {
+               "QueryType": "Operator_schedule_result",
+               "Parameter": '@Session["PlantCode"]',
+               "Parameter1": '@Session["CompanyCode"]',
+               "Parameter2": Machine,
+               "Parameter3": Operator,
+           }
+
+
+            $.ajax({
+
+                type: "POST",
+                url: URL + 'api/UserSettings/User_settings_details',
+                data: myData,
+                headers: {
+                    Authorization: 'Bearer ' + user1
+                },
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response4) {
+
+                    console.log(response4)
+
+                    if ($.fn.DataTable.isDataTable('#datatable-default1')) {
+                        $('#datatable-default1').DataTable().destroy();
+                    }
+
+                    var rowsCnt = document.getElementById("datatable-default1").getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
+                    if (rowsCnt > 0) {
+                        for (var i = 0; i < rowsCnt; i++) {
+                            document.getElementById("datatable-default1").deleteRow(1);
+                        }
+                    }
+
+                    if (response4.data.Table.length != 0) {
+                        $("#schedule_error").html("");
+                        var j = 1;
+                        for (var i = 0; i < response4.data.Table.length; i++) {
+                            var newRow = $("<tr>");
+                            var cols = '';
+                            cols += '<td>' + j + '</td>';
+                            cols += '<td class="ID"  style="display:none;"> <span>' + response4.data.Table[i].ID + '</span></td>';
+                            cols += '<td>' + response4.data.Table[i].AssetName + '</td>';
+                            cols += '<td>' + response4.data.Table[i].OperatorName + '</td>';
+                            cols += '<td>' + response4.data.Table[i].ShiftName + '</td>';
+                            cols += '<td>' + response4.data.Table[i].FDate + '</td>';
+                            cols += '<td>' + response4.data.Table[i].TDate + '</td>';
+                            cols += '<td style="text-align:center;width:150px;"> <button class="btn btn-primary" style="margin-top: 10px" id="edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>  <button class="btn btn-danger" style="margin-top: 10px" id="delete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>   </td> ';
+                            cols += "</tr>";
+                            newRow.append(cols);
+                            $(".add_details").append(newRow);
+                            j++;
+                        }
+
+                        $('#datatable-default1').DataTable({
+                        });
+                    }
+
+                    else {
+                        $("#apply_details").hide();
+                        $("#schedule_error").html("Operator Schedule Details Not Found...!");
+                    }
+
+                }
+
+            }).error(function (response4) {
+
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Token is not valid",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+
+
+            });
+
+            }
+
+
+
+
+
+
+        });
+
+
+
+         //---------Edit function----------
+
+         var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+         var R_url = '@Url.Action("Login", "Main")';
+         var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+
+        $("body").on("click", "#edit", function () {
+
+                   var row = $(this).closest("tr");
+                   var ID = row.find(".ID span").html();
+
+            var myData = {
+
+                       "QueryType": "Edit_schedule",
+                       "Parameter": ID
+                   };
+
+                $("#divedit").show();
+                $("#divnew").hide();
+                $("#divdetails").hide();
+                $("#select_div").hide();
+
+                $.ajax({
+                    type: "POST",
+                    url: URL + 'api/UserSettings/User_settings_details',
+                    data: myData,
+                    headers: {
+                        Authorization: 'Bearer ' + user1
+                    },
+                    dataType: "json",
+                    beforeSend: function () {
+                        $('.loading').show();
+                    },
+                    complete: function () {
+                        $('.loading').hide();
+                    },
+                    success: function (response) {
+
+                        console.log(response)
+                        console.log(response.data.Table[0].Operator)
+                        console.log(response.data.Table[0].Machine)
+
+                        $('#eID').val(response.data.Table[0].ID);
+                        //$('#eMachine').val(response.data.Table[0].Machine);
+                        //$('#eOperator').val(response.data.Table[0].Operator);
+                        $('#eFDate').val(response.data.Table[0].FDate);
+                        $('#eTDate').val(response.data.Table[0].TDate);
+                        $('#eDays').val(response.data.Table[0].Days);
+                        /*$('#eShift').val(response.data.Table[0].Shift);*/
+                        $('#eRepeat').val(response.data.Table[0].Repeat);
+
+                        //----MachineData----
+
+                          var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+                          var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+                          var myDatas1 =
+                            {
+                                "QueryType": "Assets",
+                                "Parameter": '@Session["PlantCode"]',
+                                "Parameter1": '@Session["CompanyCode"]',
+                                "Parameter2": '@Session["LineCode"]',
+
+                            };
+
+                    $.ajax({
+                        type: "POST",
+                        data: myDatas1,
+                        headers: {
+                            Authorization: 'Bearer ' + user1
+                        },
+                        url: URL + "api/UserSettings/User_settings_details",
+                        dataType: "json",
+
+                        success: function (response1) {
+
+                            var s = '<option value="">Select Machine</option>';
+                            for (var i = 0; i < response1.data.Table.length; i++) {
+
+
+                                if (response1.data.Table[i].AssetID == response.data.Table[0].Machine) {
+
+                                    s += '<option value="' + response1.data.Table[i].AssetID + '"selected=selected>' + response1.data.Table[i].AssetName + '</option>';
+                                }
+                                else {
+                                    s += '<option value="' + response1.data.Table[i].AssetID + '">' + response1.data.Table[i].AssetName + '</option>';
+                                }
+
+                            }
+                            $("#eMachine").html(s);
+                        }, error: function (response1) {
+
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Token is not valid",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+                            }
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+
+                        }
+                    });
+
+                        //var s = '<option value="">Select Machine</option>';
+                        //for (var i = 0; i < response.data.Table.length; i++) {
+
+                        //    if (response.data.Table[i].Id == response.data.Table[0].Id) {
+
+                        //        s += '<option value="' + response.data.Table[i].Machine + '"selected=selected>' + response.data.Table[i].Machine + '</option>';
+                        //    }
+                        //    else {
+                        //        s += '<option value="' + response.data.Table[i].Machine + '">' + response.data.Table[i].Machine + '</option>';
+                        //    }
+                        //}
+                        //$("#eMachine").html(s);
+
+                        //----OperatorData--------
+
+                              var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+                              var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+                              var R_url = '@Url.Action("Login", "Main")';
+                              var machine = response.data.Table[0].Machine;
+                              var data = {
+                                     "QueryType": "Get_Operators",
+                                     "Parameter":machine,
+                                     "Parameter1": '@Session["CompanyCode"]',
+                                     "Parameter2": '@Session["PlantCode"]',
+                                     @*"QueryType": "Operators",
+                                     "Parameter": '@Session["LineCode"]',
+                                     "Parameter1": '@Session["CompanyCode"]',*@
+                        };
+                        $.ajax({
+                        type: "POST",
+                        data: data,
+                         headers: {
+                                 Authorization: 'Bearer ' + user1
+                             },
+                        url: URL + 'api/UserSettings/User_settings_details',
+                        dataType: "json",
+                            success: function (response2) {
+                                console.log(response2)
+                                var s = '<option value="">Select Operator</option>';
+
+                                for (var i = 0; i < response2.data.Table.length; i++) {
+
+                                    if (response2.data.Table[i].OP_ID == response.data.Table[0].Operator)
+
+                                    s += '<option value="' + response2.data.Table[i].OP_ID + '"selected=selected>' + response2.data.Table[i].OperatorName + '</option>';
+                                else {
+                                    s += '<option value="' + response2.data.Table[i].OP_ID + '">' + response2.data.Table[i].OperatorName + '</option>';
+                                }
+                            }
+                            $("#eOperator").html(s);
+                        }
+                    }).error(function (response2) {
+                        if (response.status == "401") {
+                            swal({
+                                icon: "warning",
+                                title: "Token is not valid",
+                                button: true,
+                                closeModal: false
+                            })
+                            window.location = R_url;
+                        }
+                        else {
+                            swal({
+                                icon: "warning",
+                                title: response.responseText,
+                                button: true,
+                                closeModal: false
+                            })
+
+                        }
+                    });
+
+
+                        //var s = '<option value="">Select Operator</option>';
+                        //for (var i = 0; i < response.data.Table.length; i++) {
+
+                        //    if (response.data.Table[i].Id == response.data.Table[0].Id) {
+
+                        //        s += '<option value="' + response.data.Table[i].Operator + '"selected=selected>' + response.data.Table[i].Operator + '</option>';
+                        //    }
+                        //    else {
+                        //        s += '<option value="' + response.data.Table[i].Operator + '">' + response.data.Table[i].Operator + '</option>';
+                        //    }
+                        //}
+                        //$("#eOperator").html(s);
+
+
+                        //--------shiftData--------
+
+                          var myDatas1 =
+                      {
+                        "QueryType": "ShiftSettings",
+                        "Parameter": '@Session["PlantCode"]',
+                        "Parameter1": '@Session["CompanyCode"]',
+                        "Parameter2": '@Session["LineCode"]',
+
+
+                      };
+
+                $.ajax({
+                    type: "POST",
+                    data: myDatas1,
+                    headers: {
+                        Authorization: 'Bearer ' + user1
+                    },
+                    url: URL + "api/UserSettings/User_settings_details",
+                    dataType: "json",
+
+                    success: function (response3) {
+
+                        console.log(response3)
+                        console.log(response.data.Table[0].Shift)
+
+                        var s = '<option value="">Select Shift</option>';
+                        for (var i = 0; i < response3.data.Table.length; i++) {
+
+                            if (response3.data.Table[i].ID == response.data.Table[0].Shift) {
+
+                                s += '<option value="' + response3.data.Table[i].ID + '"selected=selected>' + response3.data.Table[i].ShiftName + '</option>';
+                           }
+                            else {
+                                s += '<option value="' + response3.data.Table[i].ID + '">' + response3.data.Table[i].ShiftName + '</option>';
+                           }
+                        }
+                        $("#eShift").html(s);
+
+                    } //, error: function () {
+
+                    //    if (response.status == "401") {
+                    //        swal({
+                    //            icon: "warning",
+                    //            title: "Token is not valid",
+                    //            button: true,
+                    //            closeModal: false
+                    //        })
+                    //        window.location = R_url;
+                    //    }
+                    //    else {
+                    //        swal({
+                    //            icon: "warning",
+                    //            title: response.responseText,
+                    //            button: true,
+                    //            closeModal: false
+                    //        })
+
+                    //    }
+
+                    //}
+                });
+
+                        //var s = '<option value="">Select Shift</option>';
+                        //for (var i = 0; i < response.data.Table.length; i++) {
+
+                        //    if (response.data.Table[i].Id == response.data.Table[0].Id) {
+
+                        //        s += '<option value="' + response.data.Table[i].Shift + '"selected=selected>' + response.data.Table[i].Shift + '</option>';
+                        //    }
+                        //    else {
+                        //        s += '<option value="' + response.data.Table[i].Shift + '">' + response.data.Table[i].Shift + '</option>';
+                        //    }
+                        //}
+                        //$("#eShift").html(s);
+
+                    }, error: function (response3) {
+                        if (response4.status == "401") {
+                            swal({
+                                icon: "warning",
+                                title: "Token is not valid",
+                                button: true,
+                                closeModal: false
+                            })
+                            window.location = R_url;
+                        }
+                        else {
+                            swal({
+                                icon: "warning",
+                                title: response.responseText,
+                                button: true,
+                                closeModal: false
+                            })
+
+                        }
+                    }
+                 });
+        });
+
+
+
+         //-------Delete Section-------
+
+               $("body").on("click", "#delete", function ()
+               {
+                    if (confirm("Do you want to Delete this...?"))
+                    {
+                        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+                        var R_url = '@Url.Action("Login", "Main")';
+                        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+                        var row = $(this).closest("tr");
+                        var ID = row.find(".ID span").html();
+
+                        var myData = {
+                            "QueryType": "Delete_schedule",
+                            "Parameter": ID
+                        };
+
+                            $.ajax({
+                                type: "POST",
+                                url: URL + 'api/UserSettings/delete_User_settings_details',
+                                data: myData,
+                                headers: {
+                                    Authorization: 'Bearer ' + user1
+                                },
+                                dataType: "json",
+                                beforeSend: function () {
+                                    $('.loading').show();
+                                },
+                                complete: function () {
+                                    $('.loading').hide();
+                                },
+                                success: function (response) {
+
+                                    swal({
+                                        icon: "success",
+                                        title: "Details Deleted Successfully...!",
+                                        button: true,
+                                        timer: 4500
+                                    })
+
+                                    window.location = '@Url.Action("Operator_Schedule", "Operatorallocation")';
+                                }
+                            }).error(function (response) {
+                                console.log(response)
+                                if (response.status == "401") {
+                                    swal({
+                                        icon: "warning",
+                                        title: "Token is not valid",
+                                        button: true,
+                                        closeModal: false
+                                    })
+                                    window.location = R_url;
+                                }
+                                else {
+                                    swal({
+                                        icon: "warning",
+                                        title: response.responseText,
+                                        button: true,
+                                        closeModal: false
+                                    })
+
+                                }
+                            });
+                    }
+               });
+
+    });
+
+
+
+
+</script>
+
+<script>
+
+    $(document).ready(function () {
+
+        $('.updated_time').text("N/A");
+        $('.shift').text("N/A");
+
+        if ($.fn.DataTable.isDataTable('#datatable-default')) {
+            $('#datatable-default').DataTable().destroy();
+        }
+
+
+        $('#datatable-default').DataTable({
+
+            "responsive": true,
+            "autoWidth": false,
+            scrollY: true,
+            scrollX: true,
+            scroller: true
+        });
+
+
+    });
+
+</script>

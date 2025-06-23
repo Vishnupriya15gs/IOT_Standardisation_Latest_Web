@@ -1,0 +1,1184 @@
+﻿@model IEnumerable<PlanDigitization_web.Models.Products>
+@{ ViewBag.Title = "Product Details";
+    Layout = "~/Views/Shared/_Layout.cshtml"; }
+<header class="page-header">
+    <h2> Product Details </h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("MainDashboard","MainDashboard")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li><span>Settings</span></li>
+            <li><span>Products</span></li>
+        </ol>
+    </div>
+</header>
+
+<!-- Add New Product-->
+<div class="row" id="divnew" style="display:none;">
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Insert_Productdetails","UserSettings")" method="post" enctype="multipart/form-data">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Add New Product</h2>
+                </header>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Product ID <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="Variant_Code" id="ProductID" class="form-control space" title="Product ID" placeholder="Product ID" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Product Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="VariantName" id="ProductName" class="form-control space" title="Product Name" placeholder="Product Name" required />
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+                        <label class="col-sm-2 control-label"> Product Description <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="VariantDescription" id="ProductDescription" class="form-control" title="Product Description" placeholder="Product Description" required />
+                        </div>
+
+                        <label class="col-sm-2 control-label"> Machine Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control MachineName" name="Machine_Code" id="MachineName" title="Select Machine">
+                                <option value="1">Select Line First</option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+
+
+                        <label class="col-sm-2 control-label"> Operation Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control OperationName" name="OperationName" id="OperationName" title="Select Operation" required>
+                                <option value="">Select Line First</option>
+                            </select>
+                        </div>
+                        <label class="col-sm-2 control-label"> Recipe Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="RecipeName" id="RecipeName" class="form-control" title="Recipe Name" placeholder="Recipe Name" required />
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+
+                        <label class="col-sm-2 control-label"> Cycle Time <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="number" name="CycleTime" onkeypress='return restrictAlphabets(event)' id="CycleTime" class="form-control space" title="Cycle Time" placeholder="Cycle Time" required readonly />
+
+                        </div>
+                        <label class="col-sm-2 control-label"> Cost <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="Cost" id="AddCost" onkeypress='return restrictAlphabets(event)' class="form-control space" title="Cost" placeholder="Cost" required autocomplete="off" />
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top:12px;">
+                        <label class="col-sm-2 control-label"> Manual Cycle Time <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="Manualcycletime" onkeypress='return restrictAlphabets(event)' id="manualct" class="form-control space" onkeyup="checkandadd(event)" onchange="checkanddivide(event)" title="Manual Cycle Time" placeholder="Manual CycleTime(in secs)" required autocomplete="off" />
+                        </div>
+                        <label class="col-sm-2 control-label"> Auto Cycle Time <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="Autocycletime" onkeypress='return restrictAlphabets(event)' id="autoct" class="form-control space" onkeyup=" checkandadd(event)" onchange="checkanddivide(event)" title="Auto Cycle Time" placeholder="Auto CycleTime(in secs)" required autocomplete="off" />
+                        </div>
+
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+                        <label class="col-sm-2 control-label"> NoofFixtures <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="Nooffixtures" onkeypress='return restrictAlphabets(event)' id="nooffixtures" onkeyup="checkanddivide(event)" class="form-control space" title="NoofFixtures" placeholder="No of Fixtures" required autocomplete="off" />
+                        </div>
+                        <label class="col-sm-2 control-label">IdleCycleTime <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="number" name="Idlecycletime" id="IdleCycleTime1" class="form-control space" title="IdleCycleTime" placeholder="Idle Cycle Time" required readonly />
+                        </div>
+
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+                        <label class="col-sm-2 control-label">Upload Image <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="file" name="file" id="file" class="form-control space" required autocomplete="off" />
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+<!-- Product Details-->
+<div class="row" id="divdetails">
+    <div class="col-md-12">
+        <section class="panel">
+            <header class="panel-heading" style="background-color:teal;color:white;">
+                <div class="panel-actions">
+                    @if (ViewContext.Controller.HasPermission("ProductSetting-Add"))
+                    {
+                        <button class="btn btn-success" id="add"><i class="fa fa-plus" aria-hidden="true"> Add New</i></button>}
+                    @if (ViewContext.Controller.HasPermission("ProductSetting-Edit"))
+                    {
+                        <button class="btn btn-primary" id="onselectedit"><i class="fa fa-pencil-square-o" aria-hidden="true"> Edit</i></button>}
+                    @if (ViewContext.Controller.HasPermission("ProductSetting-Delete"))
+                    {
+                        <button class="btn btn-danger" id="onselectdelete"><i class="fa fa-trash-o" aria-hidden="true"> Delete</i></button>}
+                </div>
+                <h2 class="panel-title" style="color:white;">List of Products : </h2>
+                <p style="float:right;padding-top:2%;color:black;">*Select record to edit/delete</p>
+            </header>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="panel-body">
+                        @if (ViewContext.Controller.HasPermission("ProductSetting-View"))
+                        {
+                            <table class="table table-bordered table-striped mb-none" id="datatable-default" data-swf-path="assets1/vendor/jquery-datatables/extras/TableTools/swf/copy_csv_xls_pdf.swf">
+                                <thead style="background-color:teal;color:white;">
+                                    <tr>
+                                        <th class="centercls"> S.No </th>
+                                        <th style="display:none;"></th>
+                                        <th>Product<br /> ID</th>
+                                        <th> Product Name </th>
+                                        <th> Product <br />Description </th>
+                                        <th>Operation <br />Name</th>
+                                        <th> Machine Name </th>
+                                        <th>Recipe Name </th>
+                                        <th>Cycle Time </th>
+                                        <th>Cost</th>
+                                        <th>Auto<br />Cycletime</th>
+                                        <th>Manual<br />Cycletime</th>
+                                        <th>Idle<br />Cycletime</th>
+                                        <th>No of Fixtures</th>
+                                        <th>Image</th>
+                                        @*<th style="text-align:center;width:150px;">Action</th>*@
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{int RowNo = 0;}
+                                    @foreach (var item in Model)
+                                    {
+                                        var imageSrc = "data:image/png;base64,{0}";
+                                        if (item.ImgData != null)
+                                        {
+                                            var base64String = Convert.ToBase64String(item.ImgData);
+                                            imageSrc = string.Format("data:image/png;base64,{0}", base64String);
+                                        }
+
+                                        <tr class="gradeX">
+                                            <td>
+                                                @{RowNo++;}@RowNo
+                                            </td>
+                                            <td class="ProductID" style="display:none;">
+                                                <span>@Html.Encode(item.M_ID)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.Variant_Code)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.VariantName)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.VariantDescription)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.OpName)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.AsName)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.RecipeName)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.CycleTime)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.Cost)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.Autocycletime)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.Manualcycletime)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.Idlecycletime)</span>
+                                            </td>
+                                            <td>
+                                                <span>@Html.Encode(item.Nooffixtures)</span>
+                                            </td>
+                                            <td>
+                                                <img src="@imageSrc" style="width:50px;height:30px;" class="img img-fluid" />
+                                            </td>
+
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table> }
+                        else
+                        {
+                            <h2>View permission is denied</h2>}
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!--Edit Product Details-->
+<div class="row" id="divedit" style="display:none;">
+    <div class="col-md-12">
+        <form class="form" action="@Url.Action("Update_Productdetails","UserSettings")" method="post" enctype="multipart/form-data">
+            <section class="panel">
+                <header class="panel-heading" style="background-color:teal;color:white;">
+                    <div class="panel-actions">
+                    </div>
+                    <h2 class="panel-title" style="color:white;">Update Product</h2>
+                </header>
+                <div class="panel-body">
+                    <input type="hidden" id="eM_ID" />
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Product ID <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="Variant_Code" id="eProductID" class="form-control" title="Product ID" readonly placeholder="Product ID" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Product Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="VariantName" id="eProductName" class="form-control" title="Product Name" placeholder="Product Name" required />
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+                        <label class="col-sm-2 control-label"> Product Description <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="VariantDescription" id="eProductDescription" class="form-control" title="Product Description" placeholder="Product Description" required />
+                        </div>
+
+                        <label class="col-sm-2 control-label"> Machine Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control MachineName" name="Machine_Code" id="eMachineName" title="Select Machine" required></select>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+                        <label class="col-sm-2 control-label"> Operation Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control OperationName" name="OperationName" id="eOperationName" title="Select Operation" required></select>
+                        </div>
+                        <label class="col-sm-2 control-label"> Recipe Name <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="RecipeName" id="eRecipeName" class="form-control" title="Recipe Name" placeholder="Recipe Name" required />
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+
+                        <label class="col-sm-2 control-label"> Cycle Time <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="number" name="CycleTime" onkeypress='return restrictAlphabets(event)' id="eCycleTime" class="form-control space" title="Cycle Time" placeholder="Cycle Time" required />
+                        </div>
+                        <label class="col-sm-2 control-label"> Cost <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="Cost" id="eCost" onkeypress='return restrictAlphabets(event)' class="form-control space" title="Cost" placeholder="Cost" required autocomplete="off" />
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top:12px;">
+                        <label class="col-sm-2 control-label"> Auto Cycletime <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="Autocycletime" onkeypress='return restrictAlphabets(event)' onchange="echeckanddivide(event)" id="eautoct1" class="form-control space" onkeyup="echeckandadd(event)" title="Auto Cycletime" placeholder="Auto Cycletime" required autocomplete="off" />
+                        </div>
+                        <label class="col-sm-2 control-label"> Manual Cycletime <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="Manualcycletime" onkeypress='return restrictAlphabets(event)' onchange="echeckanddivide(event)" id="emanualct1" class="form-control space" onkeyup="echeckandadd(event)" title="Manual Cycletime" placeholder="Manual Cycletime" required autocomplete="off" />
+                        </div>
+
+                    </div>
+
+                    <div class="form-group" style="margin-top:12px;">
+
+                        <label class="col-sm-2 control-label">NoofFixtures <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" name="NoofFixtures" onkeypress='return restrictAlphabets(event)' id="enooffixtures" class="form-control space" onkeyup="echeckanddivide(event)" title="NoofFixtures" placeholder="No of Fixtures" required autocomplete="off" />
+                        </div>
+
+                        <label class="col-sm-2 control-label">  IdleCycleTime <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="number" name="IdleCycleTime" id="eIdleCycleTime" class="form-control" title="IdleCycleTime" placeholder="Idle Cycle Time" required readonly />
+                        </div>
+
+
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+                        <label class="col-sm-2 control-label">Upload Image <span class="required">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="file" name="file" id="file" class="form-control space" autocomplete="off" />
+                            <input type="hidden" name="ImgData" id="HF_Img" />
+                        </div>
+
+
+                    </div>
+                </div>
+
+                <footer class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3" style="text-align:center;">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="reset" id="cancel" class="btn btn-danger cancel">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </form>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+@if (@TempData["message"] != null)
+{
+    <script type="text/javascript">
+    $(function () {
+        var msg = '@TempData["message"]';
+        if (msg == "Inserted") {
+            swal({
+                icon: "success",
+                title: "Details Added Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Updated") {
+            swal({
+                icon: "success",
+                title: "Details Updated Successfully...!",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Already Variant_Code") {
+            swal({
+                icon: "error",
+                title: "Failed to Add.Variant Code already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+        else if (msg == "Already VariantName") {
+            swal({
+                icon: "error",
+                title: "Failed to Add.Variant Name already exists",
+                button: true,
+                timer: 4500
+            })
+        }
+        else {
+            swal({
+                icon: "error",
+                title: "Failed to Add",
+                button: true,
+                timer: 4500
+            })
+        }
+    });
+    </script>
+}
+
+
+<script>
+
+
+
+
+    function restrictAlphabets(e) {
+        var x = e.which || e.keycode;
+        if ((x >= 48 && x <= 57))
+            return true;
+        else
+            return false;
+    }
+
+
+
+</script>
+
+<script type="text/javascript">
+    $(document).on("keydown", ".space", function (evt) {
+
+        var caretPos = $(this)[0].selectionStart
+        if (evt.keyCode == 32 && caretPos == 0) {
+            return false;
+        }
+    });
+
+    function allowAlphaNumericSpace(e) {
+        var code = ('charCode' in e) ? e.charCode : e.keyCode;
+        if (!(code == 32) && // space
+            !(code > 47 && code < 58) && // numeric (0-9)
+            !(code > 64 && code < 91) && // upper alpha (A-Z)
+            !(code > 96 && code < 123)) { // lower alpha (a-z)
+            e.preventDefault();
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    $("#add").click(function () {
+        $("#divnew").show();
+        $("#divdetails").hide();
+        $("#divedit").hide();
+    });
+
+    $(".cancel").click(function () {
+        $("#divnew").hide();
+        $("#divdetails").show();
+        $("#divedit").hide();
+    });
+
+</script>
+
+
+
+<script type="text/javascript">
+    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+    $("body").on("click", "#edit", function () {
+        var row = $(this).closest("tr");
+
+    });
+
+    $("body").on("click", "#delete", function () {
+
+    });
+</script>
+
+<script type="text/javascript">
+    //Function to select row
+    $("#datatable-default tbody tr").click(function () {
+        var bl;
+        var editval;
+        if ($(this).hasClass('selected')) {
+            bl = "row selected";
+            $(this).removeClass('selected');
+        }
+        else {
+            bl = "row unselected";
+            $(this).addClass('selected').siblings().removeClass('selected');
+            editval = $(this).find('td:first').html();
+            //alert(editval)
+        }
+    });
+</script>
+<!--Style section for selection of rows-->
+<style>
+    #datatable-default tbody tr:not(.table-header) {
+        cursor: pointer;
+    }
+
+    #datatable-default tbody .selected:not(.table-header) {
+        background-color: brown;
+        color: #FFF;
+    }
+</style>
+
+<script type="text/javascript">
+     var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+    //edit function on selction of row
+
+    $("#onselectedit").on("click", function () {
+        //function to retrieve id on select to edit the row
+        $("#datatable-default tbody tr").each(function () {
+            if ($(this).hasClass('selected')) {
+
+                 var row = $(this);
+                var ID = row.find(".ProductID span").html();
+
+                var myData = {
+                    "QueryType": "Edit_Products",
+                    "Parameter": ID,
+                    "CompanyCode": '@Session["CompanyCode"]',
+                    "PlantCode": '@Session["PlantCode"]',
+                    "LineCode": '@Session["LineCode"]'
+                };
+
+        $("#divedit").show();
+        $("#divnew").hide();
+        $("#divdetails").hide();
+          var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+        $.ajax({
+            type: "POST",
+            url: URL + 'api/Values/User_settings_details',
+            data: myData,
+            headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+            dataType: "json",
+            beforeSend: function () {
+                $('.loading').show();
+            },
+            complete: function () {
+                $('.loading').hide();
+            },
+            success: function (response) {
+                $('#eM_ID').val(response.data.Table[0].M_ID);
+                $('#eProductID').val(response.data.Table[0].Variant_Code);
+                $('#eProductName').val(response.data.Table[0].VariantName);
+                $('#eProductDescription').val(response.data.Table[0].VariantDescription);
+                $('#eRecipeName').val(response.data.Table[0].RecipeName);
+                $('#eCycleTime').val(response.data.Table[0].CycleTime);
+                $('#eCost').val(response.data.Table[0].Cost);
+                $('#eautoct1').val(response.data.Table[0].Auto_CycleTime);
+                $('#emanualct1').val(response.data.Table[0].Manual_CycleTime);
+                $('#eIdleCycleTime').val(response.data.Table[0].Ideal_cycletime);
+                $('#enooffixtures').val(response.data.Table[0].No_of_fixtures);
+                $('#HF_Img').val(response.data.Table[0].ImageData);
+                var linecode = '@Session["LineCode"]';
+
+                var myData = {
+                    "QueryType": "Company_Operations",
+                    "Parameter1": '@Session["CompanyCode"]',
+                    "Parameter": '@Session["PlantCode"]',
+                    "Parameter2": linecode,
+                    "CompanyCode": '@Session["CompanyCode"]',
+                    "PlantCode": '@Session["PlantCode"]',
+                    "LineCode": '@Session["LineCode"]'
+                };
+                var myDatas = {
+                    "QueryType": "Assets",
+                    "Parameter": '@Session["PlantCode"]',
+                    "Parameter1": '@Session["CompanyCode"]',
+                    "Parameter2": linecode,
+                    "CompanyCode": '@Session["CompanyCode"]',
+                     "PlantCode": '@Session["PlantCode"]',
+                     "LineCode": '@Session["LineCode"]'
+                };
+                 var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+                $.ajax({
+                    type: "POST",
+                    data: myData,
+                     headers: {
+                         Authorization: 'Bearer ' + user1
+                     },
+                    url: URL + 'api/Values/User_settings_details',
+                    dataType: "json",
+                    success: function (response1) {
+                        var s = '<option value="">Please Select</option>';
+                        for (var i = 0; i < response1.data.Table.length; i++) {
+                            if (response1.data.Table[i].OperationID == response.data.Table[0].OperationName) {
+                                s += '<option value="' + response1.data.Table[i].OperationID + '" selected=selected>' + response1.data.Table[i].OperationName + '</option>';
+                            }
+                            else {
+                                s += '<option value="' + response1.data.Table[i].OperationID + '">' + response1.data.Table[i].OperationName + '</option>';
+                            }
+                        }
+                        $("#eOperationName").html(s);
+                    }
+                }).error(function (response1) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+                    }
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+                });
+
+
+                 var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+                $.ajax({
+                    type: "POST",
+                    data: myDatas,
+                     headers: {
+                         Authorization: 'Bearer ' + user1
+                     },
+                    url: URL + 'api/Values/User_settings_details',
+                    dataType: "json",
+                    success: function (response22) {
+                        var s = '<option value="">Please Select</option>';
+                        for (var i = 0; i < response22.data.Table.length; i++) {
+                            if (response22.data.Table[i].AssetID == response.data.Table[0].Machine_Code) {
+                                s += '<option value="' + response22.data.Table[i].AssetID + '" selected=selected>' + response22.data.Table[i].AssetName + '</option>';
+                            }
+                            else {
+                                s += '<option value="' + response22.data.Table[i].AssetID + '">' + response22.data.Table[i].AssetName + '</option>';
+                            }
+                        }
+                        $("#eMachineName").html(s);
+                    }
+                }).error(function (response22) {
+                    if (response.status == "401") {
+                        swal({
+                            icon: "warning",
+                            title: "Session Timeout",
+                            button: true,
+                            closeModal: false
+                        })
+                        window.location = R_url;
+                    }
+                    else {
+                        swal({
+                            icon: "warning",
+                            title: response.responseText,
+                            button: true,
+                            closeModal: false
+                        })
+
+                    }
+             });
+            }
+            , error: function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+            }
+        });
+
+                return false;
+            }
+            else {
+                //alert("Please select a record to proceed...")
+                return;
+            }
+
+        });
+    });
+    //delete function on selection of row
+
+     $("#onselectdelete").on("click", function () {
+        //function to retrieve id on select to delete the row
+        var CompanyCode;
+        $("#datatable-default tbody tr").each(function () {
+            if ($(this).hasClass('selected')) {
+
+                     if (confirm("Do you want to Delete this Product?")) {
+            var row = $(this).closest("tr");
+            var ID = row.find(".ProductID span").html();
+
+            var myData = {
+                "QueryType": "Delete_Products",
+                "Parameter": ID,
+                "CompanyCode": '@Session["CompanyCode"]',
+                         "PlantCode": '@Session["PlantCode"]',
+                         "LineCode": '@Session["LineCode"]'
+            };
+             var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/Values/delete_User_settings_details',
+                data: myData,
+                  headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+                    swal({
+                        icon: "success",
+                        title: "Product Details Deleted Successfully...!",
+                        button: true,
+                        timer: 4500
+                    })
+                    window.location = '@Url.Action("Product_details", "UserSettings")';
+                }
+            }).error(function (response) {
+                if (response.status == "401") {
+                    swal({
+                        icon: "warning",
+                        title: "Session Timeout",
+                        button: true,
+                        closeModal: false
+                    })
+                    window.location = R_url;
+                }
+                else {
+                    swal({
+                        icon: "warning",
+                        title: response.responseText,
+                        button: true,
+                        closeModal: false
+                    })
+
+                }
+             });
+        }
+
+                return false;
+            }
+            else {
+                //alert("Please select a record to proceed...")
+                return;
+            }
+
+        });
+    });
+
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        $('.updated_time').text("N/A");
+        $('.shift').text("N/A");
+
+        if ($.fn.DataTable.isDataTable('#datatable-default')) {
+            $('#datatable-default').DataTable().destroy();
+        }
+
+
+        $('#datatable-default').DataTable({
+
+            "responsive": true,
+            "autoWidth": false,
+            scrollY: true,
+            scrollX: true,
+            scroller: true
+        });
+
+
+    });
+</script>
+
+<script type="text/javascript">
+
+</script>
+
+
+<script type="text/javascript">
+    $(function() {
+        //alert(this.value);
+
+          var myData = {
+                        "Flag": "Subsystem",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+                        "LineCode":'@Session["LineCode"]',
+                    };
+                    var R_url = '@Url.Action("Login", "Main")';
+                   var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+
+         var R_url = '@Url.Action("GetSettingdatas1", "Main")';
+                    var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+        var URL2 = '@Url.Action("GetSettingdatas1", "Main")';
+
+
+                   $.ajax({
+                        type: "POST",
+                       /*  url: '/Main/GetSettingdatas1',*/
+                       url: URL2,
+                        data: myData,
+                        dataType: "json",
+                        success: function (response) {
+                            var s = '<option value="">Select Machine</option>';
+                            for (var i = 0; i < response.data.length; i++) {
+                                s += '<option value="' + response.data[i].Code + '">' + response.data[i].Name + '</option>';
+                            }
+                            $(".MachineName").html(s);
+                        },
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+                            }
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                   });
+
+
+         var myData12 = {
+            "QueryType": "Company_Operations",
+            "Parameter1": '@Session["CompanyCode"]',
+            "Parameter": '@Session["PlantCode"]',
+             "Parameter2": '@Session["LineCode"]',
+            "CompanyCode": '@Session["CompanyCode"]',
+             "PlantCode": '@Session["PlantCode"]',
+              "LineCode": '@Session["LineCode"]'
+        };
+        @*var myDatas = {
+            "QueryType": "Assets",
+            "Parameter": '@Session["PlantCode"]',
+            "Parameter1": '@Session["CompanyCode"]'
+        };*@
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+        $.ajax({
+            type: "POST",
+            data: myData12,
+             headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+            url: URL + 'api/Values/User_settings_details',
+            dataType: "json",
+            success: function (response) {
+                var s = '<option value="" >Please Select</option>';
+                for (var i = 0; i < response.data.Table.length; i++) {
+
+                    s += '<option value="' + response.data.Table[i].OperationID + '">' + response.data.Table[i].OperationName + '</option>';
+                }
+                $(".OperationName").html(s);
+            }
+        }).error(function (response) {
+            if (response.status == "401") {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            }
+            else {
+                swal({
+                    icon: "warning",
+                    title: response.responseText,
+                    button: true,
+                    closeModal: false
+                })
+
+            }
+        });
+
+
+    });
+
+</script>
+
+<script type="text/javascript">
+    $(function() {
+        //alert(this.value);
+
+          var myData = {
+                        "Flag": "Subsystem",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+                        "LineCode":'@Session["LineCode"]',
+                    };
+                    var R_url = '@Url.Action("Login", "Main")';
+                   var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+
+
+         var R_url = '@Url.Action("GetSettingdatas1", "Main")';
+                    var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+        var URL2 = '@Url.Action("GetSettingdatas1", "Main")';
+
+
+                   $.ajax({
+                        type: "POST",
+                       /*  url: '/Main/GetSettingdatas1',*/
+
+                       url:URL2,
+                        data: myData,
+                        dataType: "json",
+                        success: function (response) {
+                            var s = '<option value="">Select Machine</option>';
+                            for (var i = 0; i < response.data.length; i++) {
+                                s += '<option value="' + response.data[i].Code + '">' + response.data[i].Name + '</option>';
+                            }
+                            $("#eMachineName").html(s);
+                        },
+                        error: function (response) {
+                            if (response.status == "401") {
+                                swal({
+                                    icon: "warning",
+                                    title: "Session Timeout",
+                                    button: true,
+                                    closeModal: false
+                                })
+                                window.location = R_url;
+                            }
+                            else {
+                                swal({
+                                    icon: "warning",
+                                    title: response.responseText,
+                                    button: true,
+                                    closeModal: false
+                                })
+
+                            }
+                        }
+                   });
+
+
+         var myData12 = {
+            "QueryType": "Company_Operations",
+            "Parameter1": '@Session["CompanyCode"]',
+            "Parameter": '@Session["PlantCode"]',
+             "Parameter2": '@Session["LineCode"]',
+            "CompanyCode": '@Session["CompanyCode"]',
+             "PlantCode": '@Session["PlantCode"]',
+              "LineCode": '@Session["LineCode"]'
+        };
+        @*var myDatas = {
+            "QueryType": "Assets",
+            "Parameter": '@Session["PlantCode"]',
+            "Parameter1": '@Session["CompanyCode"]'
+        };*@
+         var R_url = '@Url.Action("Login", "Main")';
+            var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+             //$.ajax({
+             //    type: 'Get',
+             //    url: URL + 'api/UserSettings/GetEmployee',
+             //    headers: {
+             //        Authorization: 'Bearer ' + user1
+             //    },
+             //    dataType: 'json'
+             //}).success(function (response) {
+        $.ajax({
+            type: "POST",
+            data: myData12,
+             headers: {
+                     Authorization: 'Bearer ' + user1
+                 },
+            url: URL + 'api/Values/User_settings_details',
+            dataType: "json",
+            success: function (response) {
+                var s = '<option value="" >Please Select</option>';
+                for (var i = 0; i < response.data.Table.length; i++) {
+
+                    s += '<option value="' + response.data.Table[i].OperationID + '">' + response.data.Table[i].OperationName + '</option>';
+                }
+                $("#eOperationName").html(s);
+            }
+        }).error(function (response) {
+            if (response.status == "401") {
+                swal({
+                    icon: "warning",
+                    title: "Session Timeout",
+                    button: true,
+                    closeModal: false
+                })
+                window.location = R_url;
+            }
+            else {
+                swal({
+                    icon: "warning",
+                    title: response.responseText,
+                    button: true,
+                    closeModal: false
+                })
+
+            }
+        });
+
+
+    });
+    function checkandadd() {
+
+        var num1 = 0;
+        var num2 = 0;
+        var total = 0.0;
+        var num1 = document.getElementById("manualct").value;
+        var num2 = document.getElementById("autoct").value;
+
+        if (num1 == undefined || num1 == "" ) {
+            num1 = 0
+            if (num2 != 0) {
+                document.getElementById("CycleTime").value = Number(num2).toFixed(2);
+            }
+
+        }
+        if (num2 == undefined || num2 == "" ) {
+            num2 = 0
+            if (num1 != 0) {
+                document.getElementById("CycleTime").value = Number(num1).toFixed(2);
+            }
+        }
+
+        var total = +(+(Number(num1).toFixed(2)) + +(Number(num2).toFixed(2)));
+
+        if (total >= 0) {
+            document.getElementById("CycleTime").value = total;
+
+        }
+        checkanddivide();
+
+       //return true;
+    }
+
+
+    function echeckandadd() {
+
+        var num1 = 0;
+        var num2 = 0;
+        var total = 0.0;
+        var num1 = document.getElementById("emanualct1").value;
+        var num2 = document.getElementById("eautoct1").value;
+
+        if (num1 == undefined || num1 == "") {
+            num1 = 0
+            if (num2 != 0) {
+                document.getElementById("eCycleTime").value = Number(num2).toFixed(2);
+            }
+
+        }
+        if (num2 == undefined || num2 == "") {
+            num2 = 0
+            if (num1 != 0) {
+                document.getElementById("eCycleTime").value = Number(num1).toFixed(2);
+            }
+        }
+
+        var total = +(+(Number(num1).toFixed(2)) + +(Number(num2).toFixed(2)));
+
+        if (total >= 0) {
+            document.getElementById("eCycleTime").value = total;
+
+        }
+
+
+        //return true;
+    }
+
+
+
+    function checkanddivide() {
+
+
+        var num1 = 0;
+        var num2 = 0;
+        var total = 0.0;
+        var num2 = document.getElementById("nooffixtures").value;
+        var num1 = document.getElementById("CycleTime").value;
+
+
+        if (num1 == undefined || num1 == "") {
+            num1 = 0
+            if (num2 != 0) {
+                document.getElementById("IdleCycleTime1").value = Number(num2).toFixed(2);
+            }
+
+        }
+        if (num2 == undefined || num2 == "") {
+            num2 = 0
+            if (num1 != 0) {
+                document.getElementById("IdleCycleTime1").value = Number(num1).toFixed(2);
+            }
+        }
+
+        var total = +(+(Number(num1))) / +(+Number(num2));
+        console.log(total);
+        var t = Number(total);
+        if (total >= 0) {
+            document.getElementById("IdleCycleTime1").value = Math.trunc(t * 100) / 100;
+
+        }
+
+
+
+    }
+
+
+    function echeckanddivide() {
+
+
+        var num1 = 0;
+        var num2 = 0;
+        var total = 0.0;
+        var num2 = document.getElementById("enooffixtures").value;
+
+        var num1 = document.getElementById("eCycleTime").value;
+
+        //if (num1 == undefined || num1 == "") {
+        //    num1 = 0
+        //    if (num1 != 0) {
+        //        /*document.getElementById("eCycleTime").value = Number(num1).toFixed(2);*/
+        //        var ecycle = Number(num1).toFixed(2);
+        //    }
+
+        //}
+        //if (num2 == undefined || num2 == "") {
+        //    num2 = 0
+        //    if (num1 != 0) {
+        //        /* document.getElementById("enooffixtures").value = Number(num1).toFixed(2);*/
+        //        var enooffix = Number(num2).toFixed(2);
+        //    }
+        //}
+
+        var total = +(+(Number(num1).toFixed(2)) / +(+Number(num2).toFixed(2)));
+
+        console.log(total);
+        var t1 = Number(total).toFixed(2);
+        if (total >= 0) {
+            document.getElementById("eIdleCycleTime").value = t1;
+
+        }
+
+
+
+    }
+</script>

@@ -1,0 +1,886 @@
+﻿
+@{
+    ViewBag.Title = "MOA";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .bar {
+        fill: steelblue;
+        font-size: 10px;
+    }
+</style>
+<link rel="stylesheet" type="text/css" href="~/assets1/datepicker_normal/jquery-ui-1.8.19.custom.css">
+<header class="page-header">
+    <h2>Top 10 Most Occurring Alarms</h2>
+    <div class="right-wrapper pull-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@Url.Action("NewDash","Main")">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li><span>Maintenance</span></li>
+            <li><span>Historic Data & Analytics</span></li>
+            <li><span>Alarm Analysis</span></li>
+            <li><span>MOA</span></li>
+        </ol>
+    </div>
+</header>
+@if (ViewContext.Controller.HasPermission("ParetoAnalysisHistoric-View"))
+{
+    <div class="row">
+        <div class="col-md-12">
+            <div class="btn-group">
+                <label class="control-label" style="float:right; font-weight:bold;"> Select Line </label>
+            </div>
+            <div class="btn-group">
+                <select id="linecode" class="form-control" name="linecode" title="*"></select>
+            </div>&nbsp;&nbsp;
+            <div class="btn-group">
+                <label class="control-label" style="float:right; font-weight:bold;"> Select Machine </label>
+            </div>
+            <div class="btn-group">
+                <select id="machinecode" class="form-control" name="machinecode" title="*"></select>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="tabs tabs-danger">
+                <ul class="nav nav-tabs">
+                    <li class="active" id="custom_report">
+                        <a href="#custom" data-toggle="tab">Custom</a>
+                    </li>
+                    <li id="yearly_report">
+                        <a href="#yearly" data-toggle="tab"> Yearly</a>
+                    </li>
+                    <li id="monthly_report">
+                        <a href="#monthly" data-toggle="tab">Monthly</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div id="custom" class="tab-pane active">
+                        <section class="panel">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">Date range</label>
+                                <div class="col-md-6">
+                                    <div class="input-daterange input-group">
+                                        <span class="input-group-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </span>
+                                        <input type="text" class="form-control datepic" style="text-align:left;z-index:0;" id="start" name="start" readonly>
+                                        <span class="input-group-addon">to</span>
+                                        <input type="text" class="form-control datepic" style="text-align:left;z-index:0;" id="end" name="end" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="btn-group">
+                                        <button type="button" id="searchcustomwise" class="mb-xs mt-xs mr-xs btn btn-primary" >View</button>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button type="button" id="resetcustom" class="mb-xs mt-xs mr-xs btn btn-danger" >Reset</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <header class="panel-heading">
+                                <div class="btn-group" style="width:100%;padding:10px;padding-right:50px;">
+                                    <button type="button" class="mb-xs mt-xs mr-xs btn btn-sm btn-default">Line : <span id="custom_line"></span></button>
+                                    <button type="button" class="mb-xs mt-xs mr-xs btn btn-sm btn-default" style="float:right;">Subsystem : <span id="custom_subsystem"></span> </button>
+                                </div>
+                            </header>
+                            <div class="panel-body">
+                                @*<div class="chart chart-md" id="custom1"></div>*@
+                                <div class="custom moa">
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <div id="yearly" class="tab-pane">
+                        <section class="panel">
+                            <div class="form-group">
+                                <div class="col-md-2"></div>
+                                <label class="col-md-2 control-labe">Select Year</label>
+                                <div class="col-md-4">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </span>
+                                        <input class="date-own form-control" style="width: 150px;z-index:0;" type="text" id="year" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="btn-group">
+                                        <button type="button" id="searchyearwise" class="mb-xs mt-xs mr-xs btn btn-primary" >View</button>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button type="button" id="resetyear" class="mb-xs mt-xs mr-xs btn btn-danger">Reset</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <header class="panel-heading">
+                                <div class="btn-group" style="width:100%;padding:10px;padding-right:50px;">
+                                    <button type="button" class="mb-xs mt-xs mr-xs btn btn-sm btn-default">Line : <span id="yearly_line"></span></button>
+                                    <button type="button" class="mb-xs mt-xs mr-xs btn btn-sm btn-default" style="float:right;">Subsystem : <span id="yearly_subsystem"></span></button>
+                                </div>
+                            </header>
+                            <div class="panel-body" @*style="height:900px"*@>
+                                <div class="year_report moa">
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <div id="monthly" class="tab-pane">
+                        <section class="panel">
+                            <div class="form-group">
+                                <div class="col-md-2"></div>
+                                <label class="col-md-2 control-label">Select Month</label>
+                                <div class="col-md-4">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </span>
+                                        <input class="month-own form-control" style="width: 150px;z-index:0;" type="text" id="month" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="btn-group">
+                                        <button type="button" id="searchmonthwise" class="mb-xs mt-xs mr-xs btn btn-primary" >View</button>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button type="button" id="resetmonth" class="mb-xs mt-xs mr-xs btn btn-danger" >Reset</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <header class="panel-heading">
+                                <div class="btn-group" style="width:100%;padding:10px;padding-right:50px;">
+                                    <button type="button" class="mb-xs mt-xs mr-xs btn btn-sm btn-default">Line : <span id="monthly_line"></span></button>
+                                    <button type="button" class="mb-xs mt-xs mr-xs btn btn-sm btn-default" style="float:right;">Subsystem : <span id="monthly_subsystem"></span></button>
+                                </div>
+                            </header>
+                            <div class="panel-body">
+                                <div class="monthly_report moa">
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row">
+        <h2 class="panel-title">View Permission is denied</h2>
+    </div>
+}
+<!-- end: page -->
+<script src="~/assets1/javascripts/swal.js"></script>
+<script src="~/assets1/javascripts/swal_alert.js"></script>
+<script src="~/assets1/datepicker_normal/datepicker_normal_jquery.min.js"></script>
+<script src="~/assets1/datepicker_normal/jquery-ui-1.8.19.custom.min.js"></script>
+<script src="~/Scripts/bootstrap-datepicker.js"></script>
+<script src="~/Scripts/d3_v4.min.js"></script>
+<script type="text/javascript">
+    $(".datepic").datepicker({
+        format: "yyyy-mm-dd",
+        orientation: "bottom",
+        endDate: '+0d'
+    });
+
+    $('.month-own').datepicker({
+        format: "yyyy-mm",
+        viewMode: "months",
+        endDate: '+0m',
+        minViewMode: "months",
+        orientation: "bottom"
+    });
+    $('.date-own').datepicker({
+        minViewMode: 2,
+        format: 'yyyy',
+        endDate: '+0y',
+        startView: 2,
+        orientation: "bottom"
+    });
+</script>
+<script type="text/javascript">
+    $(function () {
+        var CompanyCode = '@Session["CompanyCode"]';
+        var PlantCode = '@Session["PlantCode"]';
+        if (CompanyCode == "" && PlantCode == "") {
+            swal({
+                icon: "error",
+                title: "Please Select Customer and Plant...!",
+                button: true,
+                timer: 4500
+            })
+            return;
+        }
+        else
+            if (CompanyCode == "") {
+                swal({
+                    icon: "error",
+                    title: "Please Select Customer...!",
+                    button: true,
+                    timer: 4500
+                })
+                return;
+            }
+            else
+                if (PlantCode == "") {
+                    swal({
+                        icon: "error",
+                        title: "Please Select Plant...!",
+                        button: true,
+                        timer: 4500
+                    })
+                    return;
+                }
+                else {
+                    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+                    var myData = {
+                        "Flag": "LineCode",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+                    };
+                     var R_url = '@Url.Action("Login", "Main")';
+                   var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+                    $.ajax({
+                        type: 'Get',
+                        url: URL + 'api/UserSettings/GetEmployee',
+                        headers: {
+                            Authorization: 'Bearer ' + user1
+                        },
+                        dataType: 'json'
+                    }).success(function (response) {
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("GetSettingdatas1", "Main")',
+                        dataType: "json",
+                        success: function (response) {
+                            var s = '<option value="">Select Line</option>';
+                            for (var i = 0; i < response.data.length; i++) {
+                                s += '<option value="' + response.data[i].Code + '">' + response.data[i].Name + '</option>';
+                            }
+                            $("#linecode").html(s);
+                        },
+                        error: function (response) {
+
+                        }
+                    });
+                    }).error(function (response) {
+                        if (response.status == "401") {
+                            swal({
+                                icon: "warning",
+                                title: "Session Timeout",
+                                button: true,
+                                closeModal: false
+                            })
+                            window.location = R_url;
+                        }
+                        else {
+                            swal({
+                                icon: "warning",
+                                title: response.responseText,
+                                button: true,
+                                closeModal: false
+                            })
+
+                        }
+                    });
+
+                    var myData = {
+                        "Flag": "Subsystem",
+                        "CompanyCode": '@Session["CompanyCode"]',
+                        "PlantCode": '@Session["PlantCode"]',
+                    };
+                     var R_url = '@Url.Action("Login", "Main")';
+                   var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+                    $.ajax({
+                        type: 'Get',
+                        url: URL + 'api/UserSettings/GetEmployee',
+                        headers: {
+                            Authorization: 'Bearer ' + user1
+                        },
+                        dataType: 'json'
+                    }).success(function (response) {
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("GetSettingdatas1", "Main")',
+                        data: myData,
+                        dataType: "json",
+                        success: function (response) {
+                            var s = '<option value="">Select Subsystem</option>';
+                            for (var i = 0; i < response.data.length; i++) {
+                                s += '<option value="' + response.data[i].Code + '">' + response.data[i].Name + '</option>';
+
+                            }
+                            $("#machinecode").html(s);
+                        },
+                        error: function (response) {
+
+                        }
+                    });
+                    }).error(function (response) {
+                        if (response.status == "401") {
+                            swal({
+                                icon: "warning",
+                                title: "Session Timeout",
+                                button: true,
+                                closeModal: false
+                            })
+                            window.location = R_url;
+                        }
+                        else {
+                            swal({
+                                icon: "warning",
+                                title: response.responseText,
+                                button: true,
+                                closeModal: false
+                            })
+
+                        }
+                    });
+                }
+    });
+    document.getElementById("resetcustom").addEventListener("click", function () {
+        $('#start').val('');
+        $('#end').val('');
+        d3.select(".custom svg").remove();
+    })
+    document.getElementById("resetyear").addEventListener("click", function () {
+        $('#year').val('');
+        d3.select(".year_report svg").remove();
+    })
+    document.getElementById("resetmonth").addEventListener("click", function () {
+        $('#month').val('');
+        d3.select(".monthly_report svg").remove();
+    })
+
+
+</script>
+
+<script type="text/javascript">
+
+    var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+    document.getElementById("searchcustomwise").addEventListener("click", function () {
+
+        var linecode = $('#linecode').val();
+        var machinecode = $('#machinecode').val();
+        var start = $('#start').val();
+        var end = $('#end').val();
+        var year = $('#year').val();
+        var month = $('#month').val();
+
+        var syear = start.substr(0, 4);
+        var eyear = end.substr(0, 4);
+        if (syear != eyear && end!='') {
+            swal({
+                icon: "error",
+                title: "Please Select Same Year for Fromdate and Todate...!",
+                button: false,
+                timer: 4500
+            })
+            d3.select("svg").remove();
+            return;
+        }
+
+
+        if (linecode == '') {
+            swal({
+                icon: "error",
+                title: "Please Provide Line details",
+                button: false,
+                timer: 4500
+            })
+        }
+        else if (machinecode == '') {
+                swal({
+                    icon: "error",
+                    title: "Please Provide Machine details",
+                    button: false,
+                    timer: 4500
+                })
+        }
+        else if (start == '') {
+                swal({
+                    icon: "error",
+                    title: "Please Provide start date",
+                    button: false,
+                    timer: 4500
+                })
+        }
+        else if (end == '') {
+                swal({
+                    icon: "error",
+                    title: "Please Provide End date",
+                    button: false,
+                    timer: 4500
+                })
+        }
+        else {
+            if (start>end) {
+                swal({
+                    icon: "error",
+                    title: "Please Provide Dates correctly...",
+                    button: false,
+                    timer: 4500
+                })
+            }
+            var myData = {
+                "line": linecode,
+                "Machine": machinecode,
+                "FromDate": start,
+                "ToDate": end,
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]'
+            };
+            var sample;
+             var R_url = '@Url.Action("Login", "Main")';
+                   var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+                    $.ajax({
+                        type: 'Get',
+                        url: URL + 'api/UserSettings/GetEmployee',
+                        headers: {
+                            Authorization: 'Bearer ' + user1
+                        },
+                        dataType: 'json'
+                    }).success(function (response) {
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/Paretoanalysis/GetMOA_CustomReport',
+                data: myData,
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+                    d3.select(".custom svg").remove();
+                    $('#custom_line').text(linecode);
+                    $('#custom_subsystem').text(machinecode);
+                    if (response.status != "Error") {
+                        var data = response.data.Table;
+                        var margin = { top: 20, right: 50, bottom: 30, left: 300 },
+                            width = 960 - margin.left - margin.right,
+                            height = 800 - margin.top - margin.bottom;
+                        // set the ranges
+                        var y = d3.scaleBand()
+                            .range([height, 0])
+                            .padding(0.1);
+
+                        var x = d3.scaleLinear()
+                            .range([0, width]);
+
+                        // append the svg object to the body of the page
+                        // append a 'group' element to 'svg'
+                        // moves the 'group' element to the top left margin
+                        var svg = d3.select(".custom").append("svg")
+                            .attr("width", width + margin.left + margin.right)
+                            .attr("height", height + margin.top + margin.bottom)
+                            .append("g")
+                            .attr("transform",
+                                "translate(" + margin.left + "," + margin.top + ")");
+
+                        // format the data
+                        data.forEach(function (d) {
+                            d.Frequency = +d.Frequency;
+                        });
+
+                        // Scale the range of the data in the domains
+                        x.domain([0, d3.max(data, function (d) { return d.Frequency; })])
+                        y.domain(data.map(function (d) { return d.Alarm_Description; }));
+                        //y.domain([0, d3.max(data, function(d) { return d.sales; })]);
+
+                        // append the rectangles for the bar chart
+                        svg.selectAll(".bar")
+                            .data(data)
+                            .enter().append("rect")
+                            .attr("class", "bar")
+                            //.attr("x", function(d) { return x(d.sales); })
+                            .attr("width", function (d) { return x(d.Frequency); })
+                            .attr("y", function (d) { return y(d.Alarm_Description); })
+                            .attr("height", y.bandwidth());
+
+                        // add the x Axis
+                        svg.append("g")
+                            .attr("transform", "translate(0," + height + ")")
+                            .call(d3.axisBottom(x));
+
+                        // add the y Axis
+                        svg.append("g")
+                            .call(d3.axisLeft(y));
+                    }
+                    else
+                    {
+                        $(".custom").empty();
+                        var div_width = 400;
+                        var div_height = 400;
+                        var svg = d3.select(".custom").append("svg")
+                            .attr("width", div_width)
+                            .attr("height", div_height)
+                            .attr("preserveAspectRatio", "xMidYMid")
+                            .append("g")
+                            .attr("transform", "translate(" + (div_width / 2 - 50) + "," + (div_height / 2 - 50) + ")");
+
+                        svg.append("text")
+                            .text("No Data Available")
+                            .style("font-size", "40px");
+                    }
+                },
+                error: function (response) {
+                    //console.log(response);
+                }
+            });
+                    }).error(function (response) {
+                        if (response.status == "401") {
+                            swal({
+                                icon: "warning",
+                                title: "Session Timeout",
+                                button: true,
+                                closeModal: false
+                            })
+                            window.location = R_url;
+                        }
+                        else {
+                            swal({
+                                icon: "warning",
+                                title: response.responseText,
+                                button: true,
+                                closeModal: false
+                            })
+
+                        }
+                    });
+        }
+
+    })
+
+    document.getElementById("searchyearwise").addEventListener("click", function () {
+
+        var linecode = $('#linecode').val();
+        var machinecode = $('#machinecode').val();
+        var year = $('#year').val();
+
+        if (linecode == '') {
+            swal({
+                icon: "error",
+                title: "Please Provide Line details",
+                button: false,
+                timer: 4500
+            })
+        }
+        else if (machinecode == '') {
+                swal({
+                    icon: "error",
+                    title: "Please Provide Machine details",
+                    button: false,
+                    timer: 4500
+                })
+        }
+        else if (year == '') {
+                swal({
+                    icon: "error",
+                    title: "Please Provide Year",
+                    button: false,
+                    timer: 4500
+                })
+        }
+        else
+        {
+            var myData = {
+                "line": linecode,
+                "Machine": machinecode,
+                "Year": year,
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]'
+            };
+             var R_url = '@Url.Action("Login", "Main")';
+              var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+                    $.ajax({
+                        type: 'Get',
+                        url: URL + 'api/UserSettings/GetEmployee',
+                        headers: {
+                            Authorization: 'Bearer ' + user1
+                        },
+                        dataType: 'json'
+                    }).success(function (response) {
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/Paretoanalysis/GetMOA_YearwiseReport',
+                data: myData,
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+                    d3.select(".year_report svg").remove();
+                    $('#yearly_line').text(linecode);
+                    $('#yearly_subsystem').text(machinecode);
+                    if (response.status != "Error") {
+                        var data = response.data.Table;
+                        var margin = { top: 20, right: 50, bottom: 30, left: 300 },
+                            width = 960 - margin.left - margin.right,
+                            height = 800 - margin.top - margin.bottom;
+                        // set the ranges
+                        var y = d3.scaleBand()
+                            .range([height, 0])
+                            .padding(0.1);
+
+                        var x = d3.scaleLinear()
+                            .range([0, width]);
+
+                        // append the svg object to the body of the page
+                        // append a 'group' element to 'svg'
+                        // moves the 'group' element to the top left margin
+                        var svg = d3.select(".year_report").append("svg")
+                            .attr("width", width + margin.left + margin.right)
+                            .attr("height", height + margin.top + margin.bottom)
+                            .append("g")
+                            .attr("transform",
+                                "translate(" + margin.left + "," + margin.top + ")");
+
+                        // format the data
+                        data.forEach(function (d) {
+                            d.Frequency = +d.Frequency;
+                        });
+
+                        // Scale the range of the data in the domains
+                        x.domain([0, d3.max(data, function (d) { return d.Frequency; })])
+                        y.domain(data.map(function (d) { return d.Alarm_Description; }));
+                        //y.domain([0, d3.max(data, function(d) { return d.sales; })]);
+
+                        // append the rectangles for the bar chart
+                        svg.selectAll(".bar")
+                            .data(data)
+                            .enter().append("rect")
+                            .attr("class", "bar")
+                            //.attr("x", function(d) { return x(d.sales); })
+                            .attr("width", function (d) { return x(d.Frequency); })
+                            .attr("y", function (d) { return y(d.Alarm_Description); })
+                            .attr("height", y.bandwidth());
+
+                        // add the x Axis
+                        svg.append("g")
+                            .attr("transform", "translate(0," + height + ")")
+                            .call(d3.axisBottom(x));
+
+                        // add the y Axis
+                        svg.append("g")
+                            .call(d3.axisLeft(y));
+                    }
+                    else {
+                        $(".year_report").empty();
+                        var div_width = 400;
+                        var div_height = 400;
+                        var svg = d3.select(".year_report").append("svg")
+                            .attr("width", div_width)
+                            .attr("height", div_height)
+                            .attr("preserveAspectRatio", "xMidYMid")
+                            .append("g")
+                            .attr("transform", "translate(" + (div_width / 2 - 50) + "," + (div_height / 2 - 50) + ")");
+
+                        svg.append("text")
+                            .text("No Data Available")
+                            .style("font-size", "40px");
+                    }
+                },
+                error: function (response) {
+
+                }
+            });
+                    }).error(function (response) {
+                        if (response.status == "401") {
+                            swal({
+                                icon: "warning",
+                                title: "Session Timeout",
+                                button: true,
+                                closeModal: false
+                            })
+                            window.location = R_url;
+                        }
+                        else {
+                            swal({
+                                icon: "warning",
+                                title: response.responseText,
+                                button: true,
+                                closeModal: false
+                            })
+
+                        }
+                    });
+        }
+
+    })
+
+    document.getElementById("searchmonthwise").addEventListener("click", function () {
+      
+        var linecode = $('#linecode').val();
+        var machinecode = $('#machinecode').val();
+        var month = $('#month').val();
+
+        if (linecode == '') {
+            swal({
+                icon: "error",
+                title: "Please Provide Line details",
+                button: false,
+                timer: 4500
+            })
+        }
+        else if (machinecode == '') {
+                swal({
+                    icon: "error",
+                    title: "Please Provide Machine details",
+                    button: false,
+                    timer: 4500
+                })
+        }
+        else if (month == '') {
+                swal({
+                    icon: "error",
+                    title: "Please Provide Month",
+                    button: false,
+                    timer: 4500
+                })
+        }
+        else
+        {
+            var myData = {
+                "line": linecode,
+                "Machine": machinecode,
+                "Year": month,
+                "CompanyCode": '@Session["CompanyCode"]',
+                "PlantCode": '@Session["PlantCode"]'
+            };
+             var R_url = '@Url.Action("Login", "Main")';
+                   var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+                    $.ajax({
+                        type: 'Get',
+                        url: URL + 'api/UserSettings/GetEmployee',
+                        headers: {
+                            Authorization: 'Bearer ' + user1
+                        },
+                        dataType: 'json'
+                    }).success(function (response) {
+            $.ajax({
+                type: "POST",
+                url: URL + 'api/Paretoanalysis/GetMOA_MonthwiseReport',
+                data: myData,
+                dataType: "json",
+                beforeSend: function () {
+                    $('.loading').show();
+                },
+                complete: function () {
+                    $('.loading').hide();
+                },
+                success: function (response) {
+                    d3.select(".monthly_report svg").remove();
+                    $('#monthly_line').text(linecode);
+                    $('#monthly_subsystem').text(machinecode);
+                    if (response.status != "Error") {
+                        var data = response.data.Table;
+                        var margin = { top: 20, right: 50, bottom: 30, left: 300 },
+                            width = 960 - margin.left - margin.right,
+                            height = 800 - margin.top - margin.bottom;
+                        // set the ranges
+                        var y = d3.scaleBand()
+                            .range([height, 0])
+                            .padding(0.1);
+
+                        var x = d3.scaleLinear()
+                            .range([0, width]);
+
+                        // append the svg object to the body of the page
+                        // append a 'group' element to 'svg'
+                        // moves the 'group' element to the top left margin
+                        var svg = d3.select(".monthly_report").append("svg")
+                            .attr("width", width + margin.left + margin.right)
+                            .attr("height", height + margin.top + margin.bottom)
+                            .append("g")
+                            .attr("transform",
+                                "translate(" + margin.left + "," + margin.top + ")");
+
+                        // format the data
+                        data.forEach(function (d) {
+                            d.Frequency = +d.Frequency;
+                        });
+
+                        // Scale the range of the data in the domains
+                        x.domain([0, d3.max(data, function (d) { return d.Frequency; })])
+                        y.domain(data.map(function (d) { return d.Alarm_Description; }));
+                        //y.domain([0, d3.max(data, function(d) { return d.sales; })]);
+
+                        // append the rectangles for the bar chart
+                        svg.selectAll(".bar")
+                            .data(data)
+                            .enter().append("rect")
+                            .attr("class", "bar")
+                            //.attr("x", function(d) { return x(d.sales); })
+                            .attr("width", function (d) { return x(d.Frequency); })
+                            .attr("y", function (d) { return y(d.Alarm_Description); })
+                            .attr("height", y.bandwidth());
+
+                        // add the x Axis
+                        svg.append("g")
+                            .attr("transform", "translate(0," + height + ")")
+                            .call(d3.axisBottom(x));
+
+                        // add the y Axis
+                        svg.append("g")
+                            .call(d3.axisLeft(y));
+                    }
+                    else
+                    {
+                        $(".monthly_report").empty();
+                        var div_width = 400;
+                        var div_height = 400;
+                        var svg = d3.select(".monthly_report").append("svg")
+                            .attr("width", div_width)
+                            .attr("height", div_height)
+                            .attr("preserveAspectRatio", "xMidYMid")
+                            .append("g")
+                            .attr("transform", "translate(" + (div_width / 2 - 50) + "," + (div_height / 2 - 50) + ")");
+
+                        svg.append("text")
+                            .text("No Data Available")
+                            .style("font-size", "40px");
+                    }
+
+                },
+                error: function (response) {
+
+                }
+            });
+                    }).error(function (response) {
+                        if (response.status == "401") {
+                            swal({
+                                icon: "warning",
+                                title: "Session Timeout",
+                                button: true,
+                                closeModal: false
+                            })
+                            window.location = R_url;
+                        }
+                        else {
+                            swal({
+                                icon: "warning",
+                                title: response.responseText,
+                                button: true,
+                                closeModal: false
+                            })
+
+                        }
+                    });
+        }
+    
+    })
+
+</script>
+
