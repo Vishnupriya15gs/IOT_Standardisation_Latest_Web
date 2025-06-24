@@ -1062,7 +1062,7 @@
                                                 </a>
                                             </li>
                                         }
-                                        @if (ViewContext.Controller.HasPermission("ProductionPlan-View"))
+                                        @*@if (ViewContext.Controller.HasPermission("ProductionPlan-View"))
                                         {
                                             <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Target_Production" ? "nav-active " : "")">
                                                 <a href="@Url.Action("Target_Production", "UserSettings")">
@@ -1070,7 +1070,7 @@
                                                     <span>Production Plan</span>
                                                 </a>
                                             </li>
-                                        }
+                                        }*@
 
                                         @*Standardisation*@ 
 
@@ -1111,7 +1111,7 @@
                                                 </a>
                                             </li>
                                         }
-                                        @if (ViewContext.Controller.HasPermission("SkillSetting-View"))
+                                        @*@if (ViewContext.Controller.HasPermission("SkillSetting-View"))
                                         {
                                             <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Skill_settings" ? "nav-active " : "")">
                                                 <a href="@Url.Action("Skill_settings", "UserSettings")">
@@ -1119,7 +1119,7 @@
                                                     <span>Skill Data</span>
                                                 </a>
                                             </li>
-                                        }
+                                        }*@
                                         @if (ViewContext.Controller.HasPermission("ToolListSetting-View"))
                                         {
                                             <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Tool_list" ? "nav-active " : "")">
