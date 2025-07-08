@@ -81,14 +81,14 @@
                     </div>
                     @*<label class="col-sm-2 control-label" style="right: 75px;top: 5px;"> Shift  <span class="required">*</span></label>*@
                     @*<div class="col-sm-2" style="right: 90px;">
-                        <select id="Shift_id" class="form-control">
-                            <option value="0">Select</option>
-                            <option value="All">All</option>
-                            <option value="S1">S1</option>
-                            <option value="S2">S2</option>
-                            <option value="S3">S3</option>
-                        </select>
-                    </div>*@
+                            <select id="Shift_id" class="form-control">
+                                <option value="0">Select</option>
+                                <option value="All">All</option>
+                                <option value="S1">S1</option>
+                                <option value="S2">S2</option>
+                                <option value="S3">S3</option>
+                            </select>
+                        </div>*@
 
                     <div class="col-sm-4" style="float:right;"> <span style="font-weight:bold;font-size:13px;">Note : Select Less than 2 days to see all instance of particular alarm</span> </div>
 
@@ -121,29 +121,29 @@
                     <div class="panel-body">
                         @if (ViewContext.Controller.HasPermission("AlarmAnalysis-View"))
                         {
-            <table class="table table-bordered table-striped mb-none" id="datatable_default">
-                <thead style="background-color:teal;color:white;">
-                    <tr>
-                        <th class="centercls text-center"> S No </th>
-                        @*<th>Start Time</th>*@
-                        <th class="text-center">Machine</th>
-                        @*<th class="text-center">Alarm ID </th>*@  @*Removed for PLC Standardisation 29-03-2025*@
-                        <th class="text-center">Alarm Description</th>
-                        <th class="text-center">Total Duration (Minutes)</th>
-                        <th class="text-center">Occurence</th>
-                        <th class="text-center">Last Timestamp</th>
-                        @*<th style="display:none;"> id </th>*@
-                        <th class="text-center"> Help</th>
+                            <table class="table table-bordered table-striped mb-none" id="datatable_default">
+                                <thead style="background-color:teal;color:white;">
+                                    <tr>
+                                        <th class="centercls text-center"> S No </th>
+                                        @*<th>Start Time</th>*@
+                                        <th class="text-center">Machine</th>
+                                        <th class="text-center">Alarm ID </th>
+                                        @*<th class="text-center">Alarm Description</th>*@
+                                        <th class="text-center">Total Duration (Minutes)</th>
+                                        <th class="text-center">Occurence</th>
+                                        <th class="text-center">Last Timestamp</th>
+                                        <th style="display:none;"> id </th>
+                                        <th class="text-center"> Help</th>
 
-                        @*<th>FromDate</th>
-        <th>Todate</th>*@
-                    </tr>
-                </thead>
-                <tbody class="Historic_details"></tbody>
-            </table> }
-        else
-        {
-<h2>View Permission is denied</h2>}
+                                        @*<th>FromDate</th>
+                                            <th>Todate</th>*@
+                                    </tr>
+                                </thead>
+                                <tbody class="Historic_details"></tbody>
+                            </table> }
+                        else
+                        {
+                            <h2>View Permission is denied</h2>}
 
                     </div>
 
@@ -257,6 +257,7 @@
 
 
     function update_subtable(alarmID) {
+        debugger
         //$('#datatable_default tbody tr').each(function (e) {
             //var alarm_id = $(this).find('.Alarm_ID').val();
             var alarm_id = alarmID;
@@ -302,13 +303,13 @@
                         $('.loading').hide();
                     },
                     success: function (response1) {
-                        console.log(response1);
+                        console.log(response1, "Initial response Historic_sub");
                         tbl += "<div>"
                             + "<table cellpadding='0' cellspacing='0' class='ChildGrid'>"
                             + "<tr>"
                             + "<th>S.No </th>"
-                            /*+ "<th>Alarm ID</th>"*/
-                            + "<th>Alarm Description</th>"
+                            + "<th>Alarm ID</th>"
+                            //+ "<th>Alarm Description</th>"
                             + "<th>Start Time</th>"
                             + "<th>End Time</th>"
                             + "<th>Total Duration(Minutes)</th>"
@@ -319,8 +320,8 @@
                             console.log(response1.data.Table.length);
                             tbl += "<tr>"
                                 + "<td> " + j + " </td> "
-                                /*+ "<td>" + response1.data.Table[ii].Alarm_ID + "</td>"*/
-                                + "<td>" + response1.data.Table[ii].Alarm_Description + "</td>"
+                                + "<td>" + response1.data.Table[ii].Alarm_ID + "</td>"
+                                //+ "<td>" + response1.data.Table[ii].Alarm_Description + "</td>"
                                 + "<td>" + response1.data.Table[ii].Start_Time + "</td>"
                                 + "<td>" + response1.data.Table[ii].End_Time + "</td>"
                                 + "<td>" + response1.data.Table[ii].tot_duration + "</td>"
@@ -331,12 +332,14 @@
                             + "</div>";
                         //console.log($(this));
                         $('#datatable_default tbody tr').find('.sub_table_data').html(tbl);
+                        console.log("Im here");
+                        console.log(response1.data);
                     },
                     error: function (response1) {
 
                     }
                 });
-                
+
             }
         //});
 
@@ -422,8 +425,8 @@
                             }
 
                             cols += "<td class='text-center'> <input type='hidden' class='Machine_Code' value='" + response.data.Table[i].Machine_Code + "' /> " + response.data.Table[i].Machine_Code + "  </td> ";
-                            /*cols += "<td class='text-center'> <input type='hidden' class='Alarm_ID' value='" + response.data.Table[i].Alarm_ID + "' /> " + response.data.Table[i].Alarm_ID + "</td> ";*/
-                            cols += "<td class='text-center'> " + response.data.Table[i].Alarm_Description + "</td> ";
+                            cols += "<td class='text-center'> <input type='hidden' class='Alarm_ID' value='" + response.data.Table[i].Alarm_ID + "' /> " + response.data.Table[i].Alarm_ID + "</td> ";
+                            //cols += "<td class='text-center'> " + response.data.Table[i].Alarm_Description + "</td> ";
                             cols += "<td class='text-center'> " + response.data.Table[i].tot_duration + "</td> ";
                             cols += "<td class='text-center'> " + response.data.Table[i].no_of_times + "</td> ";
                             cols += "<td class='text-center'> " + response.data.Table[i].last_time + "</td> ";
@@ -629,23 +632,91 @@
 
 </script>
 
+@*<script type="text/javascript">
+        //Assign Click event to Plus Image.
+        $("body").on("click", "img[src*='plus02.png']", function () {
+            if (!$(this).data("valuePrinted")) {
+                var value = $(this).attr("value");
+                var parentTr = $(this).closest('tr');
+                var parentClass = parentTr.attr('class');
+                console.log(parentTr); // Print the value
+                update_subtable(value);
+                $(this).data("valuePrinted", true); // Set a flag on this image to indicate the value has been printed
+            }
+            $(this).closest("tr").after("<tr><td></td><td colspan = '999' class='sub_table_data'>" + $(this).next().html() + "</td></tr>");
+            $(this).attr("src", "../Images/minus02.png");
+        });
+        //Assign Click event to Minus Image.
+        $("body").on("click", "img[src*='minus02.png']", function () {
+            $(this).attr("src", "../Images/plus02.png");
+            $(this).closest("tr").next().remove();
+        });
+    </script>*@
+
+@*<script type="text/javascript">*@
+@*//automatically closing but prev data not updating properly
+    // Assign Click event to Plus Image.
+    //$("body").on("click", "img[src*='plus02.png']", function () {
+    //    // First, close any already open sub-table rows
+    //    $("img[src*='minus02.png']").each(function () {
+    //        $(this).attr("src", "../Images/plus02.png"); // Change icon back
+    //        $(this).closest("tr").next().remove();       // Remove sub-row
+    //    });
+
+    //    // Continue with normal operation for this image
+    //    if (!$(this).data("valuePrinted")) {
+    //        var value = $(this).attr("value");
+    //        var parentTr = $(this).closest('tr');
+    //        var parentClass = parentTr.attr('class');
+    //        console.log(parentTr); // Debug print
+    //        update_subtable(value);
+    //        $(this).data("valuePrinted", true);
+    //    }
+
+    //    // Insert the sub-table row after this row
+    //    $(this).closest("tr").after("<tr><td></td><td colspan='999' class='sub_table_data'>" + $(this).next().html() + "</td></tr>");
+    //    $(this).attr("src", "../Images/minus02.png");
+    //});
+
+    //// Assign Click event to Minus Image.
+    //$("body").on("click", "img[src*='minus02.png']", function () {
+    //    $(this).attr("src", "../Images/plus02.png");
+    //    $(this).closest("tr").next().remove();*@
+@*//});*@
+@*</script>*@
 <script type="text/javascript">
-    //Assign Click event to Plus Image.
     $("body").on("click", "img[src*='plus02.png']", function () {
-        if (!$(this).data("valuePrinted")) {
-            var value = $(this).attr("value");
-            var parentTr = $(this).closest('tr'); 
-            var parentClass = parentTr.attr('class');
-            console.log(parentTr); // Print the value
-            update_subtable(value);
-            $(this).data("valuePrinted", true); // Set a flag on this image to indicate the value has been printed
-        }
-        $(this).closest("tr").after("<tr><td></td><td colspan = '999' class='sub_table_data'>" + $(this).next().html() + "</td></tr>");
-        $(this).attr("src", "../Images/minus02.png");
+        var $img = $(this);
+        var $currentTr = $img.closest("tr");
+
+        // Close all open sub-tables
+        $("img[src*='minus02.png']").each(function () {
+            $(this).attr("src", "../Images/plus02.png");  // Reset icon
+            $(this).closest("tr").next(".sub_table_row").remove(); // Remove sub-row
+            $(this).removeData("valuePrinted"); // Reset flag so it reloads if clicked again
+        });
+
+        // Get value and parent row
+        var value = $img.attr("value");
+
+        // Always fetch new data
+        update_subtable(value); // You may need to make this async if it loads data dynamically
+
+        // Add new sub-table row
+        var subTableHtml = "<tr class='sub_table_row'><td></td><td colspan='999' class='sub_table_data'>" + $img.next().html() + "</td></tr>";
+        $currentTr.after(subTableHtml);
+
+        // Change icon
+        $img.attr("src", "../Images/minus02.png");
+        $img.data("valuePrinted", true); // Optional — in case you still want to track it
     });
-    //Assign Click event to Minus Image.
+
+    // Handle click on minus icon (collapse row)
     $("body").on("click", "img[src*='minus02.png']", function () {
-        $(this).attr("src", "../Images/plus02.png");
-        $(this).closest("tr").next().remove();
+        var $img = $(this);
+        $img.attr("src", "../Images/plus02.png");
+        $img.closest("tr").next(".sub_table_row").remove();
+        $img.removeData("valuePrinted"); // Allow reloading when clicked again
     });
+
 </script>

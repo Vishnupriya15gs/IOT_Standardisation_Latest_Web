@@ -681,14 +681,14 @@
                                                                 <span>Tool Life Monitoring</span>
                                                             </a>
                                                             <ul class="nav nav-children" style="">
-                                                                @if (ViewContext.Controller.HasPermission("Toollife_Historic-View"))
+                                                                @*@if (ViewContext.Controller.HasPermission("Toollife_Historic-View"))
                                                                 {
                                                                     <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "ToolLifeHistoricDashboard" ? "active_n" : "")">
                                                                         <a href="@Url.Action("ToolLifeHistoricDashboard", "ToolLife")">
                                                                             <span>Historic View</span>
                                                                         </a>
                                                                     </li>
-                                                                }
+                                                                }*@
                                                                 @if (ViewContext.Controller.HasPermission("Toollife_Preventive-View"))
                                                                 {
                                                                     <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "NewMaintanenceDash" ? "active_n" : "")">

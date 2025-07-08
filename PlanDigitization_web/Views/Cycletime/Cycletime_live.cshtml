@@ -291,11 +291,11 @@
                                             if (result.data.Table[ii].Operations == col[j])
                                             {
                                                 if (result.data.Table[ii].cycle != null && result.data.Table[ii].cycle != '' && result.data.Table[ii].cycle != '0') {
-                                                    tabCell.innerText = Live_data[i][col[j]] + " / " + (Live_data[i][col[j]] - result.data.Table[ii].cycle);
+                                                    tabCell.innerText = Live_data[i][col[j]];// + " / " + (Live_data[i][col[j]] - result.data.Table[ii].cycle);
 
                                                 }
                                                 else {
-                                                    tabCell.innerText = Live_data[i][col[j]] + " / " + (result.data.Table[ii].cycle);
+                                                    tabCell.innerText = Live_data[i][col[j]];// + " / " + (result.data.Table[ii].cycle);
                                                     //tot_cycle += (Live_data[i][col[j]]);
                                                 }
                                                 count += 1;
@@ -525,11 +525,11 @@
                                             if (result.data.Table[ii].Operations == col[j])
                                             {
                                                 if (result.data.Table[ii].cycle != null && result.data.Table[ii].cycle != '') {
-                                                    tabCell.innerText = Live_data[i][col[j]] + " / " + (Live_data[i][col[j]] - result.data.Table[ii].cycle);
+                                                    tabCell.innerText = Live_data[i][col[j]];// + " / " + (Live_data[i][col[j]] - result.data.Table[ii].cycle);
                                                     //tot_cycle += parseFloat(Live_data[i][col[j]]);
                                                 }
                                                 else {
-                                                    tabCell.innerText = Live_data[i][col[j]] + " / " + (result.data.Table[ii].cycle);
+                                                    tabCell.innerText = Live_data[i][col[j]];// + " / " + (result.data.Table[ii].cycle);
                                                    // tot_cycle += (Live_data[i][col[j]]);
                                                 }
                                                 count += 1;
