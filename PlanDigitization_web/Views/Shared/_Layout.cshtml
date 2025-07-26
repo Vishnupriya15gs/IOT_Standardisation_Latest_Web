@@ -532,18 +532,24 @@
                         <nav id="menu" class="nav-main" role="navigation">
                             <ul class="nav nav-main hide-nav">
                                 <li>
-                                    <a href="@Url.Action("MainDashboard", "MainDashboard")">
+                                    <a href="@Url.Action("OverallOEE", "OverallOEE")">
                                         <i class="fa fa-home" aria-hidden="true"></i>
-                                        <span>Main Dashboard</span>
+                                        <span>MainDashboard</span>
                                     </a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("MainDashboard", "MainDashboard")">
+                                        <i class="fa fa-picture-o" aria-hidden="true"></i>
+                                        <span>Dashboard</span>
+                                    </a>  
                                 </li>
 
                                 @*<li>
-                                        <a href="@Url.Action("cbm", "#")">
-                                            <i class="fa fa-building" aria-hidden="true"></i>
-                                            <span>CBM</span>
-                                        </a>
-                                    </li>*@
+            <a href="@Url.Action("cbm", "#")">
+                <i class="fa fa-building" aria-hidden="true"></i>
+                <span>CBM</span>
+            </a>
+        </li>*@
                                 <li id="hidecbm" style="display:none">
                                     <a href="#" id="redirect-link">
                                         <i class="fa fa-building" aria-hidden="true"></i>
@@ -682,13 +688,13 @@
                                                             </a>
                                                             <ul class="nav nav-children" style="">
                                                                 @*@if (ViewContext.Controller.HasPermission("Toollife_Historic-View"))
-                                                                {
-                                                                    <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "ToolLifeHistoricDashboard" ? "active_n" : "")">
-                                                                        <a href="@Url.Action("ToolLifeHistoricDashboard", "ToolLife")">
-                                                                            <span>Historic View</span>
-                                                                        </a>
-                                                                    </li>
-                                                                }*@
+                                        {
+                                            <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "ToolLifeHistoricDashboard" ? "active_n" : "")">
+                                                <a href="@Url.Action("ToolLifeHistoricDashboard", "ToolLife")">
+                                                    <span>Historic View</span>
+                                                </a>
+                                            </li>
+                                        }*@
                                                                 @if (ViewContext.Controller.HasPermission("Toollife_Preventive-View"))
                                                                 {
                                                                     <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "NewMaintanenceDash" ? "active_n" : "")">
@@ -758,27 +764,27 @@
                                             <i class="fa fa-clock-o" aria-hidden="true"></i>
                                             <span>Alarm Screen </span>
                                         </a>
-                                        @*Standardisation*@ 
+                                        @*Standardisation*@
 
                                         @*@if (ViewContext.Controller.HasPermission("AlarmSetting-View"))
-                                        {
-                                            <ul class="nav nav-children ">
-                                                <li class="nav-parent @(ViewContext.RouteData.Values["Action"].ToString() == "Alarm_data" ? "nav-expanded " : "") ">
-                                                    <a>
-                                                        <span style="color:lightseagreen">Settings</span>
-                                                    </a>
+                {
+                    <ul class="nav nav-children ">
+                        <li class="nav-parent @(ViewContext.RouteData.Values["Action"].ToString() == "Alarm_data" ? "nav-expanded " : "") ">
+                            <a>
+                                <span style="color:lightseagreen">Settings</span>
+                            </a>
 
-                                                    <ul class="nav nav-children">
-                                                        <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Alarm_data" ? "active_n" : "")">
-                                                            <a href="@Url.Action("Alarm_data", "UserSettings")">
-                                                                <span>Alarms Settings</span>
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </li>
-                                            </ul>
-                                        }*@
-                                      
+                            <ul class="nav nav-children">
+                                <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Alarm_data" ? "active_n" : "")">
+                                    <a href="@Url.Action("Alarm_data", "UserSettings")">
+                                        <span>Alarms Settings</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                }*@
+
                                         @if (ViewContext.Controller.HasPermission("AlarmAnalysis-View"))
                                         {
                                             <ul class="nav nav-children ">
@@ -814,48 +820,48 @@
                                             <span>Losses </span>
                                         </a>
 
-                                        @*Standardisation*@ 
+                                        @*Standardisation*@
 
                                         @*@if (ViewContext.Controller.HasPermission("LossesSetting-View") ||
-                                        ViewContext.Controller.HasPermission("Loss_type-View") ||
-                                        ViewContext.Controller.HasPermission("Loss_category-View"))
-                                        {
-                                            <ul class="nav nav-children ">
-                                                <li class="nav-parent @(ViewContext.RouteData.Values["Action"].ToString() == "Losses_data" ? "nav-expanded " : "")
-                                                @(ViewContext.RouteData.Values["Action"].ToString() == "Losstype_data" ? "nav-expanded " : "")
-                                                @(ViewContext.RouteData.Values["Action"].ToString() == "Losscategory_data" ? "nav-expanded " : "")">
-                                                    <a>
-                                                        <span style="color:lightseagreen">Settings</span>
-                                                    </a>
-                                                    <ul class="nav nav-children">
-                                                        @if (ViewContext.Controller.HasPermission("LossesSetting-View"))
-                                                        {
-                                                            <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Losses_data" ? "active_n" : "")">
-                                                                <a href="@Url.Action("Losses_data", "UserSettings")">
-                                                                    <span>Loss Settings</span>
-                                                                </a>
-                                                            </li>
-                                                        }
-                                                        @if (ViewContext.Controller.HasPermission("Loss_type-View"))
-                                                        {
-                                                            <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Losstype_data" ? "active_n" : "")">
-                                                                <a href="@Url.Action("Losstype_data", "UserSettings")">
-                                                                    <span>Loss Type Settings</span>
-                                                                </a>
-                                                            </li>
-                                                        }
-                                                        @if (ViewContext.Controller.HasPermission("Loss_category-View"))
-                                                        {
-                                                            <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Losscategory_data" ? "active_n" : "")">
-                                                                <a href="@Url.Action("Losscategory_data", "UserSettings")">
-                                                                    <span>Loss Category Settings</span>
-                                                                </a>
-                                                            </li>
-                                                        }
-                                                    </ul>
-                                                </li>
-                                            </ul>
-                                        }*@
+                ViewContext.Controller.HasPermission("Loss_type-View") ||
+                ViewContext.Controller.HasPermission("Loss_category-View"))
+                {
+                    <ul class="nav nav-children ">
+                        <li class="nav-parent @(ViewContext.RouteData.Values["Action"].ToString() == "Losses_data" ? "nav-expanded " : "")
+                        @(ViewContext.RouteData.Values["Action"].ToString() == "Losstype_data" ? "nav-expanded " : "")
+                        @(ViewContext.RouteData.Values["Action"].ToString() == "Losscategory_data" ? "nav-expanded " : "")">
+                            <a>
+                                <span style="color:lightseagreen">Settings</span>
+                            </a>
+                            <ul class="nav nav-children">
+                                @if (ViewContext.Controller.HasPermission("LossesSetting-View"))
+                                {
+                                    <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Losses_data" ? "active_n" : "")">
+                                        <a href="@Url.Action("Losses_data", "UserSettings")">
+                                            <span>Loss Settings</span>
+                                        </a>
+                                    </li>
+                                }
+                                @if (ViewContext.Controller.HasPermission("Loss_type-View"))
+                                {
+                                    <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Losstype_data" ? "active_n" : "")">
+                                        <a href="@Url.Action("Losstype_data", "UserSettings")">
+                                            <span>Loss Type Settings</span>
+                                        </a>
+                                    </li>
+                                }
+                                @if (ViewContext.Controller.HasPermission("Loss_category-View"))
+                                {
+                                    <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Losscategory_data" ? "active_n" : "")">
+                                        <a href="@Url.Action("Losscategory_data", "UserSettings")">
+                                            <span>Loss Category Settings</span>
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                    </ul>
+                }*@
 
                                         @if (ViewContext.Controller.HasPermission("Loss_Historic-View"))
                                         {
@@ -938,6 +944,7 @@
                                                 </li>
                                             </ul>
                                         }
+
 
                                     </li>
                                 }
@@ -1033,7 +1040,7 @@
                                                 </a>
                                             </li>
                                         }
-                                       
+
                                         @if (ViewContext.Controller.HasPermission("PlantSetting-View"))
                                         {
                                             <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Plant_details" ? "nav-active " : "")">
@@ -1063,26 +1070,26 @@
                                             </li>
                                         }
                                         @*@if (ViewContext.Controller.HasPermission("ProductionPlan-View"))
-                                        {
-                                            <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Target_Production" ? "nav-active " : "")">
-                                                <a href="@Url.Action("Target_Production", "UserSettings")">
-                                                    <i class="fa fa-ge" aria-hidden="true"></i>
-                                                    <span>Production Plan</span>
-                                                </a>
-                                            </li>
-                                        }*@
+                {
+                    <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Target_Production" ? "nav-active " : "")">
+                        <a href="@Url.Action("Target_Production", "UserSettings")">
+                            <i class="fa fa-ge" aria-hidden="true"></i>
+                            <span>Production Plan</span>
+                        </a>
+                    </li>
+                }*@
 
-                                        @*Standardisation*@ 
+                                        @*Standardisation*@
 
                                         @*@if (ViewContext.Controller.HasPermission("RejectionDataSetting-View"))
-                                        {
-                                            <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Rejection_data" ? "nav-active " : "")">
-                                                <a href="@Url.Action("Rejection_data", "UserSettings")">
-                                                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
-                                                    <span>Rejection Reasons</span>
-                                                </a>
-                                            </li>
-                                        }*@
+                {
+                    <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Rejection_data" ? "nav-active " : "")">
+                        <a href="@Url.Action("Rejection_data", "UserSettings")">
+                            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                            <span>Rejection Reasons</span>
+                        </a>
+                    </li>
+                }*@
                                         @if (ViewContext.Controller.HasPermission("ReportMailSettings-View"))
                                         {
                                             <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Mail_settings" ? "nav-active " : "")">
@@ -1112,14 +1119,14 @@
                                             </li>
                                         }
                                         @*@if (ViewContext.Controller.HasPermission("SkillSetting-View"))
-                                        {
-                                            <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Skill_settings" ? "nav-active " : "")">
-                                                <a href="@Url.Action("Skill_settings", "UserSettings")">
-                                                    <i class="fa fa-anchor" aria-hidden="true"></i>
-                                                    <span>Skill Data</span>
-                                                </a>
-                                            </li>
-                                        }*@
+                {
+                    <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Skill_settings" ? "nav-active " : "")">
+                        <a href="@Url.Action("Skill_settings", "UserSettings")">
+                            <i class="fa fa-anchor" aria-hidden="true"></i>
+                            <span>Skill Data</span>
+                        </a>
+                    </li>
+                }*@
                                         @if (ViewContext.Controller.HasPermission("ToolListSetting-View"))
                                         {
                                             <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Tool_list" ? "nav-active " : "")">
@@ -1141,7 +1148,7 @@
                                     </ul>
                                 </li>
 
-                               
+
 
                                 <!----------- MIS Report ------>
 
@@ -1483,7 +1490,7 @@
                         window.location = '@Url.Action("FactoryKPIIndex", "FactoryKPI")';
                     }*@
 
-                    window.location = '@Url.Action("MainDashboard", "MainDashboard")';
+                    window.location = '@Url.Action("OverallOEE", "OverallOEE")';
 
                 },
                 error: function (response) {
@@ -1534,7 +1541,7 @@
                     else {
                         window.location = '@Url.Action("FactoryKPIIndex", "FactoryKPI")';
                     }*@
-                    window.location = '@Url.Action("MainDashboard", "MainDashboard")';
+                    window.location = '@Url.Action("OverallOEE", "OverallOEE")';
                 },
                 error: function (response) {
                 }
@@ -1855,7 +1862,7 @@
                                 error: function (response) {
                                 }
                             });
-                      if (PlantCode != '' && Company != '') { return; } else {window.location = '@Url.Action("MainDashboard", "MainDashboard")';}
+                      if (PlantCode != '' && Company != '') { return; } else {window.location = '@Url.Action("OverallOEE", "OverallOEE")';}
 
                         }
                         else {

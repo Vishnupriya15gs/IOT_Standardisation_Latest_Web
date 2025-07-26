@@ -310,6 +310,7 @@
     <Compile Include="Controllers\MisReportController.cs" />
     <Compile Include="Controllers\MisReportWebController.cs" />
     <Compile Include="Controllers\OEEController.cs" />
+    <Compile Include="Controllers\OverallOEEController.cs" />
     <Compile Include="Controllers\ParetoanalysisController.cs" />
     <Compile Include="Controllers\QualityController.cs" />
     <Compile Include="Controllers\RBACController.cs" />
@@ -4297,6 +4298,7 @@
     <Content Include="Scripts\Main\Line_details.js" />
     <Content Include="Scripts\md5.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\OverallOEE\OverallOEE.js" />
     <Content Include="Scripts\pareto-chart.js" />
     <Content Include="Scripts\Shared\Layout.js" />
     <Content Include="Scripts\Shiftwise_production\common.js" />
@@ -4318,6 +4320,7 @@
     <Content Include="StyleSheets\Line Overview\Production\table.css" />
     <Content Include="StyleSheets\Line Overview\Production\table_simple.css" />
     <Content Include="StyleSheets\Line Overview\tabs.css" />
+    <Content Include="StyleSheets\OverallOEE\OverallOEE.css" />
     <Content Include="StyleSheets\root.css" />
     <Content Include="StyleSheets\Tables\table.css" />
     <Content Include="StyleSheets\Tables\table_pagination.css" />
@@ -4439,6 +4442,7 @@
     <Content Include="Views\LineOverview\Production.cshtml" />
     <Content Include="Views\LineOverView_Quality\QualityDashboard.cshtml" />
     <Content Include="Views\UserSettings\TargetProductionPlan.cshtml" />
+    <Content Include="Views\OverallOEE\OverallOEE.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

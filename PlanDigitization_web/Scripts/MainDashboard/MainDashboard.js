@@ -2524,6 +2524,8 @@ function carouselMachine() {
 
 							];
 
+
+
 							var totalCal = response.data.Table[machine_no1].Uptime + response.data.Table[machine_no1].Losstime + response.data.Table[machine_no1].Downtime + response.data.Table[machine_no1].Breaktime + response.data.Table[machine_no1].DLK_to_PLC_Disconnect_time;
 							var text = "";
 							var width = 90;

@@ -33,51 +33,7 @@
     </h2>
     <div class="right-wrapper pull-right">
         <ol class="breadcrumbs">
-            <!--<li class="breadcrumb-item">-->
-            @*<a href="@Url.Action("FactoryKPIIndex", "FactoryKPI")">
-                    <div id="lefttooltip">
-                        <img class="breadcrum-icon" src="~/assets1/images/FactoryIcon.png" />
-                        <span class="tooltiptexts">
-                            <span class="name">FactoryKPI</span>
-                        </span>
-                    </div>
-                </a>*@
-            <!--</li>-->
-            @*commented for Standardisation on 26th April 2025*@
-
-            @*<li class="breadcrumb-item">
-                    <a href="@Url.Action("Production", "LineOverview")">
-                        <div id="lefttooltip">
-                            <img class="breadcrum-icon" src="~/Images/LineOverview/LOicon.png" />
-                            <span class="tooltiptexts">
-                                <span class="name">Production Dashboard</span>
-                            </span>
-                        </div>
-                    </a>
-                </li>
-                <li class="breadcrumb-item">
-                    <a href="@Url.Action("QualityDashboard", "LineOverView_Quality")" class="">
-                        <div id="lefttooltip">
-                            <i class="fa fa-check-square-o"></i>
-                            <span class="tooltiptexts">
-                                <span class="name">Quality Dashboard</span>
-                            </span>
-                        </div>
-                    </a>
-                </li>*@
-
-            @*commented for Standardisation on 26th April 2025*@
-
-            @*<li class="breadcrumb-item">
-                    <a href="@Url.Action("Maintenance", "LineOverview")">
-                        <div id="lefttooltip">
-                            <i class="fa  fa-wrench"></i>
-                            <span class="tooltiptexts">
-                                <span class="name">Maintenance Dashboard</span>
-                            </span>
-                        </div>
-                    </a>
-                </li>*@
+         
         </ol>
     </div>
 
@@ -336,12 +292,6 @@
         </div>
     </div>
 
-
-
-
-
-
-
     <div id="myModalLatestAlarm" class="modal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-md">
             <div class="modal-content">
@@ -581,10 +531,6 @@
 
 
 
-
-
-
-
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryval")
 
@@ -609,7 +555,7 @@
         MainDashboard(URL, sURL, company, plant, line, R_url, user1);
     </script>
 }
-@if ((HttpContext.Current.Session["CompanyCode"] == null) || (HttpContext.Current.Session["CompanyCode"].ToString().Length == 0))
+@*@if ((HttpContext.Current.Session["CompanyCode"] == null) || (HttpContext.Current.Session["CompanyCode"].ToString().Length == 0))
 {
     <div>
         <br /><br />
@@ -630,6 +576,6 @@
         <br /><br />
         <label class="Selection_Condition">Select Line</label>
     </div>
-}
+}*@
 
 

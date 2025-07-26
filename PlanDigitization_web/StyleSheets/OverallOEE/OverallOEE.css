@@ -1,0 +1,545 @@
+﻿/* Tabs */
+.tabs {
+    margin-bottom: 10px;
+    display: flex;
+    gap: 1px;
+}
+
+.tab {
+    padding: 6px 20px;
+    cursor: pointer;
+    border: none;
+    background: #eee;
+    border-radius: 4px;
+    transition: background 0.3s;
+    font-weight: bold;
+    color: black;
+}
+
+    .tab.active {
+        background: #ccc;
+    }
+
+/* Tab Content */
+.tab-content {
+    
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #f9f9f9;
+    padding: 0px;
+}
+
+/* Card Grid: 7 columns, 2 rows */
+.card-container {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(2, auto);
+    /*gap: 20px;*/
+    
+}
+
+/* Card Styles */
+.card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    transition: transform 0.3s, box-shadow 0.3s;
+    background-repeat: no-repeat;
+    background-position: right top;
+    background-size: 80px;
+    min-width: 0;
+}
+
+    .card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 12px 20px rgba(0,0,0,0.12);
+    }
+
+    .card h3 {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    .card p {
+        font-size: 14px;
+        color: #555;
+    }
+
+/* Background images (optional per card) */
+.card-1 {
+    background-image: url('https://ionicframework.com/img/getting-started/ionic-native-card.png');
+}
+
+.card-2 {
+    background-image: url('https://ionicframework.com/img/getting-started/components-card.png');
+}
+
+.card-3,
+.card-4,
+.card-5,
+.card-6,
+.card-7 {
+    background-image: url('https://ionicframework.com/img/getting-started/theming-card.png');
+}
+
+/* Responsive fallback */
+@media (max-width: 1200px) {
+    .card-container {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .card-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 500px) {
+    .card-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+.card-header {
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.cards {
+    text-align: center;
+    margin-top: 20px;
+    background-color: antiquewhite;
+    padding: 0px 0; /* Vertical spacing inside card */
+    width: 100%; /* Optional: full width */
+    box-sizing: border-box;
+}
+/*.card-2 {
+    text-align: center;
+    margin-top: 20px;
+    background-color: darkslategrey;
+    padding: 0px 0;*/ /* Vertical spacing inside card */
+/*width: 100%;*/ /* Optional: full width */
+/*box-sizing: border-box;
+}*/
+
+.card-variant {
+    /*background-color: #0CEA4B;*/
+    color: #000000;
+    font-weight: 600;
+    padding: initial;
+    width: 100%; /* Full width of parent card */
+    max-width: 200px; /* Optional: for design constraint */
+    margin: 0 auto; /* Center the box */
+    box-sizing: border-box;
+    border-radius: 4px;
+    margin-top: auto;
+}
+
+
+
+.card-status {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column; /* Stack vertically */
+    align-items: center; /* Center horizontally */
+    gap: 10px; /* Space between OK and NOK */
+}
+
+.status {
+    padding: 6px 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    min-width: 80px;
+    text-align: center;
+}
+
+   
+/*
+oee*/
+.card-oee {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.oee-chart canvas {
+    max-width: 120px;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.oee-progress div {
+    font-size: 12px;
+    margin: 5px 0;
+}
+
+.oee-progress label {
+    display: inline-block;
+    width: 20px;
+    font-weight: bold;
+}
+
+.oee-progress progress {
+    width: 50%;
+    height: 10px;
+    vertical-align: middle;
+    margin: 0 10px;
+}
+
+
+.card-chart svg {
+    width: 100%;
+    height: 100%;
+}
+
+.progress-label {
+    font-size: 16px;
+    fill: black;
+    text-anchor: middle;
+}
+
+.progress-label1 {
+    font-size: 12px;
+    fill: gray;
+    text-anchor: middle;
+}
+
+
+
+.prec {
+    top: 30px;
+    position: relative;
+    font-size: 20px;
+    font-weight: normal;
+    color: #000;
+}
+
+    .prec b {
+        font-weight: bold;
+        margin-left: 4px;
+        margin-right: 10px;
+    }
+
+
+.circle {
+    position: relative;
+    top: 5px;
+    left: 5px;
+    text-align: center;
+    width: 100px;
+    height: 100px;
+    border-radius: 100%;
+    background-color: #E6F4F7;
+}
+
+.active-border {
+    position: relative;
+    left: 23px;
+    text-align: center;
+    width: 110px;
+    height: 110px;
+    border-radius: 100%;
+    background-color: #39B4CC;
+    background-image: linear-gradient(91deg, transparent 50%, #A2ECFB 50%), linear-gradient(90deg, #A2ECFB 50%, transparent 50%);
+}
+
+
+#cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 4px;
+    background-color: #e5e3e342;
+    /*min-height: 600px;*/
+}
+
+/* Bigger card style */
+.card.cards {
+    background: #f0f8ff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 30px 20px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    height: 180px;   
+    /*flex: 0 0 calc(100% / 6 - 20px);
+    max-width: calc(100% / 6 - 17px);*/
+    box-sizing: border-box;
+}
+
+/* 5 per row (medium desktop) */
+@media (max-width: 1199px) {
+    .card.cards {
+        flex: 0 0 calc(100% / 5 - 20px);
+        max-width: calc(100% / 5 - 20px);
+    }
+}
+
+/* 3 per row (tablet) */
+@media (max-width: 991px) {
+    .card.cards {
+        flex: 0 0 calc(100% / 3 - 20px);
+        max-width: calc(100% / 3 - 20px);
+    }
+}
+
+/* 2 per row (mobile) */
+@media (max-width: 767px) {
+    .card.cards {
+        flex: 0 0 calc(100% / 2 - 20px);
+        max-width: calc(100% / 2 - 20px);
+    }
+}
+
+/* 1 per row (extra small) */
+@media (max-width: 480px) {
+    .card.cards {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+
+
+
+.card.cards {
+    /*width: 193px;*/
+    width: 228px;
+    height: 250px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 0px 0px 0px 0px;
+    margin: 3px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: inline-block;
+    vertical-align: top;
+    text-align: center;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.card-title {
+    font-size: 15px;
+    font-weight: bold;
+   /* background-color: #4faf4c;*/
+   
+}
+
+.card-variant {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 10px;
+}
+
+.oee-chart-container {
+    margin: 10px auto;
+}
+
+.card-oee-values div {
+    margin: 4px 0;
+}
+.card-oee {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.card canvas {
+    margin: auto;
+    display: block;
+}
+
+.card-oee {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.apq-section {
+    margin-top: 50px;
+    padding: 0 10px;
+}
+
+.apq-item {
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.card-apq-progress .apq-item {
+    margin-bottom: 5px;
+    padding: 5px 5px 0px 0px;
+}
+
+.card-OK 
+{
+    
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 8px;
+}
+.card-NOK
+{
+    margin-bottom: 1px;
+    font-size: 14px;
+    font-weight: bold;
+    
+}
+.card-apq-progress 
+{
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0px 10px 0px 20px;
+    position: relative;
+    top: -35px;
+}
+
+.apq-item
+{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+   font-size:13px;
+   height:10px;
+}
+
+    .apq-item label
+    {
+        white-space: nowrap;
+        font-weight: 200;
+        width: 10px; /* Ensures labels (A:, P:, Q:) align vertically */
+        align-self: flex-end;
+        font-weight: bold;
+        margin-bottom: 12px;
+    }
+
+    .apq-item .progress {
+        flex: 1;
+        height: 10px;
+        background-color: #e9ecef;
+        border-radius: 5px;
+        overflow: hidden;
+        margin-top:-20px;
+
+      
+    }
+
+    .apq-item .progress-bar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: 500;
+        text-align:center;
+        color: #443b3b;
+    }
+
+
+
+.progress-bar-bg 
+{ 
+    fill: #e0e0e0; 
+ }
+
+.progress-bar {
+    fill: #5e5e66c2;
+    background-color: #3ac1c1;
+}
+
+
+.progress-marker {
+    fill: #808084;
+}
+.progress-label {
+    font-size: 0.9em;
+    font-weight: bold;
+    fill: #6e626a;
+}
+
+.progress-label1 {
+    font-size: 0.7em;
+    fill: #6e626a;
+}
+.oee-svg {
+    /*padding: -0px 0px 10px 20px;*/
+    padding: 0px 0px 20px 20px;
+    margin-top: -80px;
+    width: 117px;
+    height: 117px;
+    margin: auto;
+    position:relative;
+    top:-10px;
+}
+
+
+/* Background + text color per status */
+.card-red .card-title {
+    background-color: #ef1a1ab8;
+    color: #080808;
+    border-radius: 8px; /* Adjust the radius size as needed */
+    padding: 4px 8px; /* Add padding so text doesn't hit the curve */
+    background-clip: padding-box;
+}
+
+.card-green .card-title {
+    /* background-color: #2ae056;*/
+    background-color: #95e365fc;
+    color: #080808;
+    border-radius: 8px; /* Adjust the radius size as needed */
+    padding: 4px 8px; /* Add padding so text doesn't hit the curve */
+    background-clip: padding-box;
+}
+
+.card-yellow .card-title {
+    background-color: #f1e013b0;
+    color: #080808;
+    border-radius: 8px; /* Adjust the radius size as needed */
+    padding: 4px 8px; /* Add padding so text doesn't hit the curve */
+    background-clip: padding-box;
+}
+
+
+.card-title {
+    font-size: 15px;
+    font-weight: bold;  
+}
+
+
+.card-red {
+    background-color: #ef1a1ab8;
+}
+
+.card-green {
+    background-color: #95e365fc;
+}
+
+.card-yellow {
+    background-color: #f1e013b0;
+}
+
+
+
+
+.variant-label {
+    display: block;
+    font-size: 0.9em;
+    margin-top: 1px;
+    
+
+}
+
+.no-data {
+    align-items: center;
+    padding: 90px 0px 60px 10px;
+    color:dimgrey;
+}
+
+

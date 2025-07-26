@@ -1,0 +1,75 @@
+﻿@{
+    ViewBag.Title = "OverallOEE";
+}
+
+<header class="page-header">
+    <h2>Live Dashboard</h2>
+</header>
+
+@if ((HttpContext.Current.Session["LineCode"]?.ToString().Length ?? 0) > 0)
+{
+    <div class="tab-wrapper">
+        <div class="tabs">
+            <button class="tab active" data-tab="home">Overall OEE</button>
+            <button class="tab" data-tab="profile">Stationwise KPI</button>
+        </div>
+
+        <div class="tab-content" id="home" style="display: block;">
+            <div id="cards-container">
+
+            </div>
+        </div>
+
+        <div class="tab-content" id="profile" style="display: none;">
+            <div class="cards-container">
+                <div class="card">
+                    <h3>Stationwise KPI</h3>
+                    <p>This is Stationwise KPI Under Progress.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include jQuery bundles -->
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <!-- Chart.js (only once, before your custom code) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <!-- D3 if needed -->
+    <script src="/Scripts/d3.v7.min.js"></script>
+
+    <!-- Your custom JS file, after Chart.js -->
+    <script src="@Url.Content("~/Scripts/OverallOEE/OverallOEE.js")"></script>
+
+    <!-- Pass server variables into JS -->
+    <script type="text/javascript">
+        var URL = '@System.Configuration.ConfigurationManager.AppSettings["url"]';
+        var sURL = URL;
+        var company = '@Session["CompanyCode"]';
+        var plant = '@Session["PlantCode"]';
+        var line = '@Session["LineCode"]';
+        var R_url = '@Url.Action("Login", "Main")';
+        var user1 = '@Session["Token"]' + ':' + '@Session["UserName"]';
+
+        $(function () {
+            OverallOEE(URL, sURL, company, plant, line, R_url, user1);
+        });
+    </script>
+
+    <link rel="stylesheet" href="~/StyleSheets/OverallOEE/OverallOEE.css" />
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <link rel="stylesheet" href="custom.css">
+ <!-- Your file last -->
+
+}
+else
+{
+    <div><br /><br /><label class="Selection_Condition">Select Line</label></div>
+}
+
+@if ((HttpContext.Current.Session["PlantCode"]?.ToString().Length ?? 0) == 0)
+{
+    <div><br /><br /><label class="Selection_Condition">Select Plant</label></div>
+}

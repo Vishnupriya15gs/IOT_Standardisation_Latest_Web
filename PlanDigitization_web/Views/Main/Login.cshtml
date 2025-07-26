@@ -167,7 +167,7 @@
                     }).then(function (result) {
                         var UserID = '@Session["UserID"]';
                         if (UserID != null) {
-                            window.location = '@Url.Action("MainDashboard", "MainDashboard")';
+                            window.location = '@Url.Action("OverallOEE", "OverallOEE")';
                             //window.location = '@Url.Action("FactoryKPIIndex", "FactoryKPI")';
                             //window.location = '@Url.Action("NewDash", "Main")';
                         }
